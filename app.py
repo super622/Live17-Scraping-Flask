@@ -14,18 +14,17 @@ def hello_world():
 
 @app.route('/start')
 def start():
-   month = request.args.get("month")
-   day = request.args.get("day")
+   start_month = request.args.get("start_month")
+   start_day = request.args.get("start_day")
+   # start_time = request.args.get('start_time')
+   # end_month = request.args.get('end_date')
+   # end_day = request.args.get('end_day')
    
-   getData = ContentSCraping(month, day)
+   getData = ContentSCraping(start_month, start_day)
    response = asyncio.run(getData.main())
    return json.dumps(response)
 
-@app.route('/stop').
-
-
-
-
+@app.route('/stop')
 def stop():
    return 'stop ...'
 
