@@ -15,6 +15,7 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+from gspread_formatting import batch_updater
 
 class ContentSCraping:
     # Init
@@ -145,31 +146,48 @@ class ContentSCraping:
             sheet.update_title('タイトル')
 
             sheet_range = "A1"
-            width = 440
+            batch = batch_updater(sheet.spreadsheet)
+            batch.set_row_height(sheet, '1:1', 440)
+            batch.set_column_width(sheet, 'A:A', 500)
+            batch.execute()
             
             insert_image = f"=IMAGE(\"{image}\", 1)"
             sheet.update(sheet_range, [[insert_image]], value_input_option="USER_ENTERED")
 
         # Insert html content into worksheet
-        async def insert_content_in_googlesheet(sheetID, element, title):
-            SCOPES = ['https://www.googleapis.com/auth/drive']
-            SERVICE_ACCOUNT_FILE = 'service-account.json'
+        async def insert_content_in_googlesheet(sheetID, element, parent_title, title):
+            # SCOPES = ['https://www.googleapis.com/auth/drive']
+            # SERVICE_ACCOUNT_FILE = 'service-account.json'
 
-            creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-            client = gspread.authorize(creds)
-            spreadsheet = client.open_by_key(sheetID)
+            # creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+            # client = gspread.authorize(creds)
+            # spreadsheet = client.open_by_key(sheetID)
+            # search_panel = element.find_elements('css selector', '.bpEaZC')
+            # if(len(search_panel) > 0):
+            #     return 
+            # result = None
+            # content = element.find_elements('css selector', '.bjzlAe')
+            # if(len(content) > 0):
+            #     result = content[0]
+            # else:
+            #     content = element.find_elements('css selector', '.bjzlAe')
+            #     result = [el.get_attribute('innerHTML') for el in content]
 
-            result = None
-            content = element.find_elements('css selector', '.btCdvi')
-            if(len(content) > 0):
-                result = content[0]
-            else:
-                content = element.find_elements('css selector', '.bjzlAe')
-                result = [el.get_attribute('innerHTML') for el in content]
-
-            worksheet = spreadsheet.add_worksheet(title=title, rows='100', cols='100')
-            sheet_range = "A1"
+            # worksheet = spreadsheet.add_worksheet(title=f"{parent_title} - {title}", rows='100', cols='100')
+            # sheet_range = "A1"
             # worksheet.update(sheet_range, result, value_input_option="USER_ENTERED")
+
+            search_panel = element.find_elements('css selector', '.bpEaZC')
+            if(len(search_panel) > 0):
+                return 
+            inner_html = ''
+            content = element.find_elements('css selector', '.bjzlAe')
+            if(len(content)):
+                for i in range(len(content)):
+                    inner_html += content[i].get_attribute('outerHTML')
+            print("************************************************")
+            print(inner_html)
+            print("************************************************")
 
         # Get attr of element
         async def handleGetAttr(elements, type):
@@ -198,26 +216,38 @@ class ContentSCraping:
 
             tab_elements = browser.find_elements('css selector', '.kGvAFP')
             for i in range(len(tab_elements)):
+                if(i == 0):
+                    continue
                 tab_title = tab_elements[i].text
                 print(tab_title)
                 print('================')
                 tab_elements[i].click()
 
                 sub_tab_group = browser.find_elements('css selector', '.gOMukq')
-
                 if(len(sub_tab_group) > 0):
-                    sub_tab_elements = browser.find_elements('css selector', '.ffjCOc')
-                    print(len(sub_tab_elements))
-                    # for j in range(len(sub_tab_elements)):
+                    sub_tab_elements = sub_tab_group[0].find_elements('css selector', '.ffjCOc')
+                    if(len(sub_tab_elements) > 0):
+                        for j in range(len(sub_tab_elements)):
+                            sub_tab_title = sub_tab_elements[j].text
+                            sub_tab_elements[j].click()
+                            print(f"{sub_tab_title}")
+                            # 
+                            last_sub_tab_group = browser.find_elements('css selector', '.gOMukq')
+                            if(len(last_sub_tab_group) > 1):
+                                last_sub_tab_elements = last_sub_tab_group[1].find_elements('css selector', '.ffjCOc')
+                                if(len(last_sub_tab_elements) > 0):
+                                    print('---------------------------------')
+                                    for l in range(len(last_sub_tab_elements)):
+                                        sub_tab_title = last_sub_tab_elements[l].text
+                                        last_sub_tab_elements[l].click()
+                                        print(f"{sub_tab_title} - {l}")
+                                        await insert_content_in_googlesheet(sheetID, browser, tab_title, sub_tab_title)
+                                    print('---------------------------------')
+                            # 
+                            await insert_content_in_googlesheet(sheetID, browser, tab_title, sub_tab_title)
+                        print('------------()()()()()----------')
 
-                        # sub_tab_title = sub_tab_elements[j].text
-                        # print(sub_tab_title)
-                        # sub_tab_elements[j].click()
-                        # await insert_content_in_googlesheet(sheetID, browser, sub_tab_title)
-                else:
-                    # await insert_content_in_googlesheet(sheetID, browser, tab_title)
-                    print('asdf')
-
+        # Write content into google sheets
         def write_into_googlesheet(sheetID, data):
             SCOPES = ['https://www.googleapis.com/auth/drive']
             SERVICE_ACCOUNT_FILE = 'service-account.json'
@@ -255,7 +285,7 @@ class ContentSCraping:
 
         # Get event all url
         url = 'https://wap-api.17app.co/api/v1/event?region=JP&status=1'
-        
+
         event_urls = None
         try:
             event_urls = await send_request(url)
@@ -327,10 +357,13 @@ class ContentSCraping:
                 folder_name = '11seQXAOIxXozPsCy7rG_CgJW0L8rdPmM'
                 sheetID = await get_sheet_by_name(filename, folder_name)
                 print(sheetID)
-                # event_json_data[i]['Count'] = calculate_date(current_year, current_month, current_day)
-                # write_into_googlesheet(sheetID, event_json_data[i])
+                event_json_data[i]['Count'] = calculate_date(current_year, current_month, current_day)
+                write_into_googlesheet(sheetID, event_json_data[i])
+
+            break
 
         return event_json_data
+
     async def main(self):
         result = await self.scanData()
         return result
