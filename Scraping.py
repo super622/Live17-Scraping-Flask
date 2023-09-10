@@ -356,8 +356,35 @@ async def scanData(start_month, start_day):
 
     return event_json_data
 
+# Create New Google Sheet
+async def createGoogleSheet(filename):
+    SCOPES = ['https://www.googleapis.com/auth/drive']  # Modified
+    credentials = service_account.Credentials.from_service_account_file('service-account.json', scopes=SCOPES)
+
+    drive = build('drive', 'v3', credentials=credentials)
+    file_metadata = {
+        'name': filename,
+        'parents': '11seQXAOIxXozPsCy7rG_CgJW0L8rdPmM',
+        # 'parents': ['1EO1rQPYbTRGUQl4mGvkFAY2cm0zn947w'],
+        'mimeType': 'application/vnd.google-apps.spreadsheet'
+    }
+    res = drive.files().create(body=file_metadata).execute()
+    permission_body = {
+        'role': 'writer',  # Set the desired role ('reader', 'writer', 'commenter', 'owner')
+        'type': 'anyone',  # Share with anyone
+    }
+    drive.permissions().create(fileId=res['id'], body=permission_body).execute()
+
+    file_id = res['id']
+    folder_id = '11seQXAOIxXozPsCy7rG_CgJW0L8rdPmM'
+
+    # Update the file's parents
+    # drive.files().update(fileId=file_id, addParents=folder_id).execute()
+    return file_id
+
 async def main():
-    result = await scanData(month, day)
+    # result = await scanData(month, day)
+    result = await createGoogleSheet('test')
     return result
 
 asyncio.run(main())

@@ -6,15 +6,12 @@ import datetime
 import gspread
 
 from datetime import date
-# from bs4 import BeautifulSoup
 from openpyxl.styles import Alignment
 from googleapiclient.discovery import build  # Added
 from google.oauth2 import service_account
 
 from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
 from gspread_formatting import batch_updater
 
 class ContentSCraping:
@@ -72,8 +69,8 @@ class ContentSCraping:
             drive = build('drive', 'v3', credentials=credentials)
             file_metadata = {
                 'name': filename,
-                'parents': '11seQXAOIxXozPsCy7rG_CgJW0L8rdPmM',
-                # 'parents': ['1EO1rQPYbTRGUQl4mGvkFAY2cm0zn947w'],
+                # 'parents': '11seQXAOIxXozPsCy7rG_CgJW0L8rdPmM',
+                'parents': ['11seQXAOIxXozPsCy7rG_CgJW0L8rdPmM'],
                 'mimeType': 'application/vnd.google-apps.spreadsheet'
             }
             res = drive.files().create(body=file_metadata).execute()
@@ -83,12 +80,7 @@ class ContentSCraping:
             }
             drive.permissions().create(fileId=res['id'], body=permission_body).execute()
 
-            file_id = res['id']
-            folder_id = '11seQXAOIxXozPsCy7rG_CgJW0L8rdPmM'
-
-            # Update the file's parents
-            # drive.files().update(fileId=file_id, addParents=folder_id).execute()
-            return file_id
+            return res['id']
 
         # Get Sheet ID by file name
         async def get_sheet_by_name(file_name, folder_name):
@@ -156,38 +148,75 @@ class ContentSCraping:
 
         # Insert html content into worksheet
         async def insert_content_in_googlesheet(sheetID, element, parent_title, title):
-            # SCOPES = ['https://www.googleapis.com/auth/drive']
-            # SERVICE_ACCOUNT_FILE = 'service-account.json'
+            SCOPES = ['https://www.googleapis.com/auth/drive']
+            SERVICE_ACCOUNT_FILE = 'service-account.json'
 
-            # creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-            # client = gspread.authorize(creds)
-            # spreadsheet = client.open_by_key(sheetID)
-            # search_panel = element.find_elements('css selector', '.bpEaZC')
-            # if(len(search_panel) > 0):
-            #     return 
-            # result = None
-            # content = element.find_elements('css selector', '.bjzlAe')
-            # if(len(content) > 0):
-            #     result = content[0]
-            # else:
-            #     content = element.find_elements('css selector', '.bjzlAe')
-            #     result = [el.get_attribute('innerHTML') for el in content]
-
-            # worksheet = spreadsheet.add_worksheet(title=f"{parent_title} - {title}", rows='100', cols='100')
-            # sheet_range = "A1"
-            # worksheet.update(sheet_range, result, value_input_option="USER_ENTERED")
+            creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+            client = gspread.authorize(creds)
+            spreadsheet = client.open_by_key(sheetID)
+            
+            worksheet = spreadsheet.add_worksheet(title=f"{parent_title} - {title}", rows='100', cols='100')
 
             search_panel = element.find_elements('css selector', '.bpEaZC')
             if(len(search_panel) > 0):
                 return 
-            inner_html = ''
-            content = element.find_elements('css selector', '.bjzlAe')
-            if(len(content)):
-                for i in range(len(content)):
-                    inner_html += content[i].get_attribute('outerHTML')
-            print("************************************************")
-            print(inner_html)
-            print("************************************************")
+            
+            inner_html = []
+            i = 0
+            contents = element.find_elements('css selector', '.bjzlAe')
+            if(len(contents) == 0):
+                contents = element.find_elements('css selector', '.btCdvi')
+ 
+            for content in contents:
+                child_elements = content.find_elements(By.TAG_NAME, '*')
+                
+                if(len(child_elements) > 0):
+                    for child in child_elements:
+                        class_name = child.get_attribute('class')[10:]
+                        
+                        if(class_name == 'hCXNzI'):
+                            # inner_html.append(["parent_title", child.text])
+                            font_size = 18
+                            insert_data = [child.text, font_size]
+                            # worksheet.insert_rows(insert_data, row=(i + 1))
+                            worksheet.insert_rows([[child.text]], row=(i + 1))
+                        elif class_name == 'jPbYFU' or class_name == 'fezHWk':
+                            # inner_html.append(['child_title', child.text])
+                            font_size = 15
+                            insert_data = [child.text, font_size]
+                            # worksheet.insert_rows(insert_data, row=(i + 1))
+                            worksheet.insert_rows([[child.text]], row=(i + 1))
+                        elif class_name == 'fpiBVx':
+                            # inner_html.append(["image", child.get_attribute('src')])
+                            worksheet.insert_rows([[child.get_attribute('src')]], row=(i + 1))
+                        elif class_name == 'dMxtIb':
+                            # inner_html.append(['text', child.text])
+                            insert_data = [child.text, font_size]
+                            # worksheet.insert_rows(insert_data, row=(i + 1))
+                            worksheet.insert_rows([[child.text]], row=(i + 1))
+                        elif class_name == 'bsffay':
+                            # inner_html.append(['text', child.text])
+                            insert_data = [child.text, font_size]
+                            # worksheet.insert_rows(insert_data, row=(i + 1))
+                            worksheet.insert_rows([[child.text]], row=(i + 1))
+                            image_elements = child.find_elements(By.TAG_NAME, 'img')
+
+                            if(len(image_elements) > 0):
+                                for image in image_elements:
+                                    inner_html.append(["image", image.get_attribute('src')])
+                                    insert_data = image.get_attribute('src')
+                                    worksheet.insert_rows([[insert_data]], row=(i + 1))
+
+                        elif class_name == 'jwdikc':
+                            th_element = content.find_elements(By.CLASS_NAME, 'jwdikc')
+                            col_cnt = len(th_element)
+                            data = []
+                            td_element = content.find_elements(By.CLASS_NAME, 'cdkoph')
+                            for td in td_element:
+                                data.append(td.text)
+
+                            # inner_html.append(["table", col_cnt, data])
+                        i += 1
 
         # Get attr of element
         async def handleGetAttr(elements, type):
@@ -209,10 +238,16 @@ class ContentSCraping:
             
             browser.get(f'https://event.17.live/{event_id}')
             time.sleep(10)
+            main_image = ''
             main_image_elements = browser.find_elements('css selector', '.sc-crHlIS')
-            main_image = await handleGetAttr(main_image_elements, 'src')
+            main_video_elements = browser.find_elements('css selector', '.diUfYd')
 
-            await insert_image_in_googlesheet(sheetID, main_image)
+            if(len(main_image_elements) > 0):
+                main_image = await handleGetAttr(main_image_elements, 'src')
+            else:
+                main_image = await handleGetAttr(main_video_elements, 'src')
+            
+            # await insert_image_in_googlesheet(sheetID, main_image)
 
             tab_elements = browser.find_elements('css selector', '.kGvAFP')
             for i in range(len(tab_elements)):
@@ -230,22 +265,17 @@ class ContentSCraping:
                         for j in range(len(sub_tab_elements)):
                             sub_tab_title = sub_tab_elements[j].text
                             sub_tab_elements[j].click()
-                            print(f"{sub_tab_title}")
                             # 
                             last_sub_tab_group = browser.find_elements('css selector', '.gOMukq')
                             if(len(last_sub_tab_group) > 1):
                                 last_sub_tab_elements = last_sub_tab_group[1].find_elements('css selector', '.ffjCOc')
                                 if(len(last_sub_tab_elements) > 0):
-                                    print('---------------------------------')
                                     for l in range(len(last_sub_tab_elements)):
                                         sub_tab_title = last_sub_tab_elements[l].text
                                         last_sub_tab_elements[l].click()
-                                        print(f"{sub_tab_title} - {l}")
                                         await insert_content_in_googlesheet(sheetID, browser, tab_title, sub_tab_title)
-                                    print('---------------------------------')
                             # 
                             await insert_content_in_googlesheet(sheetID, browser, tab_title, sub_tab_title)
-                        print('------------()()()()()----------')
 
         # Write content into google sheets
         def write_into_googlesheet(sheetID, data):
@@ -332,6 +362,9 @@ class ContentSCraping:
                     event_json_data.append(res)
             except Exception as e:
                 print(f"An error occurred while fetching JSON for {json_url}: {e}")
+
+        await insert_image('1rroaeukkr_6cj3HeVgzmQkCutAShFPAxuUtDIo2iscg', '17890-2309-jp-saury')
+        return 
 
         for i in range(len(event_json_data)):
             data = event_json_data[i]['Data']
