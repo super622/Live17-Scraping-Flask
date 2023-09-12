@@ -16,9 +16,10 @@ from gspread_formatting import batch_updater
 
 class ContentSCraping:
     # Init
-    def __init__(self, month, day):
+    def __init__(self, month, day, event_url):
         self.month = month
         self.day = day
+        self.event_url = event_url
 
     # Get Data from purpose site
     async def scanData(self):
@@ -69,7 +70,6 @@ class ContentSCraping:
             drive = build('drive', 'v3', credentials=credentials)
             file_metadata = {
                 'name': filename,
-                # 'parents': '11seQXAOIxXozPsCy7rG_CgJW0L8rdPmM',
                 'parents': ['11seQXAOIxXozPsCy7rG_CgJW0L8rdPmM'],
                 'mimeType': 'application/vnd.google-apps.spreadsheet'
             }
@@ -123,7 +123,7 @@ class ContentSCraping:
 
             data = data['Data']
             for i in range(len(data)):
-                worksheet = spreadsheet.add_worksheet(title=data[i]['EventID'], rows='100', cols='100')
+                worksheet = spreadsheet.add_worksheet(title=data[i]['EventID'], rows='500', cols='100')
 
         # Insert image into worksheet
         async def insert_image_in_googlesheet(sheetID, image):
@@ -155,14 +155,14 @@ class ContentSCraping:
             client = gspread.authorize(creds)
             spreadsheet = client.open_by_key(sheetID)
             
-            worksheet = spreadsheet.add_worksheet(title=f"{parent_title} - {title}", rows='100', cols='100')
+            worksheet = spreadsheet.add_worksheet(title=f"{parent_title} - {title}", rows='500', cols='100')
 
             search_panel = element.find_elements('css selector', '.bpEaZC')
             if(len(search_panel) > 0):
                 return 
             
             inner_html = []
-            i = 0
+            i = 1
             contents = element.find_elements('css selector', '.bjzlAe')
             if(len(contents) == 0):
                 contents = element.find_elements('css selector', '.btCdvi')
@@ -173,39 +173,70 @@ class ContentSCraping:
                 if(len(child_elements) > 0):
                     for child in child_elements:
                         class_name = child.get_attribute('class')[10:]
-                        
-                        if(class_name == 'hCXNzI'):
+                        tag_name = child.tag_name
+
+                        if(tag_name == 'center'):
+                            print(child.text)
+                            # worksheet.insert_rows(insert_data, row=(i + 1))
+                            worksheet.update(f"A{i}", [[child.text]], value_input_option="USER_ENTERED")
+                            i += 1
+                        elif(class_name == 'hCXNzI'):
                             # inner_html.append(["parent_title", child.text])
                             font_size = 18
                             insert_data = [child.text, font_size]
+                            print(child.text)
                             # worksheet.insert_rows(insert_data, row=(i + 1))
-                            worksheet.insert_rows([[child.text]], row=(i + 1))
+                            worksheet.update(f"A{i}", [[child.text]], value_input_option="USER_ENTERED")
+                            i += 1
                         elif class_name == 'jPbYFU' or class_name == 'fezHWk':
                             # inner_html.append(['child_title', child.text])
                             font_size = 15
                             insert_data = [child.text, font_size]
+                            print(child.text)
                             # worksheet.insert_rows(insert_data, row=(i + 1))
-                            worksheet.insert_rows([[child.text]], row=(i + 1))
+                            worksheet.update(f"A{i}", [[child.text]], value_input_option="USER_ENTERED")
+                            i += 1
                         elif class_name == 'fpiBVx':
                             # inner_html.append(["image", child.get_attribute('src')])
-                            worksheet.insert_rows([[child.get_attribute('src')]], row=(i + 1))
+                            print(child.get_attribute('src'))
+                            insert_image = f"=IMAGE(\"{child.get_attribute('src')}\", 1)"
+                            # worksheet.insert_rows([[insert_image]], row=(i + 1))
+
+                            batch = batch_updater(worksheet.spreadsheet)
+                            batch.set_row_height(worksheet, f'1:{i}', 200)
+                            batch.set_column_width(worksheet, f'A:A', 500)
+                            batch.execute()
+
+                            worksheet.update(f"A{i}", [[insert_image]], value_input_option="USER_ENTERED")
+                            i += 1
                         elif class_name == 'dMxtIb':
                             # inner_html.append(['text', child.text])
                             insert_data = [child.text, font_size]
+                            print(child.text)
                             # worksheet.insert_rows(insert_data, row=(i + 1))
-                            worksheet.insert_rows([[child.text]], row=(i + 1))
+                            worksheet.update(f"A{i}", [[child.text]], value_input_option="USER_ENTERED")
+                            i += 1
                         elif class_name == 'bsffay':
                             # inner_html.append(['text', child.text])
-                            insert_data = [child.text, font_size]
+                            print(child.text)
                             # worksheet.insert_rows(insert_data, row=(i + 1))
-                            worksheet.insert_rows([[child.text]], row=(i + 1))
+                            worksheet.update(f"A{i}", [[child.text]], value_input_option="USER_ENTERED")
                             image_elements = child.find_elements(By.TAG_NAME, 'img')
+                            i += 1
 
                             if(len(image_elements) > 0):
                                 for image in image_elements:
-                                    inner_html.append(["image", image.get_attribute('src')])
-                                    insert_data = image.get_attribute('src')
-                                    worksheet.insert_rows([[insert_data]], row=(i + 1))
+                                    print(image.get_attribute('src'))
+                                    # inner_html.append(["image", image.get_attribute('src')])
+
+                                    batch = batch_updater(worksheet.spreadsheet)
+                                    batch.set_row_height(worksheet, f'{i}:1', 200)
+                                    batch.set_column_width(worksheet, f'A{i}:A1', 500)
+                                    batch.execute()
+
+                                    insert_image = f"=IMAGE(\"{image.get_attribute('src')}\", 1)"
+                                    worksheet.update(f"A{i}", [[insert_image]], value_input_option="USER_ENTERED")
+                                    i += 1
 
                         elif class_name == 'jwdikc':
                             th_element = content.find_elements(By.CLASS_NAME, 'jwdikc')
@@ -215,8 +246,22 @@ class ContentSCraping:
                             for td in td_element:
                                 data.append(td.text)
 
-                            # inner_html.append(["table", col_cnt, data])
-                        i += 1
+                            k = 0
+                            j = 0
+                            print(data)
+                            for k in range(len(data)):
+                                if(k + col_cnt == len(data)):
+                                    break
+                                if(k >= col_cnt):
+                                    j = k % col_cnt
+                                time.sleep(5)
+                                print(f"{data[j]} : {data[k + col_cnt]}")
+                                worksheet.update(f"A{i}", [[f"{data[j]} : {data[k + col_cnt]}"]], value_input_option="USER_ENTERED")
+                                i += 1
+                                j += 1
+                                print(f"----------------{i}-------------------")
+
+                        print(f"----------------{i}-------------------")
 
         # Get attr of element
         async def handleGetAttr(elements, type):
@@ -247,7 +292,8 @@ class ContentSCraping:
             else:
                 main_image = await handleGetAttr(main_video_elements, 'src')
             
-            # await insert_image_in_googlesheet(sheetID, main_image)
+            print(main_image)
+            await insert_image_in_googlesheet(sheetID, main_image)
 
             tab_elements = browser.find_elements('css selector', '.kGvAFP')
             for i in range(len(tab_elements)):
@@ -273,8 +319,10 @@ class ContentSCraping:
                                     for l in range(len(last_sub_tab_elements)):
                                         sub_tab_title = last_sub_tab_elements[l].text
                                         last_sub_tab_elements[l].click()
+                                        time.sleep(30)
                                         await insert_content_in_googlesheet(sheetID, browser, tab_title, sub_tab_title)
                             # 
+                            time.sleep(30)
                             await insert_content_in_googlesheet(sheetID, browser, tab_title, sub_tab_title)
 
         # Write content into google sheets
@@ -312,28 +360,32 @@ class ContentSCraping:
                 row_index = 2  # Assuming you want to insert the data in the 2nd row
 
                 worksheet.insert_rows(data[i]['List'], row=row_index)
+                time.sleep(10)
 
         # Get event all url
-        url = 'https://wap-api.17app.co/api/v1/event?region=JP&status=1'
+        # url = 'https://wap-api.17app.co/api/v1/event?region=JP&status=1'
 
-        event_urls = None
-        try:
-            event_urls = await send_request(url)
-        except Exception as e:
-            print(f"An error occurred while fetching JSON for {url}: {e}")
+        # event_urls = None
+        # try:
+        #     event_urls = await send_request(url)
+        # except Exception as e:
+        #     print(f"An error occurred while fetching JSON for {url}: {e}")
 
-        event_urls = json.loads(event_urls)
-        event_urls = event_urls['events']['inProgress']
+        # event_urls = json.loads(event_urls)
+        # event_urls = event_urls['events']['inProgress']
 
-        event_url_arr = []
-        if (len(event_urls) > 1):
-            for i in range(len(event_urls)):
-                event_url_arr.append(event_urls[i]['descriptionURL'])
+        # event_url_arr = []
+        # if (len(event_urls) > 1):
+        #     for i in range(len(event_urls)):
+        #         event_url_arr.append(event_urls[i]['descriptionURL'])
+
+        event_url_arr = [self.event_url]
 
         # Get containerID from event refrence api
         event_json_data = []
         for i in range(len(event_url_arr)):
             event_id = event_url_arr[i].split('/')[-1]
+            print(event_id)
             json_url = f'https://webcdn.17app.co/campaign/projects/{event_id}/references.json'
             try:
                 event_json_response = await send_request(json_url)
@@ -360,11 +412,13 @@ class ContentSCraping:
                         "Count": 0
                     }
                     event_json_data.append(res)
+                else:
+                    return 'Failure'
             except Exception as e:
                 print(f"An error occurred while fetching JSON for {json_url}: {e}")
 
-        await insert_image('1rroaeukkr_6cj3HeVgzmQkCutAShFPAxuUtDIo2iscg', '17890-2309-jp-saury')
-        return 
+        # await insert_image('1rroaeukkr_6cj3HeVgzmQkCutAShFPAxuUtDIo2iscg', '17890-2309-jp-saury')
+        # return 
 
         for i in range(len(event_json_data)):
             data = event_json_data[i]['Data']
@@ -378,22 +432,22 @@ class ContentSCraping:
 
             filename = f"Ranking_{event_json_data[i]['ID']}_{current_year}_{self.month}_{self.day}"
 
-            if(int(self.month) == current_month and int(self.day) == current_day):
+            if((int(self.month) == current_month and int(self.day) == current_day) or (int(self.month) < current_month and int(self.day) < current_day)):
                 # create new sheet
                 sheetID = await createGoogleSheet(filename)
                 print(sheetID)
                 event_json_data[i]['Count'] == 0
                 await insert_image(sheetID, event_json_data[i]['ID'])
                 await create_sheet_into_spreadsheet(sheetID, event_json_data[i])
+                time.sleep(20)
                 write_into_googlesheet(sheetID, event_json_data[i])
             else:
                 folder_name = '11seQXAOIxXozPsCy7rG_CgJW0L8rdPmM'
                 sheetID = await get_sheet_by_name(filename, folder_name)
                 print(sheetID)
                 event_json_data[i]['Count'] = calculate_date(current_year, current_month, current_day)
+                time.sleep(20)
                 write_into_googlesheet(sheetID, event_json_data[i])
-
-            break
 
         return event_json_data
 
