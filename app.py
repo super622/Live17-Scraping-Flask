@@ -48,7 +48,7 @@ def start():
    # response = asyncio.run(getData.main())
    # return json.dumps(response)
 
-   getChatingData = Chating(nick_url)
+   getChatingData = Chating(end_date_month, end_date_day, nick_url)
    response = asyncio.run(getChatingData.main())
    return json.dumps(response)
 

@@ -1,3 +1,4 @@
+import math
 import time
 import requests
 import asyncio
@@ -82,16 +83,14 @@ class ContentSCraping:
 
             return res['id']
 
-        # Get Sheet ID by file name
+        # Get Sheet ID by file name in special folder
         async def get_sheet_by_name(file_name, folder_name):
             SCOPES = ['https://www.googleapis.com/auth/drive']  # Modified
             credentials = service_account.Credentials.from_service_account_file('service-account.json', scopes=SCOPES)
             drive_service = build('drive', 'v3', credentials=credentials)
             sheet_id = None
 
-            # results = drive_service.files().list(q="name='" + file_name + "' and mimeType='application/vnd.google-apps.spreadsheet' and '" + folder_name + "' in parents",
-            #                                     pageSize=10, fields="nextPageToken, files(id, name)").execute()
-            results = drive_service.files().list(q="name='" + file_name + "' and mimeType='application/vnd.google-apps.spreadsheet' ",
+            results = drive_service.files().list(q="name='" + file_name + "' and and mimeType='application/vnd.google-apps.spreadsheet' ",
                                     pageSize=10, fields="nextPageToken, files(id, name)").execute()
             items = results.get('files', [])
             if not items:
@@ -160,8 +159,7 @@ class ContentSCraping:
             search_panel = element.find_elements('css selector', '.bpEaZC')
             if(len(search_panel) > 0):
                 return 
-            
-            inner_html = []
+
             i = 1
             contents = element.find_elements('css selector', '.bjzlAe')
             if(len(contents) == 0):
@@ -176,32 +174,16 @@ class ContentSCraping:
                         tag_name = child.tag_name
 
                         if(tag_name == 'center'):
-                            print(child.text)
-                            # worksheet.insert_rows(insert_data, row=(i + 1))
                             worksheet.update(f"A{i}", [[child.text]], value_input_option="USER_ENTERED")
                             i += 1
                         elif(class_name == 'hCXNzI'):
-                            # inner_html.append(["parent_title", child.text])
-                            font_size = 18
-                            insert_data = [child.text, font_size]
-                            print(child.text)
-                            # worksheet.insert_rows(insert_data, row=(i + 1))
                             worksheet.update(f"A{i}", [[child.text]], value_input_option="USER_ENTERED")
                             i += 1
                         elif class_name == 'jPbYFU' or class_name == 'fezHWk':
-                            # inner_html.append(['child_title', child.text])
-                            font_size = 15
-                            insert_data = [child.text, font_size]
-                            print(child.text)
-                            # worksheet.insert_rows(insert_data, row=(i + 1))
                             worksheet.update(f"A{i}", [[child.text]], value_input_option="USER_ENTERED")
                             i += 1
                         elif class_name == 'fpiBVx':
-                            # inner_html.append(["image", child.get_attribute('src')])
-                            print(child.get_attribute('src'))
                             insert_image = f"=IMAGE(\"{child.get_attribute('src')}\", 1)"
-                            # worksheet.insert_rows([[insert_image]], row=(i + 1))
-
                             batch = batch_updater(worksheet.spreadsheet)
                             batch.set_row_height(worksheet, f'1:{i}', 200)
                             batch.set_column_width(worksheet, f'A:A', 500)
@@ -210,25 +192,15 @@ class ContentSCraping:
                             worksheet.update(f"A{i}", [[insert_image]], value_input_option="USER_ENTERED")
                             i += 1
                         elif class_name == 'dMxtIb':
-                            # inner_html.append(['text', child.text])
-                            insert_data = [child.text, font_size]
-                            print(child.text)
-                            # worksheet.insert_rows(insert_data, row=(i + 1))
                             worksheet.update(f"A{i}", [[child.text]], value_input_option="USER_ENTERED")
                             i += 1
                         elif class_name == 'bsffay':
-                            # inner_html.append(['text', child.text])
-                            print(child.text)
-                            # worksheet.insert_rows(insert_data, row=(i + 1))
                             worksheet.update(f"A{i}", [[child.text]], value_input_option="USER_ENTERED")
                             image_elements = child.find_elements(By.TAG_NAME, 'img')
                             i += 1
 
                             if(len(image_elements) > 0):
                                 for image in image_elements:
-                                    print(image.get_attribute('src'))
-                                    # inner_html.append(["image", image.get_attribute('src')])
-
                                     batch = batch_updater(worksheet.spreadsheet)
                                     batch.set_row_height(worksheet, f'{i}:1', 200)
                                     batch.set_column_width(worksheet, f'A{i}:A1', 500)
@@ -238,27 +210,28 @@ class ContentSCraping:
                                     worksheet.update(f"A{i}", [[insert_image]], value_input_option="USER_ENTERED")
                                     i += 1
 
-                        elif class_name == 'jwdikc':
-                            th_element = content.find_elements(By.CLASS_NAME, 'jwdikc')
+                        elif class_name == 'bXAnVj':
+                            th_element = child.find_elements(By.CLASS_NAME, 'jwdikc')
                             col_cnt = len(th_element)
                             data = []
-                            td_element = content.find_elements(By.CLASS_NAME, 'cdkoph')
+                            td_element = child.find_elements(By.CLASS_NAME, 'cdkoph')
                             for td in td_element:
                                 data.append(td.text)
 
                             k = 0
-                            j = 0
-                            print(data)
+                            res_str = ''
                             for k in range(len(data)):
-                                if(k + col_cnt == len(data)):
-                                    break
-                                if(k >= col_cnt):
-                                    j = k % col_cnt
-                                time.sleep(5)
-                                print(f"{data[j]} : {data[k + col_cnt]}")
-                                worksheet.update(f"A{i}", [[f"{data[j]} : {data[k + col_cnt]}"]], value_input_option="USER_ENTERED")
+                                j = math.floor(k % col_cnt)
+                                if(j == 0):
+                                    res_str += data[k]
+                                else:
+                                    res_str += f" | {data[k]}"
+                                
+                                if(j == col_cnt - 1):
+                                    worksheet.update(f"A{i}", [[res_str]], value_input_option="USER_ENTERED")
+                                    res_str = ''
+
                                 i += 1
-                                j += 1
                                 print(f"----------------{i}-------------------")
 
                         print(f"----------------{i}-------------------")
@@ -415,10 +388,7 @@ class ContentSCraping:
                 else:
                     return 'Failure'
             except Exception as e:
-                print(f"An error occurred while fetching JSON for {json_url}: {e}")
-
-        # await insert_image('1rroaeukkr_6cj3HeVgzmQkCutAShFPAxuUtDIo2iscg', '17890-2309-jp-saury')
-        # return 
+                print(f"An error occurred while fetching JSON for {json_url}: {e}") 
 
         for i in range(len(event_json_data)):
             data = event_json_data[i]['Data']
