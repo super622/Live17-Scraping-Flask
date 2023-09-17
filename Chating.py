@@ -275,6 +275,8 @@ class Chating:
 
                     creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
                     client = gspread.authorize(creds)
+                    service = build('sheets', 'v4', credentials=creds)
+
                     spreadsheet = client.open_by_key(sheetID)
 
                     if(create_flag):
@@ -300,6 +302,12 @@ class Chating:
                         worksheet.update("A1", [["ギフト名"]], value_input_option="USER_ENTERED")
                         worksheet.update("B1", [["ギフト個数"]], value_input_option="USER_ENTERED")
                         worksheet.update("C1", [["コイン数"]], value_input_option="USER_ENTERED")
+
+                    # clear content in google sheet
+                    sheet_range = f'チャット履歴!A6:Z'  # Adjust the range as needed
+                    service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
+                    sheet_range = f'ギフト内訳!A2:Z'  # Adjust the range as needed
+                    service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
 
                     # write content into google sheet
                     worksheet = spreadsheet.worksheet("チャット履歴")
