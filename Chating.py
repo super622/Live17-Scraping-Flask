@@ -85,18 +85,6 @@ class Chating:
                 "Coin": 0
             }
             return res
-        #  get total score
-        def get_score(browser):
-            res_str = ''
-            score_elements = browser.find_elements(By.XPATH, "//*[@style='transform: rotateX(0deg) translateZ(28px);']")
-            for element in score_elements:
-                print(element.text)
-                while element.text == '':
-                    time.sleep(2)
-
-                print(element.text)
-                res_str += element.text
-            return res_str
         
         # Create New Google Sheet
         async def createGoogleSheet(filename):
@@ -260,9 +248,15 @@ class Chating:
                             total_result.append([gifs_users[i]['UserName'], gifs_users[i]['GifType'], gifs_users[i]['Gif_Count'], gifs_users[i]['Coin'], snack_gifs_users[i]['UserName'], snack_gifs_users[i]['Snack_Count'], snack_gifs_users[i]['Gif_Count'], snack_gifs_users[i]['Coin']])
                         i += 1
                     
-                    score = get_score(browser)
+
+                    score_elements = browser.find_elements(By.XPATH, "//*[@style='transform: rotateX(0deg) translateZ(28px);']")
+                    print(len(score_elements))
+                    for element in score_elements:
+                        while element.text == '':
+                            time.sleep(2)
+                        print(element.text)
+                        score += element.text
                     print(f"coin = {coin_cnt}, score = {score}")
-                    return
 
                     # create google sheet
                     filename = f"Test_{self.name}__{self.start_year}_{self.start_month}_{self.start_day}"
