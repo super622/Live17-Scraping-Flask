@@ -18,10 +18,12 @@ from selenium.webdriver.common.by import By
 class Chating:
 
     # Init
-    def __init__(self, end_date_month, end_date_day, name):
-        self.name = name
+    def __init__(self, end_date_month, end_date_day, start_time_hour, start_time_minute, nick_url):
+        self.name = nick_url
         self.end_date_month = end_date_month
         self.end_date_day = end_date_day
+        self.start_hours = start_time_hour
+        self.start_minute = start_time_minute
         self.start_year = datetime.datetime.now().year
         self.start_month = datetime.datetime.now().month
         self.start_day = datetime.datetime.now().day
@@ -48,8 +50,8 @@ class Chating:
             flag = False
             for user in gifs_users:
                 if(user['UserName'] == res['UserName'] and user['GifType'] == res['GifType']):
+                    user['Coin'] = int(res['Coin']) * int(user['Gif_Count'] + 1)
                     user['Gif_Count'] += 1
-                    user['Coin'] = int(res['Coin'])
                     flag = True
 
             if flag:
@@ -76,6 +78,8 @@ class Chating:
         # find special gif user
         def find_in_gifusers(gifs_users, user_name):
             for user in gifs_users:
+                print(user_name)
+                print(user['UserName'] == user_name)
                 if(user['UserName'] == user_name):
                     return user
             res = {
@@ -125,7 +129,7 @@ class Chating:
             flag = False
             x = 1
             for user in snack_gifs_users:
-                if(user['UserName'] == gifs_user['UserName']):
+                if(user['UserName'] == username):
                     user['Gif_Count'] = gifs_user['Gif_Count']
                     user['Coin'] = ((int(user['Snack_Count']) + 1) * x) + int(gifs_user['Coin'])
                     user['Snack_Count'] = 1 + int(user['Snack_Count'])
@@ -138,7 +142,7 @@ class Chating:
                     "UserName": username,
                     "Gif_Count": gifs_user['Gif_Count'],
                     "Snack_Count": 1,
-                    "Coin": 1 * x + int(gifs_user['Coin'])
+                    "Coin": (1 * x) + int(gifs_user['Coin'])
                 }
                 snack_gifs_users.append(res)
                 return snack_gifs_users
@@ -161,7 +165,7 @@ class Chating:
 
         if len(live_stream_id_arr) == 0:
             return 'failure - not exist live stream id'
-        
+        print(live_stream_id_arr)
         for live_room_id in live_stream_id_arr:
             url = f'https://17.live/ja/live/{live_room_id}'
 
@@ -212,7 +216,7 @@ class Chating:
                             gifs_list = append_to_gif(gifs_list, gif_type, coin)
                             gifs_users = append_to_gifusers(gifs_users, res)
 
-                            gif_man_cnt = len(chating_panel[0].find_elements('css selector', '.GiftItem__GiftIcon-sc-g419cs-0'))
+                            gif_man_cnt = len(gifs_users)
 
                         if len(chat_element.find_elements('css selector', '.LaborReward__ControlledText-sc-cxndew-0')) > 0:
                             name_element = chat_element.find_elements('css selector', '.ChatUserName__NameWrapper-sc-1ca2hpy-0')
@@ -220,9 +224,11 @@ class Chating:
                             gif_state = find_in_gifusers(gifs_users, user_name)
                             snack_gifs_users = append_to_snack_gifusers(snack_gifs_users, gif_state, user_name)
 
-                            snack_cnt = len(chating_panel[0].find_elements('css selector', '.LaborReward__ControlledText-sc-cxndew-0'))
-                            gif_man_cnt = len(chating_panel[0].find_elements('css selector', '.GiftItem__GiftIcon-sc-g419cs-0'))
+                            gif_man_cnt = len(gifs_users)
+                            snack_cnt = len(snack_gifs_users)
 
+                    print(gifs_users)
+                    print(snack_gifs_users)
                     for user in gifs_users:
                         coin_cnt += int(user['Coin'])
 
@@ -240,23 +246,27 @@ class Chating:
 
                     i = 0
                     for i in range(len(temp_arr)):
-                        if(i > len(gifs_users)):
-                            total_result.append(['', '', '', '', snack_gifs_users[i]['UserName'], snack_gifs_users[i]['Snack_Count'], snack_gifs_users[i]['Gif_Count'], snack_gifs_users[i]['Coin']])
-                        elif(i > len(snack_gifs_users)):
-                            total_result.append([gifs_users[i]['UserName'], gifs_users[i]['GifType'], gifs_users[i]['Gif_Count'], gifs_users[i]['Coin'], '','','',''])
+                        res_arr = None
+                        if(i >= len(gifs_users)):
+                            res_arr = ['', '', '', '', snack_gifs_users[i]['UserName'], snack_gifs_users[i]['Snack_Count'], snack_gifs_users[i]['Gif_Count'], snack_gifs_users[i]['Coin']]
+                        elif(i >= len(snack_gifs_users)):
+                            res_arr = [gifs_users[i]['UserName'], gifs_users[i]['GifType'], gifs_users[i]['Gif_Count'], gifs_users[i]['Coin'], '','','','']
                         elif(i < len(gifs_users) and i < len(snack_gifs_users)):
-                            total_result.append([gifs_users[i]['UserName'], gifs_users[i]['GifType'], gifs_users[i]['Gif_Count'], gifs_users[i]['Coin'], snack_gifs_users[i]['UserName'], snack_gifs_users[i]['Snack_Count'], snack_gifs_users[i]['Gif_Count'], snack_gifs_users[i]['Coin']])
+                            res_arr = [gifs_users[i]['UserName'], gifs_users[i]['GifType'], gifs_users[i]['Gif_Count'], gifs_users[i]['Coin'], snack_gifs_users[i]['UserName'], snack_gifs_users[i]['Snack_Count'], snack_gifs_users[i]['Gif_Count'], snack_gifs_users[i]['Coin']]
+                        
+                        print(res_arr)
+                        total_result.append(res_arr)
                         i += 1
                     
-
                     score_elements = browser.find_elements(By.XPATH, "//*[@style='transform: rotateX(0deg) translateZ(28px);']")
-                    print(len(score_elements))
                     for element in score_elements:
+                        print(element.text)
                         while element.text == '':
                             time.sleep(2)
                         print(element.text)
                         score += element.text
                     print(f"coin = {coin_cnt}, score = {score}")
+                    time.sleep(5)
 
                     # create google sheet
                     filename = f"Test_{self.name}__{self.start_year}_{self.start_month}_{self.start_day}"
@@ -326,14 +336,17 @@ class Chating:
 
                     current_month = datetime.datetime.now().month
                     current_day = datetime.datetime.now().day
+                    current_hour = datetime.datetime.now().hour
+                    current_minute = datetime.datetime.now().minute
 
-                    if current_month == self.end_date_month and current_day == self.end_date_day:
+                    if current_month == self.end_date_month and current_day == self.end_date_day and current_hour == self.start_hours and current_minute == self.start_minute:
                         sys.exit(1)
 
                 else:
                     return 'Failure'
 
     async def main(self):
+        print('start-1')
         result = await self.scanData()
         return result
     
