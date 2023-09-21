@@ -51,16 +51,11 @@ def start():
    nick_url = request.values.get('nick_url')
 
    current_year = datetime.datetime.now().year
-   current_month = datetime.datetime.now().month
-   current_day = datetime.datetime.now().day
-   current_hour = datetime.datetime.now().hour
-   current_minute = datetime.datetime.now().minute
-
-   if(start_date_year == current_year):
-      print('')
+   # if(start_date_year == current_year):
+   #    print('')
       # if((start_date_day == current_day and start_time_hour < current_hour) or (start_date_day == current_day and start_time_hour == current_hour and start_time_minute < current_minute)):
       #    return json.dumps([{"type": "warning", "msg": "選択した開始日と時刻が現在の時刻より遅れてはいけません。"}])
-   elif(start_date_year > current_year):
+   if(start_date_year > current_year):
       current_year = start_date_year
 
    # Create a datetime object for the specified start date and time
@@ -72,20 +67,29 @@ def start():
    delay = math.floor(delay)
    print(delay)
 
-   # Create a new thread to call the scheduled function after the delay
-   res = threading.Timer(delay, chating_scraping, args=(end_date_month, end_date_day, start_time_hour, start_time_minute, nick_url)).start()
+   if(nick_url != ''):
+      if(nick_url.find(';') > -1):
+         nick_name_arr = nick_url.split(';')
+         for nick_name in nick_name_arr:
+            res = threading.Timer(delay, chating_scraping, args=(end_date_month, end_date_day, start_time_hour, start_time_minute, nick_name)).start()
+      else:
+         res = threading.Timer(delay, chating_scraping, args=(end_date_month, end_date_day, start_time_hour, start_time_minute, nick_url)).start()
 
    # Convert start_date and end_date to datetime objects
    start_datetime = datetime.datetime.strptime(f"{current_year}-{start_date_month}-{start_date_day} {start_time_hour}:{start_time_minute}:0", '%Y-%m-%d %H:%M:%S')
    end_datetime = datetime.datetime.strptime(f"{end_date_year}-{end_date_month}-{end_date_day} {start_time_hour}:{start_time_minute}:0", '%Y-%m-%d %H:%M:%S')
-   
-   # Schedule the cron job
-   job = schedule.every().day.at(f"{change_string(start_time_hour)}:{change_string(start_time_minute)}:00").do(event_scraping, start_date_month, start_date_day, event_url)
 
-   print(job)
-
-   # Store the scheduled job in a dictionary
-   scheduled_jobs[job] = {'start_datetime': start_datetime, 'end_datetime': end_datetime}
+   # if(event_url != ''):
+   #    if(event_url.find(';') > -1):
+   #       event_url_arr = event_url.split(';')
+   #       for event in event_url_arr:
+   #          job = schedule.every().day.at(f"{change_string(start_time_hour)}:{change_string(start_time_minute)}:00").do(event_scraping, start_date_month, start_date_day, event)
+   #          print(job)
+   #          scheduled_jobs[job] = {'start_datetime': start_datetime, 'end_datetime': end_datetime}
+   #    else:
+   #       job = schedule.every().day.at(f"{change_string(start_time_hour)}:{change_string(start_time_minute)}:00").do(event_scraping, start_date_month, start_date_day, event)
+   #       print(job)
+   #       scheduled_jobs[job] = {'start_datetime': start_datetime, 'end_datetime': end_datetime}
 
    return json.dumps([{"type": "success", "msg": "リクエストが受け付けられました。"}])
 
