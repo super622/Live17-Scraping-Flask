@@ -7,8 +7,6 @@ import json
 import datetime
 import gspread
 
-from datetime import date
-from openpyxl.styles import Alignment
 from googleapiclient.discovery import build  # Added
 from google.oauth2 import service_account
 
@@ -170,17 +168,18 @@ class Chating:
             url = f'https://17.live/ja/live/{live_room_id}'
 
             chrome_options = webdriver.ChromeOptions()
+            chrome_options.add_argument("--headless")
             browser = webdriver.Chrome(options=chrome_options)
 
-            # Maximize the browser window
-            browser.maximize_window()
+            # # Maximize the browser window
+            # browser.maximize_window()
 
-            # Bring the browser window to the front
-            browser.execute_script("window.focus();")
-            time.sleep(3)
+            # # Bring the browser window to the front
+            # browser.execute_script("window.focus();")
+            # time.sleep(3)
             
             browser.get(url)
-            time.sleep(20)
+            time.sleep(10)
 
             while True:
                 time.sleep(5)

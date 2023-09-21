@@ -245,14 +245,14 @@ class ContentSCraping:
         # Insert jpg, html content into spreadsheet
         async def insert_image(sheetID, event_id):
             chrome_options = webdriver.ChromeOptions()
+            chrome_options.add_argument("--headless")
             browser = webdriver.Chrome(options=chrome_options)
 
             # Maximize the browser window
-            browser.maximize_window()
+            # browser.maximize_window()
 
             # Bring the browser window to the front
-            browser.execute_script("window.focus();")
-            time.sleep(3)
+            # browser.execute_script("window.focus();")
             
             browser.get(f'https://event.17.live/{event_id}')
             time.sleep(10)
