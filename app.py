@@ -39,6 +39,9 @@ def event_scraping(start_date_month, start_date_day, event_url):
 
 @app.route('/start')
 def start():
+   print(request.values)
+   print('==============')
+   print(request.args)
    start_date_year = int(request.values.get('start_date_year'))
    start_date_month = int(request.values.get('start_date_month'))
    start_date_day = int(request.values.get('start_date_day'))
