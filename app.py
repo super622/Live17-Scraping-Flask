@@ -57,8 +57,9 @@ def start():
    current_minute = datetime.datetime.now().minute
 
    if(start_date_year == current_year):
-      if((start_date_day == current_day and start_time_hour < current_hour) or (start_date_day == current_day and start_time_hour == current_hour and start_time_minute < current_minute)):
-         return json.dumps([{"type": "warning", "msg": "選択した開始日と時刻が現在の時刻より遅れてはいけません。"}])
+      print('')
+      # if((start_date_day == current_day and start_time_hour < current_hour) or (start_date_day == current_day and start_time_hour == current_hour and start_time_minute < current_minute)):
+      #    return json.dumps([{"type": "warning", "msg": "選択した開始日と時刻が現在の時刻より遅れてはいけません。"}])
    elif(start_date_year > current_year):
       current_year = start_date_year
 
