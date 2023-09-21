@@ -37,11 +37,8 @@ def event_scraping(start_date_month, start_date_day, event_url):
    response = asyncio.run(getData.main())
    return json.dumps(response)
 
-@app.route('/start')
+@app.route('/start', methods=['POST'])
 def start():
-   print(request.values)
-   print('==============')
-   print(request.args)
    start_date_year = int(request.values.get('start_date_year'))
    start_date_month = int(request.values.get('start_date_month'))
    start_date_day = int(request.values.get('start_date_day'))
@@ -91,7 +88,7 @@ def start():
 
    return json.dumps([{"type": "success", "msg": "リクエストが受け付けられました。"}])
 
-@app.route('/stop')
+@app.route('/stop', methods=['POST'])
 def stop():
    job = list(scheduled_jobs.keys())[0]
    job.cancel()
