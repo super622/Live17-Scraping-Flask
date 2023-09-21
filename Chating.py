@@ -13,6 +13,7 @@ from google.oauth2 import service_account
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
 
 class Chating:
 
@@ -176,9 +177,7 @@ class Chating:
             chrome_options.add_argument("--no-sandbox")
             chrome_options.add_argument("--disable-dev-shm-usage")
 
-            driver_manager = ChromeDriverManager()
-            
-            browser = webdriver.Chrome(driver_manager.install(), options=chrome_options)
+            browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
             # # Maximize the browser window
             # browser.maximize_window()
