@@ -177,9 +177,8 @@ class Chating:
             chrome_options.add_argument("--disable-dev-shm-usage")
 
             driver_manager = ChromeDriverManager()
-            driver_manager.install()
-
-            browser = webdriver.Chrome(service=driver_manager.service, options=chrome_options)
+            
+            browser = webdriver.Chrome(driver_manager.install(), options=chrome_options)
 
             # # Maximize the browser window
             # browser.maximize_window()
