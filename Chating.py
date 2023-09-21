@@ -154,7 +154,10 @@ class Chating:
             liveStreamIDs = liveStreamIDs['cells']
         except Exception as e:
             print(f"An error occurred while fetching JSON for {url}: {e}")
-
+        
+        if(liveStreamIDs == None):
+            return 'Not exist'
+        
         live_stream_id_arr = []
         for i in range(len(liveStreamIDs)):
             if('stream' in liveStreamIDs[i]):
