@@ -80,7 +80,7 @@ def start():
             print(job)
             scheduled_jobs[job] = {'start_datetime': start_datetime, 'end_datetime': end_datetime}
       else:
-         job = schedule.every().day.at(f"{change_string(start_time_hour)}:{change_string(start_time_minute)}", "Asia/Tokyo").do(event_scraping, start_date_month, start_date_day, event)
+         job = schedule.every().day.at(f"{change_string(start_time_hour)}:{change_string(start_time_minute)}", "Asia/Tokyo").do(event_scraping, start_date_month, start_date_day, event_url)
          print(job)
          scheduled_jobs[job] = {'start_datetime': start_datetime, 'end_datetime': end_datetime}
 
