@@ -4,6 +4,7 @@ import math
 import datetime
 import threading
 import schedule
+import pytz
 
 from flask import Flask, request
 from flask_cors import CORS
@@ -50,7 +51,7 @@ def start():
    event_url = request.values.get('event_url')
    nick_url = request.values.get('nick_url')
 
-   current_year = datetime.datetime.now().year
+   current_year = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).year
    # if(start_date_year == current_year):
    #    print('')
       # if((start_date_day == current_day and start_time_hour < current_hour) or (start_date_day == current_day and start_time_hour == current_hour and start_time_minute < current_minute)):
@@ -58,12 +59,16 @@ def start():
    if(start_date_year > current_year):
       current_year = start_date_year
 
-   # Create a datetime object for the specified start date and time
-   start_datetime = datetime.datetime(current_year, start_date_month, start_date_day, start_time_hour, start_time_minute, 0)
-   end_datetime = datetime.datetime(end_date_year, end_date_month, end_date_day, start_time_hour, start_time_minute, 0)
+   # Create datetime objects for start and end times
+   japan_timezone = pytz.timezone('Asia/Tokyo')
+   start_datetime = japan_timezone.localize(datetime.datetime(current_year, start_date_month, start_date_day, start_time_hour, start_time_minute, 0))
+   end_datetime = japan_timezone.localize(datetime.datetime(end_date_year, end_date_month, end_date_day, start_time_hour, start_time_minute, 0))
+
+   # Convert current time to Japan time zone and make it offset-aware
+   cur_time = datetime.datetime.now(japan_timezone)
 
    # Calculate the delay in seconds until the scheduled time
-   delay = (start_datetime - datetime.datetime.now()).total_seconds()
+   delay = (start_datetime - cur_time).total_seconds()
    delay = math.floor(delay)
    print(delay)
 

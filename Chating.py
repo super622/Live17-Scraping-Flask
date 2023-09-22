@@ -6,6 +6,7 @@ import asyncio
 import json
 import datetime
 import gspread
+import pytz
 
 from googleapiclient.discovery import build  # Added
 from google.oauth2 import service_account
@@ -19,14 +20,15 @@ class Chating:
 
     # Init
     def __init__(self, end_date_month, end_date_day, start_time_hour, start_time_minute, nick_url):
+
         self.name = nick_url
         self.end_date_month = end_date_month
         self.end_date_day = end_date_day
         self.start_hours = start_time_hour
         self.start_minute = start_time_minute
-        self.start_year = datetime.datetime.now().year
-        self.start_month = datetime.datetime.now().month
-        self.start_day = datetime.datetime.now().day
+        self.start_year = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).year
+        self.start_month = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).month
+        self.start_day = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).day
 
     # Get Data from Chating panel
     async def scanData(self):
@@ -341,10 +343,10 @@ class Chating:
                     worksheet = spreadsheet.worksheet("ギフト内訳")
                     worksheet.insert_rows(gifs_list, row=2)
 
-                    current_month = datetime.datetime.now().month
-                    current_day = datetime.datetime.now().day
-                    current_hour = datetime.datetime.now().hour
-                    current_minute = datetime.datetime.now().minute
+                    current_month = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).month
+                    current_day = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).day
+                    current_hour = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).hour
+                    current_minute = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).minute
 
                     if current_month == self.end_date_month and current_day == self.end_date_day and current_hour == self.start_hours and current_minute == self.start_minute:
                         sys.exit(1)
