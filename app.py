@@ -23,10 +23,9 @@ def hello_world():
 
 def change_string(value):
    value = str(value)
-   print(value)
    if(len(value) == 1):
-      print(f"0{value}")
       return f"0{value}"
+   return value
 
 def chating_scraping(end_date_month, end_date_day, start_time_hour, start_time_minute, nick_url):
    getChatingData = Chating(end_date_month, end_date_day, start_time_hour, start_time_minute, nick_url)
@@ -73,29 +72,30 @@ def start():
    delay = math.floor(delay)
    print(delay)
 
-   # if(nick_url != ''):
-   #    if(nick_url.find(';') > -1):
-   #       nick_name_arr = nick_url.split(';')
-   #       for nick_name in nick_name_arr:
-   #          res = threading.Timer(delay, chating_scraping, args=(end_date_month, end_date_day, start_time_hour, start_time_minute, nick_name)).start()
-   #    else:
-   #       res = threading.Timer(delay, chating_scraping, args=(end_date_month, end_date_day, start_time_hour, start_time_minute, nick_url)).start()
+   if(event_url != ''):
+      if(event_url.find(';') > -1):
+         event_url_arr = event_url.split(';')
+         for event in event_url_arr:
+            job = schedule.every().day.at(f"{change_string(start_time_hour)}:{change_string(start_time_minute)}", "Asia/Tokyo").do(event_scraping, start_date_month, start_date_day, event)
+            print(job)
+            scheduled_jobs[job] = {'start_datetime': start_datetime, 'end_datetime': end_datetime}
+      else:
+         job = schedule.every().day.at(f"{change_string(start_time_hour)}:{change_string(start_time_minute)}", "Asia/Tokyo").do(event_scraping, start_date_month, start_date_day, event)
+         print(job)
+         scheduled_jobs[job] = {'start_datetime': start_datetime, 'end_datetime': end_datetime}
+
+   if(nick_url != ''):
+      if(nick_url.find(';') > -1):
+         nick_name_arr = nick_url.split(';')
+         for nick_name in nick_name_arr:
+            res = threading.Timer(delay, chating_scraping, args=(end_date_month, end_date_day, start_time_hour, start_time_minute, nick_name)).start()
+      else:
+         res = threading.Timer(delay, chating_scraping, args=(end_date_month, end_date_day, start_time_hour, start_time_minute, nick_url)).start()
 
    # Convert start_date and end_date to datetime objects
    start_datetime = datetime.datetime.strptime(f"{current_year}-{start_date_month}-{start_date_day} {start_time_hour}:{start_time_minute}:0", '%Y-%m-%d %H:%M:%S')
    end_datetime = datetime.datetime.strptime(f"{end_date_year}-{end_date_month}-{end_date_day} {start_time_hour}:{start_time_minute}:0", '%Y-%m-%d %H:%M:%S')
 
-   if(event_url != ''):
-      if(event_url.find(';') > -1):
-         event_url_arr = event_url.split(';')
-         for event in event_url_arr:
-            job = schedule.every().day.at(f"{change_string(start_time_hour)}:{change_string(start_time_minute)}:00", "Asia/Tokyo").do(event_scraping, start_date_month, start_date_day, event)
-            print(job)
-            scheduled_jobs[job] = {'start_datetime': start_datetime, 'end_datetime': end_datetime}
-      else:
-         job = schedule.every().day.at(f"{change_string(start_time_hour)}:{change_string(start_time_minute)}:00", "Asia/Tokyo").do(event_scraping, start_date_month, start_date_day, event)
-         print(job)
-         scheduled_jobs[job] = {'start_datetime': start_datetime, 'end_datetime': end_datetime}
 
    return json.dumps([{"type": "success", "msg": "リクエストが受け付けられました。"}])
 

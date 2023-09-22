@@ -48,7 +48,7 @@ class Chating:
                 return ''
             
         # Add gif user
-        def append_to_gifusers(gifs_users, res):
+        async def append_to_gifusers(gifs_users, res):
             flag = False
             for user in gifs_users:
                 if(user['UserName'] == res['UserName'] and user['GifType'] == res['GifType']):
@@ -63,7 +63,7 @@ class Chating:
                 return gifs_users
             
         # add gif list
-        def append_to_gif(gif_list, gif_type, coin):
+        async def append_to_gif(gif_list, gif_type, coin):
             flag = False
             for gif in gif_list:
                 if(gif[0] == gif_type):
@@ -78,10 +78,8 @@ class Chating:
                 return gif_list
 
         # find special gif user
-        def find_in_gifusers(gifs_users, user_name):
+        async def find_in_gifusers(gifs_users, user_name):
             for user in gifs_users:
-                print(user_name)
-                print(user['UserName'] == user_name)
                 if(user['UserName'] == user_name):
                     return user
             res = {
@@ -127,14 +125,14 @@ class Chating:
                 return items[0]['id']
 
         # add git and snack user
-        def append_to_snack_gifusers(snack_gifs_users, gifs_user, username):
+        async def append_to_snack_gifusers(snack_gifs_users, gifs_user, username, snack_cnt):
             flag = False
             x = 1
             for user in snack_gifs_users:
                 if(user['UserName'] == username):
                     user['Gif_Count'] = gifs_user['Gif_Count']
-                    user['Coin'] = ((int(user['Snack_Count']) + 1) * x) + int(gifs_user['Coin'])
-                    user['Snack_Count'] = 1 + int(user['Snack_Count'])
+                    user['Coin'] = ((int(user['Snack_Count']) + int(snack_cnt)) * x) + int(gifs_user['Coin'])
+                    user['Snack_Count'] = int(snack_cnt) + int(user['Snack_Count'])
                     flag = True
 
             if flag:
@@ -143,8 +141,8 @@ class Chating:
                 res = {
                     "UserName": username,
                     "Gif_Count": gifs_user['Gif_Count'],
-                    "Snack_Count": 1,
-                    "Coin": (1 * x) + int(gifs_user['Coin'])
+                    "Snack_Count": int(snack_cnt),
+                    "Coin": (int(snack_cnt) * x) + int(gifs_user['Coin'])
                 }
                 snack_gifs_users.append(res)
                 return snack_gifs_users
@@ -222,22 +220,25 @@ class Chating:
                                 "Gif_Count": 1,
                                 "Coin": coin
                             }
-                            gifs_list = append_to_gif(gifs_list, gif_type, coin)
-                            gifs_users = append_to_gifusers(gifs_users, res)
+                            gifs_list = await append_to_gif(gifs_list, gif_type, coin)
+                            gifs_users = await append_to_gifusers(gifs_users, res)
 
                             gif_man_cnt = len(gifs_users)
 
                         if len(chat_element.find_elements('css selector', '.LaborReward__ControlledText-sc-cxndew-0')) > 0:
                             name_element = chat_element.find_elements('css selector', '.ChatUserName__NameWrapper-sc-1ca2hpy-0')
                             user_name = name_element[0].text
-                            gif_state = find_in_gifusers(gifs_users, user_name)
-                            snack_gifs_users = append_to_snack_gifusers(snack_gifs_users, gif_state, user_name)
+                            gif_state = await find_in_gifusers(gifs_users, user_name)
+                            print(gif_state)
+                            snack_cnt_element = chat_element.find_elements('css selector', '.LaborReward__ControlledText-sc-cxndew-0')
+                            snack_cnt_element = snack_cnt_element[0].text
+                            snack_cnt = re.findall(r'\d+', snack_cnt_element)
+                            snack_cnt = snack_cnt[0]
+                            snack_gifs_users = await append_to_snack_gifusers(snack_gifs_users, gif_state, user_name, snack_cnt)
 
                             gif_man_cnt = len(gifs_users)
                             snack_cnt = len(snack_gifs_users)
 
-                    print(gifs_users)
-                    print(snack_gifs_users)
                     for user in gifs_users:
                         coin_cnt += int(user['Coin'])
 
@@ -263,16 +264,13 @@ class Chating:
                         elif(i < len(gifs_users) and i < len(snack_gifs_users)):
                             res_arr = [gifs_users[i]['UserName'], gifs_users[i]['GifType'], gifs_users[i]['Gif_Count'], gifs_users[i]['Coin'], snack_gifs_users[i]['UserName'], snack_gifs_users[i]['Snack_Count'], snack_gifs_users[i]['Gif_Count'], snack_gifs_users[i]['Coin']]
                         
-                        print(res_arr)
                         total_result.append(res_arr)
                         i += 1
                     
                     score_elements = browser.find_elements(By.XPATH, "//*[@style='transform: rotateX(0deg) translateZ(28px);']")
                     for element in score_elements:
-                        print(element.text)
                         while element.text == '':
                             time.sleep(2)
-                        print(element.text)
                         score += element.text
                     print(f"coin = {coin_cnt}, score = {score}")
                     time.sleep(5)
@@ -286,7 +284,6 @@ class Chating:
                         create_flag = True
                         sheetID = await createGoogleSheet(filename)
                     print(sheetID)
-                    print(f"{create_flag}")
 
                     # write content into google sheet (init column name)
                     SCOPES = ['https://www.googleapis.com/auth/drive']
@@ -355,7 +352,6 @@ class Chating:
                     return 'Failure'
 
     async def main(self):
-        print('start-1')
         result = await self.scanData()
         return result
     
