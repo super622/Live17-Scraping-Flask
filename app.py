@@ -4,6 +4,7 @@ import math
 import datetime
 from multiprocessing import Process
 import threading
+import time
 import schedule
 import pytz
 
@@ -29,6 +30,7 @@ def change_string(value):
    return value
 
 def chating_scraping(end_date_month, end_date_day, end_time_hour, end_time_minute, nick_url):
+   print('start')
    getChatingData = Chating(end_date_month, end_date_day, end_time_hour, end_time_minute, nick_url)
    response = asyncio.run(getChatingData.main())
    return json.dumps(response)
@@ -41,7 +43,7 @@ def event_scraping(start_date_month, start_date_day, event_url):
 
 @app.route('/start', methods=['POST'])
 def start():
-   url_type = bool(request.values.get('type'))
+   url_type = request.values.get('type')
    start_date_year = int(request.values.get('start_date_year'))
    start_date_month = int(request.values.get('start_date_month'))
    start_date_day = int(request.values.get('start_date_day'))
@@ -65,14 +67,14 @@ def start():
    end_datetime = japan_timezone.localize(datetime.datetime(end_date_year, end_date_month, end_date_day, end_time_hour, end_time_minute, 0))
 
    # Convert current time to Japan time zone and make it offset-aware
-   cur_time = datetime.datetime.now(japan_timezone)
+   cur_time = datetime.datetime.now(pytz.timezone('Asia/Tokyo'))
 
    # Calculate the delay in seconds until the scheduled time
    delay = (start_datetime - cur_time).total_seconds()
    delay = math.floor(delay)
    print(delay)
 
-   if(url_type):
+   if(url_type != 'false'):
       if(purpose_url.find(';') > -1):
          event_url_arr = purpose_url.split(';')
          for event in event_url_arr:
@@ -83,12 +85,16 @@ def start():
          job = schedule.every().day.at(f"{change_string(start_time_hour)}:{change_string(start_time_minute)}", "Asia/Tokyo").do(event_scraping, start_date_month, start_date_day, purpose_url)
          print(job)
          scheduled_jobs[job] = {'start_datetime': start_datetime, 'end_datetime': end_datetime}
+      while True:
+         schedule.run_pending()
+         time.sleep(1000)
    else:
       if(purpose_url.find(';') > -1):
          nick_name_arr = purpose_url.split(';')
          for nick_name in nick_name_arr:
             res = threading.Timer(delay, chating_scraping, args=(end_date_month, end_date_day, end_time_hour, end_time_minute, nick_name)).start()
       else:
+         print(purpose_url)
          res = threading.Timer(delay, chating_scraping, args=(end_date_month, end_date_day, end_time_hour, end_time_minute, purpose_url)).start()
 
    # Convert start_date and end_date to datetime objects

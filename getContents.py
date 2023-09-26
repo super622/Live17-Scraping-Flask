@@ -24,6 +24,7 @@ class ContentSCraping:
         self.month = month
         self.day = day
         self.event_url = event_url
+        self.date_str = ''
 
     # Get Data from purpose site
     async def scanData(self):

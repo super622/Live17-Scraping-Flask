@@ -52,8 +52,8 @@ class Chating:
             flag = False
             for user in gifs_users:
                 if(user['UserName'] == res['UserName'] and user['GifType'] == res['GifType']):
-                    user['Coin'] = int(res['Coin']) * int(user['Gif_Count'] + 1)
-                    user['Gif_Count'] += 1
+                    user['Coin'] = int(res['Coin']) + int(user['Coin'])
+                    user['Gif_Count'] = int(res['Gif_Count']) + int(user['Gif_Count'])
                     flag = True
 
             if flag:
@@ -124,14 +124,67 @@ class Chating:
             else:
                 return items[0]['id']
 
+        # add all gif users
+        async def append_to_total_gif_users(total_users, sub_users):
+            flag = False
+            for sub in sub_users:
+                for total in total_users:
+                    if(total['UserName'] == sub['UserName'] and total['GifType'] == sub['GifType']):
+                        total['Coin'] = int(sub['Coin']) + int(total['Coin'])
+                        total['Gif_Count'] = int(total['Gif_Count']) + int(sub['Gif_Count'])
+                        flag = True
+                    
+                if(flag != True):
+                    total_users.append(sub)
+                    return total_users
+                else:
+                    flag = False
+
+        # add all snack users
+        async def append_to_total_snack_users(total_users, sub_users):
+            flag = False
+            for sub in sub_users:
+                for total in total_users:
+                    if(total['UserName'] == sub['UserName']):
+                        total['Gif_Count'] = int(sub['Gif_Count']) + int(total['Gif_Count'])
+                        total['Coin'] = int(sub['Coin']) + int(total['Coin'])
+                        total['Snack_Count'] = int(sub['Snack_Count']) + int(total['Snack_Count'])
+                        flag = True
+            
+                if(flag):
+                    flag = False
+                else:
+                    total_users.append(sub)
+                    return total_users
+
+        # add all result
+        async def append_to_total_result(gif_users, snack_users):
+            max_len = len(gif_users) if len(gif_users) > len(snack_users) else len(snack_users)
+            temp_arr = None
+
+            if max_len == len(gif_users):
+                temp_arr = gif_users
+            else:
+                temp_arr = snack_users
+            
+            for i in range(len(temp_arr)):
+                res_arr = None
+                if(i >= len(gif_users)):
+                    res_arr = ['', '', '', '', snack_users[i]['UserName'], snack_users[i]['Snack_Count'], snack_users[i]['Gif_Count'], snack_users[i]['Coin']]
+                elif(i >= len(snack_users)):
+                    res_arr = [gif_users[i]['UserName'], gif_users[i]['GifType'], gif_users[i]['Gif_Count'], gif_users[i]['Coin'], '','','','']
+                elif(i < len(gif_users) and i < len(snack_users)):
+                    res_arr = [gif_users[i]['UserName'], gif_users[i]['GifType'], gif_users[i]['Gif_Count'], gif_users[i]['Coin'], snack_users[i]['UserName'], snack_users[i]['Snack_Count'], snack_users[i]['Gif_Count'], snack_users[i]['Coin']]
+
+                total_results.append(res_arr)
+
         # add git and snack user
         async def append_to_snack_gifusers(snack_gifs_users, gifs_user, username, snack_cnt):
             flag = False
-            x = 1
             for user in snack_gifs_users:
                 if(user['UserName'] == username):
                     user['Gif_Count'] = gifs_user['Gif_Count']
-                    user['Coin'] = ((int(user['Snack_Count']) + int(snack_cnt)) * x) + int(gifs_user['Coin'])
+                    user['Coin'] = int(gifs_user['Coin'])
                     user['Snack_Count'] = int(snack_cnt) + int(user['Snack_Count'])
                     flag = True
 
@@ -142,7 +195,7 @@ class Chating:
                     "UserName": username,
                     "Gif_Count": gifs_user['Gif_Count'],
                     "Snack_Count": int(snack_cnt),
-                    "Coin": (int(snack_cnt) * x) + int(gifs_user['Coin'])
+                    "Coin": int(gifs_user['Coin'])
                 }
                 snack_gifs_users.append(res)
                 return snack_gifs_users
@@ -168,7 +221,7 @@ class Chating:
 
         if len(live_stream_id_arr) == 0:
             return 'failure - not exist live stream id'
-        print(live_stream_id_arr)
+        
         for live_room_id in live_stream_id_arr:
             url = f'https://17.live/ja/live/{live_room_id}'
 
@@ -179,15 +232,14 @@ class Chating:
 
             browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
-            # # Maximize the browser window
-            # browser.maximize_window()
-
-            # # Bring the browser window to the front
-            # browser.execute_script("window.focus();")
-            # time.sleep(3)
-            
             browser.get(url)
-            time.sleep(10)
+            total_snack_cnt = 0
+            total_coin_cnt = 0
+            total_score = 0
+            total_gif_man_cnt = 0
+            total_gifs_user = []
+            total_snack_user = []
+            total_results = []
 
             while True:
                 time.sleep(5)
@@ -200,7 +252,7 @@ class Chating:
                     gifs_users = []
                     snack_gifs_users = []
                     gifs_list = []
-                    total_result = []
+                    sub_result = []
 
                     chating_elements = browser.find_elements('css selector', '.Chat__ChatWrapper-sc-clenhv-0')
                     for chat_element in chating_elements:
@@ -238,6 +290,9 @@ class Chating:
 
                             gif_man_cnt = len(gifs_users)
                             snack_cnt = len(snack_gifs_users)
+                            total_snack_cnt += snack_cnt
+
+                    total_gif_man_cnt = gif_man_cnt
 
                     for user in gifs_users:
                         coin_cnt += int(user['Coin'])
@@ -264,8 +319,7 @@ class Chating:
                         elif(i < len(gifs_users) and i < len(snack_gifs_users)):
                             res_arr = [gifs_users[i]['UserName'], gifs_users[i]['GifType'], gifs_users[i]['Gif_Count'], gifs_users[i]['Coin'], snack_gifs_users[i]['UserName'], snack_gifs_users[i]['Snack_Count'], snack_gifs_users[i]['Gif_Count'], snack_gifs_users[i]['Coin']]
                         
-                        total_result.append(res_arr)
-                        i += 1
+                        sub_result.append(res_arr)
                     
                     score_elements = browser.find_elements(By.XPATH, "//*[@style='transform: rotateX(0deg) translateZ(28px);']")
                     for element in score_elements:
@@ -273,19 +327,25 @@ class Chating:
                             time.sleep(2)
                         score += element.text
                     print(f"coin = {coin_cnt}, score = {score}")
-                    time.sleep(5)
+
+                    total_coin_cnt += coin_cnt
+                    total_score = score
+
+                    # total_gifs_user
+                    await append_to_total_gif_users(total_gifs_user, gifs_users)
+
+                    # total_snack_user
+                    await append_to_total_snack_users(total_snack_user, snack_gifs_users)
+
+                    # total result
+                    await append_to_total_result(total_gifs_user, total_snack_user)
+
+                    print(total_snack_cnt, total_coin_cnt, total_gif_man_cnt, total_score)
+                    print(total_gifs_user)
+                    print(total_snack_user)
+                    print(total_results)
 
                     # create google sheet
-                    filename = f"Test_{self.name}__{self.start_year}_{self.start_month}_{self.start_day}"
-                    folder_name = '1IkovXnPZ8y-aIgR6MnbykOVfXC34CJhT'
-                    sheetID = await get_sheet_by_name(filename, folder_name)
-                    create_flag = False
-                    if(sheetID == ''):
-                        create_flag = True
-                        sheetID = await createGoogleSheet(filename)
-                    print(sheetID)
-
-                    # write content into google sheet (init column name)
                     SCOPES = ['https://www.googleapis.com/auth/drive']
                     SERVICE_ACCOUNT_FILE = 'service-account.json'
 
@@ -293,11 +353,31 @@ class Chating:
                     client = gspread.authorize(creds)
                     service = build('sheets', 'v4', credentials=creds)
 
+                    tab_position = 0
+                    filename = f"{self.name}"
+                    folder_name = '1IkovXnPZ8y-aIgR6MnbykOVfXC34CJhT'
+                    sheetID = await get_sheet_by_name(filename, folder_name)
+                    print(sheetID)
+                    create_flag = False
+                    if(sheetID == ''):
+                        create_flag = True
+                        sheetID = await createGoogleSheet(filename)
+                        tab_position = 3
+                    else:
+                        spreadsheet = client.open_by_key(sheetID)
+                        sheets_list = spreadsheet.worksheets()
+                        tab_position = len(sheets_list)
+
+                    # write content into google sheet (init column name)
                     spreadsheet = client.open_by_key(sheetID)
+
+                    current_month = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).month
+                    current_day = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).day
 
                     if(create_flag):
                         worksheet = spreadsheet.sheet1
-                        worksheet.update_title('チャット履歴')
+
+                        worksheet.update_title(f"{current_month}-{current_day}")
 
                         worksheet.update("E1", [["コイン数"]], value_input_option="USER_ENTERED")
                         worksheet.update("E2", [["ギフト人数"]], value_input_option="USER_ENTERED")
@@ -313,35 +393,76 @@ class Chating:
                         worksheet.update("G5", [["ギフト個数"]], value_input_option="USER_ENTERED")
                         worksheet.update("H5", [["合計コイン"]], value_input_option="USER_ENTERED")
 
-                        worksheet = spreadsheet.add_worksheet(title="ギフト内訳", rows='1000', cols='20')
+                        worksheet = spreadsheet.add_worksheet(title="total", rows='5000', cols='8')
+
+                        worksheet.update("E1", [["コイン数"]], value_input_option="USER_ENTERED")
+                        worksheet.update("E2", [["ギフト人数"]], value_input_option="USER_ENTERED")
+                        worksheet.update("E3", [["スナック数"]], value_input_option="USER_ENTERED")
+                        worksheet.update("E4", [["スコア"]], value_input_option="USER_ENTERED")
+
+                        worksheet.update("A5", [["リスナー名"]], value_input_option="USER_ENTERED")
+                        worksheet.update("B5", [["ギフト名"]], value_input_option="USER_ENTERED")
+                        worksheet.update("C5", [["ギフト個数"]], value_input_option="USER_ENTERED")
+                        worksheet.update("D5", [["コイン数"]], value_input_option="USER_ENTERED")
+                        worksheet.update("E5", [["リスナー名"]], value_input_option="USER_ENTERED")
+                        worksheet.update("F5", [["スナック"]], value_input_option="USER_ENTERED")
+                        worksheet.update("G5", [["ギフト個数"]], value_input_option="USER_ENTERED")
+                        worksheet.update("H5", [["合計コイン"]], value_input_option="USER_ENTERED")
+
+                        worksheet = spreadsheet.add_worksheet(title="ギフト内訳", rows='5000', cols='3')
 
                         worksheet.update("A1", [["ギフト名"]], value_input_option="USER_ENTERED")
                         worksheet.update("B1", [["ギフト個数"]], value_input_option="USER_ENTERED")
                         worksheet.update("C1", [["コイン数"]], value_input_option="USER_ENTERED")
 
+                    print(tab_position - 3)
+                    worksheet = spreadsheet.get_worksheet(tab_position - 3)
+                    if(worksheet == None):
+                        worksheet = spreadsheet.add_worksheet(title=f"{current_month}-{current_day}", rows='5000', cols='8')
+
+                        worksheet.update("E1", [["コイン数"]], value_input_option="USER_ENTERED")
+                        worksheet.update("E2", [["ギフト人数"]], value_input_option="USER_ENTERED")
+                        worksheet.update("E3", [["スナック数"]], value_input_option="USER_ENTERED")
+                        worksheet.update("E4", [["スコア"]], value_input_option="USER_ENTERED")
+
+                        worksheet.update("A5", [["リスナー名"]], value_input_option="USER_ENTERED")
+                        worksheet.update("B5", [["ギフト名"]], value_input_option="USER_ENTERED")
+                        worksheet.update("C5", [["ギフト個数"]], value_input_option="USER_ENTERED")
+                        worksheet.update("D5", [["コイン数"]], value_input_option="USER_ENTERED")
+                        worksheet.update("E5", [["リスナー名"]], value_input_option="USER_ENTERED")
+                        worksheet.update("F5", [["スナック"]], value_input_option="USER_ENTERED")
+                        worksheet.update("G5", [["ギフト個数"]], value_input_option="USER_ENTERED")
+                        worksheet.update("H5", [["合計コイン"]], value_input_option="USER_ENTERED")
+
                     # clear content in google sheet
-                    sheet_range = f'チャット履歴!A6:Z'  # Adjust the range as needed
+                    sheet_range = f'{current_month}-{current_day}!A6:Z'  # Adjust the range as needed
+                    service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
+                    sheet_range = f'total!A6:Z'
                     service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
                     sheet_range = f'ギフト内訳!A2:Z'  # Adjust the range as needed
                     service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
 
                     # write content into google sheet
-                    worksheet = spreadsheet.worksheet("チャット履歴")
+                    worksheet = spreadsheet.get_worksheet(tab_position - 3)
 
                     worksheet.update("F1", [[str(coin_cnt)]], value_input_option="USER_ENTERED")
                     worksheet.update("F2", [[str(snack_cnt)]], value_input_option="USER_ENTERED")
                     worksheet.update("F3", [[str(gif_man_cnt)]], value_input_option="USER_ENTERED")
                     worksheet.update("F4", [[str(score)]], value_input_option="USER_ENTERED")
                     try:
-                        worksheet.insert_rows(total_result, row=6)
+                        worksheet.insert_rows(sub_result, row=6)
+                    except:
+                        print('quota <')
+
+                    worksheet = spreadsheet.worksheet("total")
+                    try:
+                        worksheet.insert_rows(total_results, row=6)
                     except:
                         print('quota <')
 
                     worksheet = spreadsheet.worksheet("ギフト内訳")
                     worksheet.insert_rows(gifs_list, row=2)
 
-                    current_month = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).month
-                    current_day = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).day
                     current_hour = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).hour
                     current_minute = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).minute
 
