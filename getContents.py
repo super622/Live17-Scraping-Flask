@@ -1,5 +1,6 @@
 import math
 import time
+import pytz
 import requests
 import asyncio
 import json
@@ -124,7 +125,7 @@ class ContentSCraping:
 
             data = data['Data']
             for i in range(len(data)):
-                worksheet = spreadsheet.add_worksheet(title=data[i]['EventID'], rows='500', cols='100')
+                worksheet = spreadsheet.add_worksheet(title=data[i]['EventID'], rows='500', cols='500')
 
         # Insert image into worksheet
         async def insert_image_in_googlesheet(sheetID, image):
@@ -156,7 +157,7 @@ class ContentSCraping:
             client = gspread.authorize(creds)
             spreadsheet = client.open_by_key(sheetID)
             
-            worksheet = spreadsheet.add_worksheet(title=f"{parent_title} - {title}", rows='500', cols='100')
+            worksheet = spreadsheet.add_worksheet(title=f"{parent_title} - {title}", rows='500', cols='500')
 
             search_panel = element.find_elements('css selector', '.bpEaZC')
             if(len(search_panel) > 0):
@@ -402,9 +403,9 @@ class ContentSCraping:
                 event_json_data[i]['Data'][j]['List'] = await getRankingList(data[j]['ContainerID'])
 
         for i in range(len(event_json_data)):
-            current_year = datetime.datetime.now().year
-            current_month = datetime.datetime.now().month
-            current_day = datetime.datetime.now().day
+            current_year = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).year
+            current_month = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).month
+            current_day = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).day
 
             filename = f"Ranking_{event_json_data[i]['ID']}_{current_year}_{self.month}_{self.day}"
 

@@ -19,13 +19,13 @@ from selenium.webdriver.chrome.service import Service
 class Chating:
 
     # Init
-    def __init__(self, end_date_month, end_date_day, start_time_hour, start_time_minute, nick_url):
+    def __init__(self, end_date_month, end_date_day, end_time_hour, end_time_minute, nick_url):
 
         self.name = nick_url
         self.end_date_month = end_date_month
         self.end_date_day = end_date_day
-        self.start_hours = start_time_hour
-        self.start_minute = start_time_minute
+        self.end_time_hour = end_time_hour
+        self.end_time_minute = end_time_minute
         self.start_year = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).year
         self.start_month = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).month
         self.start_day = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).day
@@ -345,7 +345,7 @@ class Chating:
                     current_hour = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).hour
                     current_minute = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).minute
 
-                    if current_month == self.end_date_month and current_day == self.end_date_day and current_hour == self.start_hours and current_minute == self.start_minute:
+                    if current_month == self.end_date_month and current_day == self.end_date_day and current_hour == self.end_time_hour and current_minute == self.end_time_minute:
                         sys.exit(1)
 
                 else:
