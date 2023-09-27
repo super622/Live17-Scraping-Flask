@@ -6,6 +6,8 @@ import asyncio
 import json
 import datetime
 import gspread
+import config
+import mysql.connector
 
 from datetime import date
 from openpyxl.styles import Alignment
@@ -20,11 +22,19 @@ from gspread_formatting import batch_updater
 
 class ContentSCraping:
     # Init
-    def __init__(self, month, day, event_url):
-        self.month = month
-        self.day = day
-        self.event_url = event_url
+    def __init__(self, start_date_month, start_date_day, start_time_hour, start_time_minute, end_date_month, end_date_day, end_time_hour, end_time_minute, event):
+        self.start_date_month = start_date_month
+        self.start_date_day = start_date_day
+        self.event_url = event
+        self.start_time_hour = start_time_hour
+        self.start_time_minute = start_time_minute
         self.date_str = ''
+        self.end_date_month = end_date_month
+        self.end_date_day = end_date_day
+        self.end_time_hour = end_time_hour
+        self.end_time_minute = end_time_minute
+        self.start_year = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).year
+        self.stated_flag = False
 
     # Get Data from purpose site
     async def scanData(self):
@@ -94,7 +104,7 @@ class ContentSCraping:
             drive_service = build('drive', 'v3', credentials=credentials)
             sheet_id = None
 
-            results = drive_service.files().list(q="name='" + file_name + "' and and mimeType='application/vnd.google-apps.spreadsheet' ",
+            results = drive_service.files().list(q="name='" + file_name + "' and mimeType='application/vnd.google-apps.spreadsheet' ",
                                     pageSize=10, fields="nextPageToken, files(id, name)").execute()
             items = results.get('files', [])
             if not items:
@@ -107,11 +117,11 @@ class ContentSCraping:
         # Get Calculate result
         def calculate_date(year, month, day):
             date1 = datetime.datetime.strptime(f'{year}-{month}-{day}', '%Y-%m-%d')
-            if(int(self.month) > month):
+            if(int(self.start_date_month) > month):
                 start_year = year - 1
             else:
                 start_year = year
-            date2 = datetime.datetime.strptime(f'{start_year}-{self.month}-{self.day}', '%Y-%m-%d')
+            date2 = datetime.datetime.strptime(f'{start_year}-{self.start_date_month}-{self.start_date_day}', '%Y-%m-%d')
             delta = date1 - date2
             return delta.days
         
@@ -349,6 +359,38 @@ class ContentSCraping:
                 worksheet.insert_rows(data[i]['List'], row=row_index)
                 time.sleep(10)
 
+        # add data into database
+        def result_response(value):
+            result = ''
+            if value == 1:
+                result = 'イベントが存在しません。'
+            elif value == 2:
+                result = 'Eventに関する情報を抽出できませんでした。 もう一度お試しください。'
+
+            try:
+                with mysql.connector.connect(
+                    host='127.0.0.1',
+                    user='root',
+                    password=config.DB_PASS,
+                    database='live_db'
+                ) as cnx:
+                    cursor = cnx.cursor()
+                    query = "SELECT * FROM history WHERE url='" + self.event_url + "'"
+                    cursor.execute(query)
+                    rows = cursor.fetchall()
+
+                    if len(rows) > 0:
+                        for row in rows:
+                            cursor.execute(f"DELETE FROM history WHERE id={row[0]}")
+                    
+                    query = 'INSERT INTO history (url, start_date, end_date, type, status) VALUES (%s, %s, %s, %s, %s)'
+                    cursor.execute(query, (self.event_url, f"{self.start_year}-{self.start_date_month}-{self.start_date_day} {self.start_time_hour}:{self.start_time_minute}", f"{self.start_year}-{self.end_date_month}-{self.end_date_day} {self.end_time_hour}:{self.end_time_minute}", 'E', result,))
+                    cnx.commit()
+                    print('db disconnect')
+            except Exception as e:
+                print(e)
+
+
         # Get event all url
         # url = 'https://wap-api.17app.co/api/v1/event?region=JP&status=1'
 
@@ -377,6 +419,10 @@ class ContentSCraping:
             try:
                 event_json_response = await send_request(json_url)
                 if(event_json_response != ''):
+                    if self.stated_flag != True:
+                        result_response(0)
+                        self.stated_flag = True
+                    
                     data = json.loads(event_json_response)
                     data = data['fetcher']
                     # Get Current Date
@@ -400,9 +446,12 @@ class ContentSCraping:
                     }
                     event_json_data.append(res)
                 else:
+                    result_response(1)
                     return 'Failure'
             except Exception as e:
+                result_response(2)
                 print(f"An error occurred while fetching JSON for {json_url}: {e}") 
+                return 'Failure'
 
         for i in range(len(event_json_data)):
             data = event_json_data[i]['Data']
@@ -414,9 +463,9 @@ class ContentSCraping:
             current_month = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).month
             current_day = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).day
 
-            filename = f"Ranking_{event_json_data[i]['ID']}_{current_year}_{self.month}_{self.day}"
+            filename = f"Ranking_{event_json_data[i]['ID']}_{current_year}_{self.start_date_month}_{self.start_date_day}"
 
-            if((int(self.month) == current_month and int(self.day) == current_day) or (int(self.month) < current_month and int(self.day) < current_day)):
+            if((int(self.start_date_month) == current_month and int(self.start_date_day) == current_day) or (int(self.start_date_month) < current_month and int(self.start_date_day) < current_day)):
                 # create new sheet
                 sheetID = await createGoogleSheet(filename)
                 print(sheetID)

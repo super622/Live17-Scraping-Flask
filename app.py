@@ -35,9 +35,9 @@ def chating_scraping(end_date_month, end_date_day, end_time_hour, end_time_minut
    response = asyncio.run(getChatingData.main())
    return json.dumps(response)
 
-def event_scraping(start_date_month, start_date_day, event_url):
+def event_scraping(start_date_month, start_date_day, start_time_hour, start_time_minute, end_date_month, end_date_day, end_time_hour, end_time_minute, event):
    print('start')
-   getData = ContentSCraping(start_date_month, start_date_day, event_url)
+   getData = ContentSCraping(start_date_month, start_date_day, start_time_hour, start_time_minute, end_date_month, end_date_day, end_time_hour, end_time_minute, event)
    response = asyncio.run(getData.main())
    return json.dumps(response)
 
@@ -78,11 +78,11 @@ def start():
       if(purpose_url.find(';') > -1):
          event_url_arr = purpose_url.split(';')
          for event in event_url_arr:
-            job = schedule.every().day.at(f"{change_string(start_time_hour)}:{change_string(start_time_minute)}", "Asia/Tokyo").do(event_scraping, start_date_month, start_date_day, event)
+            job = schedule.every().day.at(f"{change_string(start_time_hour)}:{change_string(start_time_minute)}", "Asia/Tokyo").do(event_scraping, start_date_month, start_date_day, start_time_hour, start_time_minute, end_date_month, end_date_day, end_time_hour, end_time_minute, event)
             print(job)
             scheduled_jobs[job] = {'start_datetime': start_datetime, 'end_datetime': end_datetime}
       else:
-         job = schedule.every().day.at(f"{change_string(start_time_hour)}:{change_string(start_time_minute)}", "Asia/Tokyo").do(event_scraping, start_date_month, start_date_day, purpose_url)
+         job = schedule.every().day.at(f"{change_string(start_time_hour)}:{change_string(start_time_minute)}", "Asia/Tokyo").do(event_scraping, start_date_month, start_date_day, start_time_hour, start_time_minute, end_date_month, end_date_day, end_time_hour, end_time_minute, purpose_url)
          print(job)
          scheduled_jobs[job] = {'start_datetime': start_datetime, 'end_datetime': end_datetime}
       while True:
