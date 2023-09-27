@@ -294,6 +294,7 @@ class Chating:
 
             while True:
                 chating_panel = browser.find_elements('css selector', '.ChatList__ListWrapper-sc-733d46-1')
+                print(len(chating_panel))
                 if(len(chating_panel) > 0):
                     snack_cnt = 0
                     gif_man_cnt = 0
