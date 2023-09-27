@@ -271,6 +271,7 @@ class Chating:
             result_response(0)
             self.started_flag = True
 
+        print(live_stream_id_arr)
         for live_room_id in live_stream_id_arr:
             url = f'https://17.live/ja/live/{live_room_id}'
 
@@ -329,7 +330,6 @@ class Chating:
                             name_element = chat_element.find_elements('css selector', '.ChatUserName__NameWrapper-sc-1ca2hpy-0')
                             user_name = name_element[0].text
                             gif_state = await find_in_gifusers(gifs_users, user_name)
-                            print(gif_state)
                             snack_cnt_element = chat_element.find_elements('css selector', '.LaborReward__ControlledText-sc-cxndew-0')
                             snack_cnt_element = snack_cnt_element[0].text
                             snack_cnt = re.findall(r'\d+', snack_cnt_element)
@@ -387,11 +387,6 @@ class Chating:
 
                     # total result
                     await append_to_total_result(total_results, total_gifs_user, total_snack_user)
-
-                    print(total_snack_cnt, total_coin_cnt, total_gif_man_cnt, total_score)
-                    print(total_gifs_user)
-                    print(total_snack_user)
-                    print(total_results)
 
                     # create google sheet
                     SCOPES = ['https://www.googleapis.com/auth/drive']
