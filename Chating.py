@@ -272,7 +272,7 @@ class Chating:
             chrome_options = webdriver.ChromeOptions()
             chrome_options.add_argument("--headless")
             chrome_options.add_argument("--no-sandbox")
-            chrome_options.add_argument("--disable-dev-shm-usage")
+            # chrome_options.add_argument("--disable-dev-shm-usage")
 
             browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
