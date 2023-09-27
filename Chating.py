@@ -8,6 +8,7 @@ import datetime
 import gspread
 import pytz
 import mysql.connector
+import logging
 
 import config
 
@@ -270,10 +271,12 @@ class Chating:
             url = f'https://17.live/ja/live/{live_room_id}'
             print(url)
             chrome_options = webdriver.ChromeOptions()
-            # chrome_options.add_argument("--headless")
-            chrome_options.add_argument("--headless=new")
+            chrome_options.add_argument("--headless")
+            # chrome_options.add_argument("--headless=new")
             # chrome_options.add_argument("--no-sandbox")
             # chrome_options.add_argument("--disable-dev-shm-usage")
+
+            logging.basicConfig(filename='seleninum.log', level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
             browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
