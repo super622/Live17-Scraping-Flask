@@ -175,12 +175,14 @@ class Chating:
             
             for i in range(len(temp_arr)):
                 res_arr = None
-                if(i >= len(gif_users)):
+
+                if(i < len(gif_users) and i < len(snack_users)):
+                    res_arr = [gif_users[i]['UserName'], gif_users[i]['GifType'], gif_users[i]['Gif_Count'], gif_users[i]['Coin'], snack_users[i]['UserName'], snack_users[i]['Snack_Count'], snack_users[i]['Gif_Count'], snack_users[i]['Coin']]
+                elif(i >= len(gif_users)):
                     res_arr = ['', '', '', '', snack_users[i]['UserName'], snack_users[i]['Snack_Count'], snack_users[i]['Gif_Count'], snack_users[i]['Coin']]
                 elif(i >= len(snack_users)):
                     res_arr = [gif_users[i]['UserName'], gif_users[i]['GifType'], gif_users[i]['Gif_Count'], gif_users[i]['Coin'], '','','','']
-                elif(i < len(gif_users) and i < len(snack_users)):
-                    res_arr = [gif_users[i]['UserName'], gif_users[i]['GifType'], gif_users[i]['Gif_Count'], gif_users[i]['Coin'], snack_users[i]['UserName'], snack_users[i]['Snack_Count'], snack_users[i]['Gif_Count'], snack_users[i]['Coin']]
+                
                 print(len(gif_users), len(snack_users))
                 print(res_arr)
                 total_result.append(res_arr)
@@ -272,13 +274,10 @@ class Chating:
             print(url)
             chrome_options = webdriver.ChromeOptions()
             chrome_options.add_argument("--headless")
-            # chrome_options.add_argument("--headless=new")
-            # chrome_options.add_argument("--no-sandbox")
-            # chrome_options.add_argument("--disable-dev-shm-usage")
+            chrome_options.add_argument("--no-sandbox")
+            chrome_options.add_argument("--disable-dev-shm-usage")
 
-            logging.basicConfig(filename='seleninum.log', level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-            browser = webdriver.Chrome(options=chrome_options)
+            browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
             browser.get(url)
             print(browser)
@@ -459,7 +458,6 @@ class Chating:
                         worksheet.update("B1", [["ギフト個数"]], value_input_option="USER_ENTERED")
                         worksheet.update("C1", [["コイン数"]], value_input_option="USER_ENTERED")
 
-                    print(tab_position - 3)
                     worksheet = None
                     try:
                         worksheet = spreadsheet.get_worksheet(tab_position - 3)

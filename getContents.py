@@ -126,7 +126,7 @@ class ContentSCraping:
 
             data = data['Data']
             for i in range(len(data)):
-                worksheet = spreadsheet.add_worksheet(title=data[i]['EventID'], rows='500', cols='500')
+                worksheet = spreadsheet.add_worksheet(title=data[i]['EventID'], rows='1000', cols='500')
 
         # Insert image into worksheet
         async def insert_image_in_googlesheet(sheetID, image):
@@ -148,6 +148,7 @@ class ContentSCraping:
             
             insert_image = f"=IMAGE(\"{image}\", 1)"
             sheet.update(sheet_range, [[insert_image]], value_input_option="USER_ENTERED")
+            sheet.update("A2", [[self.date_str]], value_input_option="USER_ENTERED")
 
         # Insert html content into worksheet
         async def insert_content_in_googlesheet(sheetID, element, parent_title, title):
@@ -274,6 +275,11 @@ class ContentSCraping:
                 main_image = await handleGetAttr(main_video_elements, 'src')
             
             print(main_image)
+
+            date_element = browser.find_elements('css selector', '.sc-egiSv')
+            if(len(date_element) > 0):
+                self.date_str = date_element[0].text
+            
             await insert_image_in_googlesheet(sheetID, main_image)
 
             tab_elements = browser.find_elements('css selector', '.kGvAFP')
