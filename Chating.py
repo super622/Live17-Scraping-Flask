@@ -271,11 +271,10 @@ class Chating:
             result_response(0)
             self.started_flag = True
 
-        print('scraping start')
-        print(live_stream_id_arr)
+        print(len(live_stream_id_arr))
         for live_room_id in live_stream_id_arr:
             url = f'https://17.live/ja/live/{live_room_id}'
-
+            print(url)
             chrome_options = webdriver.ChromeOptions()
             chrome_options.add_argument("--headless")
             chrome_options.add_argument("--no-sandbox")
@@ -284,6 +283,7 @@ class Chating:
             browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
             browser.get(url)
+            print('browser')
             total_snack_cnt = 0
             total_coin_cnt = 0
             total_score = 0
