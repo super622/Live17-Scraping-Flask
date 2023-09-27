@@ -278,7 +278,7 @@ class Chating:
 
             logging.basicConfig(filename='seleninum.log', level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-            browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+            browser = webdriver.Chrome(options=chrome_options)
 
             browser.get(url)
             print(browser)
