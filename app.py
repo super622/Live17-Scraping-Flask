@@ -29,9 +29,9 @@ def change_string(value):
       return f"0{value}"
    return value
 
-def chating_scraping(end_date_month, end_date_day, end_time_hour, end_time_minute, nick_url):
+def chating_scraping(end_date_month, end_date_day, end_time_hour, end_time_minute, nick_url, start_time_hour, start_time_minute):
    print('start')
-   getChatingData = Chating(end_date_month, end_date_day, end_time_hour, end_time_minute, nick_url)
+   getChatingData = Chating(end_date_month, end_date_day, end_time_hour, end_time_minute, nick_url, start_time_hour, start_time_minute)
    response = asyncio.run(getChatingData.main())
    return json.dumps(response)
 
@@ -92,10 +92,10 @@ def start():
       if(purpose_url.find(';') > -1):
          nick_name_arr = purpose_url.split(';')
          for nick_name in nick_name_arr:
-            res = threading.Timer(delay, chating_scraping, args=(end_date_month, end_date_day, end_time_hour, end_time_minute, nick_name)).start()
+            res = threading.Timer(delay, chating_scraping, args=(end_date_month, end_date_day, end_time_hour, end_time_minute, nick_name, start_time_hour, start_time_minute)).start()
       else:
          print(purpose_url)
-         res = threading.Timer(delay, chating_scraping, args=(end_date_month, end_date_day, end_time_hour, end_time_minute, purpose_url)).start()
+         res = threading.Timer(delay, chating_scraping, args=(end_date_month, end_date_day, end_time_hour, end_time_minute, purpose_url, start_time_hour, start_time_minute)).start()
 
    # Convert start_date and end_date to datetime objects
    start_datetime = datetime.datetime.strptime(f"{current_year}-{start_date_month}-{start_date_day} {start_time_hour}:{start_time_minute}:0", '%Y-%m-%d %H:%M:%S')
@@ -109,9 +109,6 @@ def stop():
    job.cancel()
    del scheduled_jobs[job]
    return json.dumps({'message': 'Cron job canceled successfully'})
-
-if __name__ == '__main__':
-   app.run()
 
 if __name__ == '__main__':
     for _ in range(50):  # Run 50 processes

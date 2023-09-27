@@ -7,6 +7,7 @@ import json
 import datetime
 import gspread
 import pytz
+import mysql.connector
 
 from googleapiclient.discovery import build  # Added
 from google.oauth2 import service_account
@@ -19,16 +20,18 @@ from selenium.webdriver.chrome.service import Service
 class Chating:
 
     # Init
-    def __init__(self, end_date_month, end_date_day, end_time_hour, end_time_minute, nick_url):
-
+    def __init__(self, end_date_month, end_date_day, end_time_hour, end_time_minute, nick_url, start_time_hour, start_time_minute):
         self.name = nick_url
         self.end_date_month = end_date_month
         self.end_date_day = end_date_day
         self.end_time_hour = end_time_hour
         self.end_time_minute = end_time_minute
+        self.start_time_hour = start_time_hour
+        self.start_time_minute = start_time_minute
         self.start_year = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).year
         self.start_month = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).month
         self.start_day = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).day
+        self.started_flag = False
 
     # Get Data from Chating panel
     async def scanData(self):
@@ -46,7 +49,7 @@ class Chating:
                 return json_response
             else:
                 return ''
-            
+
         # Add gif user
         async def append_to_gifusers(gifs_users, res):
             flag = False
@@ -158,7 +161,7 @@ class Chating:
                     return total_users
 
         # add all result
-        async def append_to_total_result(gif_users, snack_users):
+        async def append_to_total_result(total_result, gif_users, snack_users):
             max_len = len(gif_users) if len(gif_users) > len(snack_users) else len(snack_users)
             temp_arr = None
 
@@ -175,8 +178,9 @@ class Chating:
                     res_arr = [gif_users[i]['UserName'], gif_users[i]['GifType'], gif_users[i]['Gif_Count'], gif_users[i]['Coin'], '','','','']
                 elif(i < len(gif_users) and i < len(snack_users)):
                     res_arr = [gif_users[i]['UserName'], gif_users[i]['GifType'], gif_users[i]['Gif_Count'], gif_users[i]['Coin'], snack_users[i]['UserName'], snack_users[i]['Snack_Count'], snack_users[i]['Gif_Count'], snack_users[i]['Coin']]
-
-                total_results.append(res_arr)
+                print(len(gif_users), len(snack_users))
+                print(res_arr)
+                total_result.append(res_arr)
 
         # add git and snack user
         async def append_to_snack_gifusers(snack_gifs_users, gifs_user, username, snack_cnt):
@@ -200,6 +204,43 @@ class Chating:
                 snack_gifs_users.append(res)
                 return snack_gifs_users
 
+        # add data into database
+        def result_response(value):
+            result = ''
+            if value == 1:
+                result = '現在進行中の配信者のリストが見つかりません。'
+            elif value == 2:
+                result = '入力した配信者に関する情報が見つかりません。'
+            
+            try:
+                with mysql.connector.connect(
+                    host='127.0.0.1',
+                    user='root',
+                    password='',
+                    database='live_db'
+                ) as cnx:
+                    cursor = cnx.cursor()
+                    query = "SELECT * FROM history WHERE url='" + self.name + "'"
+                    cursor.execute(query)
+                    result = cursor.fetchall()
+
+                    if len(result) > 0:
+                        for row in result:
+                            cursor.execute(f"DELETE FROM history WHERE id={row[0]}")
+                            print(f"DELETE FROM history WHERE id={row[0]}")
+
+                    query = 'INSERT INTO history (url, start_date, end_date, type, status) VALUES (%s, %s, %s, %s, %s)'
+                    cursor.execute(query, (self.name, f"{self.start_year}-{self.start_month}-{self.start_day} {self.start_time_hour}:{self.start_time_minute}", f"{self.start_year}-{self.end_date_month}-{self.end_date_day} {self.end_time_hour}:{self.end_time_minute}", 'C', value))
+                    cnx.commit()
+                    print('ece')
+                    # cursor.close()
+                    # cnx.close()
+            except Exception as e:
+                print(e)
+            finally:
+                cursor.close()
+                cnx.close()
+
         url = 'https://wap-api.17app.co/api/v1/cells?count=0&cursor=&paging=1&region=JP&tab=hot'
 
         liveStreamIDs = None
@@ -211,6 +252,7 @@ class Chating:
             print(f"An error occurred while fetching JSON for {url}: {e}")
         
         if(liveStreamIDs == None):
+            result_response(1)
             return 'Not exist'
         
         live_stream_id_arr = []
@@ -220,8 +262,13 @@ class Chating:
                     live_stream_id_arr.append(liveStreamIDs[i]['stream']['liveStreamID'])
 
         if len(live_stream_id_arr) == 0:
+            result_response(2)
             return 'failure - not exist live stream id'
         
+        if(self.started_flag != True):
+            result_response(0)
+            self.started_flag = True
+
         for live_room_id in live_stream_id_arr:
             url = f'https://17.live/ja/live/{live_room_id}'
 
@@ -242,7 +289,6 @@ class Chating:
             total_results = []
 
             while True:
-                time.sleep(5)
                 chating_panel = browser.find_elements('css selector', '.ChatList__ListWrapper-sc-733d46-1')
                 if(len(chating_panel) > 0):
                     snack_cnt = 0
@@ -338,7 +384,7 @@ class Chating:
                     await append_to_total_snack_users(total_snack_user, snack_gifs_users)
 
                     # total result
-                    await append_to_total_result(total_gifs_user, total_snack_user)
+                    await append_to_total_result(total_results, total_gifs_user, total_snack_user)
 
                     print(total_snack_cnt, total_coin_cnt, total_gif_man_cnt, total_score)
                     print(total_gifs_user)
@@ -374,8 +420,9 @@ class Chating:
                     current_month = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).month
                     current_day = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).day
 
-                    if(create_flag):
+                    if(create_flag or tab_position == 1):
                         worksheet = spreadsheet.sheet1
+                        worksheet.resize(rows=5000, cols=8)
 
                         worksheet.update_title(f"{current_month}-{current_day}")
 
@@ -416,7 +463,12 @@ class Chating:
                         worksheet.update("C1", [["コイン数"]], value_input_option="USER_ENTERED")
 
                     print(tab_position - 3)
-                    worksheet = spreadsheet.get_worksheet(tab_position - 3)
+                    worksheet = None
+                    try:
+                        worksheet = spreadsheet.get_worksheet(tab_position - 3)
+                    except:
+                        worksheet = None
+                    
                     if(worksheet == None):
                         worksheet = spreadsheet.add_worksheet(title=f"{current_month}-{current_day}", rows='5000', cols='8')
 
@@ -455,6 +507,11 @@ class Chating:
                         print('quota <')
 
                     worksheet = spreadsheet.worksheet("total")
+
+                    worksheet.update("F1", [[str(total_coin_cnt)]], value_input_option="USER_ENTERED")
+                    worksheet.update("F2", [[str(total_snack_cnt)]], value_input_option="USER_ENTERED")
+                    worksheet.update("F3", [[str(total_gif_man_cnt)]], value_input_option="USER_ENTERED")
+                    worksheet.update("F4", [[str(total_score)]], value_input_option="USER_ENTERED")
                     try:
                         worksheet.insert_rows(total_results, row=6)
                     except:
@@ -471,6 +528,8 @@ class Chating:
 
                 else:
                     return 'Failure'
+                
+                time.sleep(120)
 
     async def main(self):
         result = await self.scanData()
