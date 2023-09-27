@@ -271,6 +271,7 @@ class Chating:
             result_response(0)
             self.started_flag = True
 
+        print('scraping start')
         print(live_stream_id_arr)
         for live_room_id in live_stream_id_arr:
             url = f'https://17.live/ja/live/{live_room_id}'
