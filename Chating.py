@@ -16,6 +16,7 @@ from googleapiclient.discovery import build  # Added
 from google.oauth2 import service_account
 
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
@@ -272,11 +273,10 @@ class Chating:
         for live_room_id in live_stream_id_arr:
             url = f'https://17.live/ja/live/{live_room_id}'
             print(url)
-            chrome_options = webdriver.ChromeOptions()
-            chrome_options.add_argument("--headless")
-            # chrome_options.add_argument("--no-sandbox")
-            # chrome_options.add_argument("--disable-dev-shm-usage")
-            chrome_options.add_argument('--disable-gpu')
+            chrome_options = Options()
+            chrome_options.add_argument('--headless')
+            chrome_options.add_argument('--no-sandbox')
+            chrome_options.add_argument('--disable-dev-shm-usage')
 
             browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
