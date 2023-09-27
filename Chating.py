@@ -9,6 +9,8 @@ import gspread
 import pytz
 import mysql.connector
 
+import config
+
 from googleapiclient.discovery import build  # Added
 from google.oauth2 import service_account
 
@@ -216,7 +218,7 @@ class Chating:
                 with mysql.connector.connect(
                     host='127.0.0.1',
                     user='root',
-                    password='',
+                    password=config.DB_PASS,
                     database='live_db'
                 ) as cnx:
                     cursor = cnx.cursor()
