@@ -526,6 +526,7 @@ class Chating:
                         sys.exit(1)
 
                 else:
+                    result_response(2)
                     return 'Failure'
                 
                 time.sleep(120)
