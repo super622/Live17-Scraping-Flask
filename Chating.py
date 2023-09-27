@@ -224,24 +224,18 @@ class Chating:
                     cursor = cnx.cursor()
                     query = "SELECT * FROM history WHERE url='" + self.name + "'"
                     cursor.execute(query)
-                    result = cursor.fetchall()
+                    rows = cursor.fetchall()
 
-                    if len(result) > 0:
-                        for row in result:
+                    if len(rows) > 0:
+                        for row in rows:
                             cursor.execute(f"DELETE FROM history WHERE id={row[0]}")
-                            print(f"DELETE FROM history WHERE id={row[0]}")
-
+                    
                     query = 'INSERT INTO history (url, start_date, end_date, type, status) VALUES (%s, %s, %s, %s, %s)'
-                    cursor.execute(query, (self.name, f"{self.start_year}-{self.start_month}-{self.start_day} {self.start_time_hour}:{self.start_time_minute}", f"{self.start_year}-{self.end_date_month}-{self.end_date_day} {self.end_time_hour}:{self.end_time_minute}", 'C', result))
+                    cursor.execute(query, (self.name, f"{self.start_year}-{self.start_month}-{self.start_day} {self.start_time_hour}:{self.start_time_minute}", f"{self.start_year}-{self.end_date_month}-{self.end_date_day} {self.end_time_hour}:{self.end_time_minute}", 'C', result,))
                     cnx.commit()
-                    print('ece')
-                    # cursor.close()
-                    # cnx.close()
+                    print('db disconnect')
             except Exception as e:
                 print(e)
-            finally:
-                cursor.close()
-                cnx.close()
 
         url = 'https://wap-api.17app.co/api/v1/cells?count=0&cursor=&paging=1&region=JP&tab=hot'
 
