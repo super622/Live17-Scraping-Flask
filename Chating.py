@@ -232,7 +232,7 @@ class Chating:
                             print(f"DELETE FROM history WHERE id={row[0]}")
 
                     query = 'INSERT INTO history (url, start_date, end_date, type, status) VALUES (%s, %s, %s, %s, %s)'
-                    cursor.execute(query, (self.name, f"{self.start_year}-{self.start_month}-{self.start_day} {self.start_time_hour}:{self.start_time_minute}", f"{self.start_year}-{self.end_date_month}-{self.end_date_day} {self.end_time_hour}:{self.end_time_minute}", 'C', value))
+                    cursor.execute(query, (self.name, f"{self.start_year}-{self.start_month}-{self.start_day} {self.start_time_hour}:{self.start_time_minute}", f"{self.start_year}-{self.end_date_month}-{self.end_date_day} {self.end_time_hour}:{self.end_time_minute}", 'C', result))
                     cnx.commit()
                     print('ece')
                     # cursor.close()
