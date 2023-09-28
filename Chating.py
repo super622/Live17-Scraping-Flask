@@ -285,7 +285,7 @@ class Chating:
             options.add_argument('--disable-gpu')
             options.add_argument('--disable-dev-shm-usage')
             options.add_argument('--no-sandbox')
-            browser = webdriver.Chrome(executable_path=r'/usr/bin/chromedriver', options=options)
+            browser = webdriver.Chrome(options=options)
 
             browser.get(url)
             print(browser)
