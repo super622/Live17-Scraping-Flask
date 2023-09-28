@@ -276,11 +276,20 @@ class Chating:
             print(url)
 
             options = webdriver.ChromeOptions()
-            options.add_argument('--headless')
-            options.add_argument("--remote-debugging-port=9222")
-            options.add_argument("--user-data-dir=/home/ubuntu/.config/google-chrome")
+            # options.add_argument('--headless')
+            # options.add_argument("--remote-debugging-port=9222")
             # options.add_argument('--disable-dev-shm-usage')
             # options.add_argument('--no-sandbox')
+            options.add_argument('--no-sandbox') 
+            options.add_argument('--disable-dev-shm-usage') 
+            options.add_argument('--headless')
+            options.add_argument('--disable-gpu')
+            options.add_argument('--disable-extensions')
+            options.add_argument('--remote-debugging-port=9222')
+            options.add_argument('--log-level=DEBUG')
+            options.add_argument('--enable-logging')
+            options.add_argument('--disable-software-rasterizer')
+            options.binary_location = '/usr/bin/google-chrome'
 
             browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
