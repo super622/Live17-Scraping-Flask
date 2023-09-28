@@ -538,8 +538,6 @@ class Chating:
                 else:
                     result_response(2)
                     return 'Failure'
-                
-                time.sleep(120)
 
     async def main(self):
         result = await self.scanData()
