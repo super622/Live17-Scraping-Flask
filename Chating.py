@@ -273,12 +273,19 @@ class Chating:
         for live_room_id in live_stream_id_arr:
             url = f'https://17.live/ja/live/{live_room_id}'
             print(url)
-            chrome_options = Options()
-            chrome_options.add_argument('--headless')
-            chrome_options.add_argument('--no-sandbox')
-            chrome_options.add_argument('--disable-dev-shm-usage')
+            # chrome_options = Options()
+            # chrome_options.add_argument('--headless')
+            # chrome_options.add_argument('--no-sandbox')
+            # chrome_options.add_argument('--disable-dev-shm-usage')
 
-            browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+            # browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+
+            options = webdriver.ChromeOptions()
+            options.add_argument('--headless')
+            options.add_argument('--disable-gpu')
+            options.add_argument('--disable-dev-shm-usage')
+            options.add_argument('--no-sandbox')
+            browser = webdriver.Chrome(executable_path=r'/usr/bin/chromedriver', options=options)
 
             browser.get(url)
             print(browser)
