@@ -289,7 +289,7 @@ class Chating:
             options.add_argument('--log-level=DEBUG')
             options.add_argument('--enable-logging')
             options.add_argument('--disable-software-rasterizer')
-            # options.binary_location = '/usr/bin/google-chrome'
+            options.binary_location = '/usr/bin/google-chrome'
 
             browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
