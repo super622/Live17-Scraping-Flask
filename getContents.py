@@ -371,6 +371,7 @@ class ContentSCraping:
             client = gspread.authorize(creds)
             spreadsheet = client.open_by_key(sheetID)
 
+            count = data['Count']
             data = data['Data']
             for i in range(len(data)):
                 worksheet = spreadsheet.worksheet(data[i]['EventID'])
@@ -395,6 +396,7 @@ class ContentSCraping:
                 worksheet.update_cells([merged_cell])
 
                 row_index = 2  # Assuming you want to insert the data in the 2nd row
+                col_index = int(count) * 4 + 1
 
                 worksheet.insert_rows(data[i]['List'], row=row_index)
                 time.sleep(10)
