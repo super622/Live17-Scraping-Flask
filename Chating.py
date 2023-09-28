@@ -289,7 +289,7 @@ class Chating:
             options.add_argument('--log-level=DEBUG')
             options.add_argument('--enable-logging')
             options.add_argument('--disable-software-rasterizer')
-            options.binary_location = '/usr/bin/google-chrome'
+            # options.binary_location = '/usr/bin/google-chrome'
 
             browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
@@ -432,45 +432,54 @@ class Chating:
 
                     if(create_flag or tab_position == 1):
                         worksheet = spreadsheet.sheet1
-                        worksheet.resize(rows=5000, cols=8)
+                        try:
+                            worksheet.resize(rows=5000, cols=8)
 
-                        worksheet.update_title(f"{current_month}-{current_day}")
+                            worksheet.update_title(f"{current_month}-{current_day}")
 
-                        worksheet.update("E1", [["コイン数"]], value_input_option="USER_ENTERED")
-                        worksheet.update("E2", [["ギフト人数"]], value_input_option="USER_ENTERED")
-                        worksheet.update("E3", [["スナック数"]], value_input_option="USER_ENTERED")
-                        worksheet.update("E4", [["スコア"]], value_input_option="USER_ENTERED")
+                            worksheet.update("E1", [["コイン数"]], value_input_option="USER_ENTERED")
+                            worksheet.update("E2", [["ギフト人数"]], value_input_option="USER_ENTERED")
+                            worksheet.update("E3", [["スナック数"]], value_input_option="USER_ENTERED")
+                            worksheet.update("E4", [["スコア"]], value_input_option="USER_ENTERED")
 
-                        worksheet.update("A5", [["リスナー名"]], value_input_option="USER_ENTERED")
-                        worksheet.update("B5", [["ギフト名"]], value_input_option="USER_ENTERED")
-                        worksheet.update("C5", [["ギフト個数"]], value_input_option="USER_ENTERED")
-                        worksheet.update("D5", [["コイン数"]], value_input_option="USER_ENTERED")
-                        worksheet.update("E5", [["リスナー名"]], value_input_option="USER_ENTERED")
-                        worksheet.update("F5", [["スナック"]], value_input_option="USER_ENTERED")
-                        worksheet.update("G5", [["ギフト個数"]], value_input_option="USER_ENTERED")
-                        worksheet.update("H5", [["合計コイン"]], value_input_option="USER_ENTERED")
+                            worksheet.update("A5", [["リスナー名"]], value_input_option="USER_ENTERED")
+                            worksheet.update("B5", [["ギフト名"]], value_input_option="USER_ENTERED")
+                            worksheet.update("C5", [["ギフト個数"]], value_input_option="USER_ENTERED")
+                            worksheet.update("D5", [["コイン数"]], value_input_option="USER_ENTERED")
+                            worksheet.update("E5", [["リスナー名"]], value_input_option="USER_ENTERED")
+                            worksheet.update("F5", [["スナック"]], value_input_option="USER_ENTERED")
+                            worksheet.update("G5", [["ギフト個数"]], value_input_option="USER_ENTERED")
+                            worksheet.update("H5", [["合計コイン"]], value_input_option="USER_ENTERED")
+                        except:
+                            print('quota <')
 
                         worksheet = spreadsheet.add_worksheet(title="total", rows='5000', cols='8')
 
-                        worksheet.update("E1", [["コイン数"]], value_input_option="USER_ENTERED")
-                        worksheet.update("E2", [["ギフト人数"]], value_input_option="USER_ENTERED")
-                        worksheet.update("E3", [["スナック数"]], value_input_option="USER_ENTERED")
-                        worksheet.update("E4", [["スコア"]], value_input_option="USER_ENTERED")
+                        try:
+                            worksheet.update("E1", [["コイン数"]], value_input_option="USER_ENTERED")
+                            worksheet.update("E2", [["ギフト人数"]], value_input_option="USER_ENTERED")
+                            worksheet.update("E3", [["スナック数"]], value_input_option="USER_ENTERED")
+                            worksheet.update("E4", [["スコア"]], value_input_option="USER_ENTERED")
 
-                        worksheet.update("A5", [["リスナー名"]], value_input_option="USER_ENTERED")
-                        worksheet.update("B5", [["ギフト名"]], value_input_option="USER_ENTERED")
-                        worksheet.update("C5", [["ギフト個数"]], value_input_option="USER_ENTERED")
-                        worksheet.update("D5", [["コイン数"]], value_input_option="USER_ENTERED")
-                        worksheet.update("E5", [["リスナー名"]], value_input_option="USER_ENTERED")
-                        worksheet.update("F5", [["スナック"]], value_input_option="USER_ENTERED")
-                        worksheet.update("G5", [["ギフト個数"]], value_input_option="USER_ENTERED")
-                        worksheet.update("H5", [["合計コイン"]], value_input_option="USER_ENTERED")
+                            worksheet.update("A5", [["リスナー名"]], value_input_option="USER_ENTERED")
+                            worksheet.update("B5", [["ギフト名"]], value_input_option="USER_ENTERED")
+                            worksheet.update("C5", [["ギフト個数"]], value_input_option="USER_ENTERED")
+                            worksheet.update("D5", [["コイン数"]], value_input_option="USER_ENTERED")
+                            worksheet.update("E5", [["リスナー名"]], value_input_option="USER_ENTERED")
+                            worksheet.update("F5", [["スナック"]], value_input_option="USER_ENTERED")
+                            worksheet.update("G5", [["ギフト個数"]], value_input_option="USER_ENTERED")
+                            worksheet.update("H5", [["合計コイン"]], value_input_option="USER_ENTERED")
+                        except:
+                            print('quota <')
 
                         worksheet = spreadsheet.add_worksheet(title="ギフト内訳", rows='5000', cols='3')
 
-                        worksheet.update("A1", [["ギフト名"]], value_input_option="USER_ENTERED")
-                        worksheet.update("B1", [["ギフト個数"]], value_input_option="USER_ENTERED")
-                        worksheet.update("C1", [["コイン数"]], value_input_option="USER_ENTERED")
+                        try:
+                            worksheet.update("A1", [["ギフト名"]], value_input_option="USER_ENTERED")
+                            worksheet.update("B1", [["ギフト個数"]], value_input_option="USER_ENTERED")
+                            worksheet.update("C1", [["コイン数"]], value_input_option="USER_ENTERED")
+                        except:
+                            print('quota <')
 
                     worksheet = None
                     try:
@@ -481,19 +490,22 @@ class Chating:
                     if(worksheet == None):
                         worksheet = spreadsheet.add_worksheet(title=f"{current_month}-{current_day}", rows='5000', cols='8')
 
-                        worksheet.update("E1", [["コイン数"]], value_input_option="USER_ENTERED")
-                        worksheet.update("E2", [["ギフト人数"]], value_input_option="USER_ENTERED")
-                        worksheet.update("E3", [["スナック数"]], value_input_option="USER_ENTERED")
-                        worksheet.update("E4", [["スコア"]], value_input_option="USER_ENTERED")
+                        try:
+                            worksheet.update("E1", [["コイン数"]], value_input_option="USER_ENTERED")
+                            worksheet.update("E2", [["ギフト人数"]], value_input_option="USER_ENTERED")
+                            worksheet.update("E3", [["スナック数"]], value_input_option="USER_ENTERED")
+                            worksheet.update("E4", [["スコア"]], value_input_option="USER_ENTERED")
 
-                        worksheet.update("A5", [["リスナー名"]], value_input_option="USER_ENTERED")
-                        worksheet.update("B5", [["ギフト名"]], value_input_option="USER_ENTERED")
-                        worksheet.update("C5", [["ギフト個数"]], value_input_option="USER_ENTERED")
-                        worksheet.update("D5", [["コイン数"]], value_input_option="USER_ENTERED")
-                        worksheet.update("E5", [["リスナー名"]], value_input_option="USER_ENTERED")
-                        worksheet.update("F5", [["スナック"]], value_input_option="USER_ENTERED")
-                        worksheet.update("G5", [["ギフト個数"]], value_input_option="USER_ENTERED")
-                        worksheet.update("H5", [["合計コイン"]], value_input_option="USER_ENTERED")
+                            worksheet.update("A5", [["リスナー名"]], value_input_option="USER_ENTERED")
+                            worksheet.update("B5", [["ギフト名"]], value_input_option="USER_ENTERED")
+                            worksheet.update("C5", [["ギフト個数"]], value_input_option="USER_ENTERED")
+                            worksheet.update("D5", [["コイン数"]], value_input_option="USER_ENTERED")
+                            worksheet.update("E5", [["リスナー名"]], value_input_option="USER_ENTERED")
+                            worksheet.update("F5", [["スナック"]], value_input_option="USER_ENTERED")
+                            worksheet.update("G5", [["ギフト個数"]], value_input_option="USER_ENTERED")
+                            worksheet.update("H5", [["合計コイン"]], value_input_option="USER_ENTERED")
+                        except:
+                            print('quota <')
 
                     # clear content in google sheet
                     sheet_range = f'{current_month}-{current_day}!A6:Z'  # Adjust the range as needed
@@ -506,10 +518,14 @@ class Chating:
                     # write content into google sheet
                     worksheet = spreadsheet.get_worksheet(tab_position - 3)
 
-                    worksheet.update("F1", [[str(coin_cnt)]], value_input_option="USER_ENTERED")
-                    worksheet.update("F2", [[str(snack_cnt)]], value_input_option="USER_ENTERED")
-                    worksheet.update("F3", [[str(gif_man_cnt)]], value_input_option="USER_ENTERED")
-                    worksheet.update("F4", [[str(score)]], value_input_option="USER_ENTERED")
+                    try:
+                        worksheet.update("F1", [[str(coin_cnt)]], value_input_option="USER_ENTERED")
+                        worksheet.update("F2", [[str(snack_cnt)]], value_input_option="USER_ENTERED")
+                        worksheet.update("F3", [[str(gif_man_cnt)]], value_input_option="USER_ENTERED")
+                        worksheet.update("F4", [[str(score)]], value_input_option="USER_ENTERED")
+                    except:
+                        print('quota <')
+                    
                     try:
                         worksheet.insert_rows(sub_result, row=6)
                     except:
@@ -517,17 +533,25 @@ class Chating:
 
                     worksheet = spreadsheet.worksheet("total")
 
-                    worksheet.update("F1", [[str(total_coin_cnt)]], value_input_option="USER_ENTERED")
-                    worksheet.update("F2", [[str(total_snack_cnt)]], value_input_option="USER_ENTERED")
-                    worksheet.update("F3", [[str(total_gif_man_cnt)]], value_input_option="USER_ENTERED")
-                    worksheet.update("F4", [[str(total_score)]], value_input_option="USER_ENTERED")
+                    try:
+                        worksheet.update("F1", [[str(total_coin_cnt)]], value_input_option="USER_ENTERED")
+                        worksheet.update("F2", [[str(total_snack_cnt)]], value_input_option="USER_ENTERED")
+                        worksheet.update("F3", [[str(total_gif_man_cnt)]], value_input_option="USER_ENTERED")
+                        worksheet.update("F4", [[str(total_score)]], value_input_option="USER_ENTERED")
+                    except:
+                        print('quota <')
+                    
                     try:
                         worksheet.insert_rows(total_results, row=6)
                     except:
                         print('quota <')
 
                     worksheet = spreadsheet.worksheet("ギフト内訳")
-                    worksheet.insert_rows(gifs_list, row=2)
+
+                    try:
+                        worksheet.insert_rows(gifs_list, row=2)
+                    except:
+                        print('quota <')
 
                     current_hour = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).hour
                     current_minute = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).minute
