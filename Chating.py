@@ -278,14 +278,14 @@ class Chating:
             # chrome_options.add_argument('--no-sandbox')
             # chrome_options.add_argument('--disable-dev-shm-usage')
 
-            # browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
             options = webdriver.ChromeOptions()
             options.add_argument('--headless')
             options.add_argument('--disable-gpu')
             options.add_argument('--disable-dev-shm-usage')
             options.add_argument('--no-sandbox')
-            browser = webdriver.Chrome(options=options)
+            # browser = webdriver.Chrome(options=options)
+            browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
             browser.get(url)
             print(browser)
