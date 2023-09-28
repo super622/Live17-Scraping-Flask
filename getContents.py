@@ -151,14 +151,25 @@ class ContentSCraping:
             sheet.update_title('タイトル')
 
             sheet_range = "A1"
-            batch = batch_updater(sheet.spreadsheet)
-            batch.set_row_height(sheet, '1:1', 440)
-            batch.set_column_width(sheet, 'A:A', 500)
-            batch.execute()
+            try:
+                batch = batch_updater(sheet.spreadsheet)
+                batch.set_row_height(sheet, '1:1', 440)
+                batch.set_column_width(sheet, 'A:A', 500)
+                batch.execute()
+            except:
+                time.sleep(5)
+                batch = batch_updater(sheet.spreadsheet)
+                batch.set_row_height(sheet, '1:1', 440)
+                batch.set_column_width(sheet, 'A:A', 500)
+                batch.execute()
             
             insert_image = f"=IMAGE(\"{image}\", 1)"
-            sheet.update(sheet_range, [[insert_image]], value_input_option="USER_ENTERED")
-            sheet.update("A2", [[self.date_str]], value_input_option="USER_ENTERED")
+
+            try:
+                sheet.update(sheet_range, [[insert_image]], value_input_option="USER_ENTERED")
+                sheet.update("A2", [[self.date_str]], value_input_option="USER_ENTERED")
+            except:
+                print('quota <')
 
         # Insert html content into worksheet
         async def insert_content_in_googlesheet(sheetID, element, parent_title, title):
@@ -189,40 +200,66 @@ class ContentSCraping:
                         tag_name = child.tag_name
 
                         if(tag_name == 'center'):
-                            worksheet.update(f"A{i}", [[child.text]], value_input_option="USER_ENTERED")
+                            try:
+                                worksheet.update(f"A{i}", [[child.text]], value_input_option="USER_ENTERED")
+                            except:
+                                print('quota <')
                             i += 1
                         elif(class_name == 'hCXNzI'):
-                            worksheet.update(f"A{i}", [[child.text]], value_input_option="USER_ENTERED")
+                            try:
+                                worksheet.update(f"A{i}", [[child.text]], value_input_option="USER_ENTERED")
+                            except:
+                                print('quota <')
                             i += 1
                         elif class_name == 'jPbYFU' or class_name == 'fezHWk':
-                            worksheet.update(f"A{i}", [[child.text]], value_input_option="USER_ENTERED")
+                            try:
+                                worksheet.update(f"A{i}", [[child.text]], value_input_option="USER_ENTERED")
+                            except:
+                                print('quota <')
                             i += 1
                         elif class_name == 'fpiBVx':
                             insert_image = f"=IMAGE(\"{child.get_attribute('src')}\", 1)"
-                            batch = batch_updater(worksheet.spreadsheet)
-                            batch.set_row_height(worksheet, f'1:{i}', 200)
-                            batch.set_column_width(worksheet, f'A:A', 500)
-                            batch.execute()
+                            try:
+                                batch = batch_updater(worksheet.spreadsheet)
+                                batch.set_row_height(worksheet, f'1:{i}', 200)
+                                batch.set_column_width(worksheet, f'A:A', 500)
+                                batch.execute()
 
-                            worksheet.update(f"A{i}", [[insert_image]], value_input_option="USER_ENTERED")
+                                worksheet.update(f"A{i}", [[insert_image]], value_input_option="USER_ENTERED")
+                            except:
+                                print('quota <')
+
                             i += 1
                         elif class_name == 'dMxtIb':
-                            worksheet.update(f"A{i}", [[child.text]], value_input_option="USER_ENTERED")
+                            try:
+                                worksheet.update(f"A{i}", [[child.text]], value_input_option="USER_ENTERED")
+                            except:
+                                print('quota <')
                             i += 1
                         elif class_name == 'bsffay':
-                            worksheet.update(f"A{i}", [[child.text]], value_input_option="USER_ENTERED")
+                            try:
+                                worksheet.update(f"A{i}", [[child.text]], value_input_option="USER_ENTERED")
+                            except:
+                                print('quota <')
                             image_elements = child.find_elements(By.TAG_NAME, 'img')
                             i += 1
 
                             if(len(image_elements) > 0):
                                 for image in image_elements:
-                                    batch = batch_updater(worksheet.spreadsheet)
-                                    batch.set_row_height(worksheet, f'{i}:1', 200)
-                                    batch.set_column_width(worksheet, f'A{i}:A1', 500)
-                                    batch.execute()
+                                    try:
+                                        batch = batch_updater(worksheet.spreadsheet)
+                                        batch.set_row_height(worksheet, f'{i}:1', 200)
+                                        batch.set_column_width(worksheet, f'A{i}:A1', 500)
+                                        batch.execute()
+                                    except:
+                                        print('quota <')
 
                                     insert_image = f"=IMAGE(\"{image.get_attribute('src')}\", 1)"
-                                    worksheet.update(f"A{i}", [[insert_image]], value_input_option="USER_ENTERED")
+                                    
+                                    try:
+                                        worksheet.update(f"A{i}", [[insert_image]], value_input_option="USER_ENTERED")
+                                    except:
+                                        print('quota <')
                                     i += 1
 
                         elif class_name == 'bXAnVj':
@@ -243,7 +280,10 @@ class ContentSCraping:
                                     res_str += f" | {data[k]}"
                                 
                                 if(j == col_cnt - 1):
-                                    worksheet.update(f"A{i}", [[res_str]], value_input_option="USER_ENTERED")
+                                    try:
+                                        worksheet.update(f"A{i}", [[res_str]], value_input_option="USER_ENTERED")
+                                    except:
+                                        print('quota <')
                                     res_str = ''
 
                                 i += 1
