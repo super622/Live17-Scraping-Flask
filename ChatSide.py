@@ -12,6 +12,7 @@ import logging
 
 import config
 
+from gspread_formatting import *
 from googleapiclient.discovery import build  # Added
 from google.oauth2 import service_account
 
@@ -101,40 +102,6 @@ class Chating:
             }
             return res
         
-        # Create New Google Sheet
-        async def createGoogleSheet(filename):
-            SCOPES = ['https://www.googleapis.com/auth/drive']  # Modified
-            credentials = service_account.Credentials.from_service_account_file('service-account.json', scopes=SCOPES)
-
-            drive = build('drive', 'v3', credentials=credentials)
-            file_metadata = {
-                'name': filename,
-                'parents': ['1IkovXnPZ8y-aIgR6MnbykOVfXC34CJhT'],
-                'mimeType': 'application/vnd.google-apps.spreadsheet'
-            }
-            res = drive.files().create(body=file_metadata).execute()
-            permission_body = {
-                'role': 'writer',  # Set the desired role ('reader', 'writer', 'commenter', 'owner')
-                'type': 'anyone',  # Share with anyone
-            }
-            drive.permissions().create(fileId=res['id'], body=permission_body).execute()
-
-            return res['id']
-
-        # Get Sheet ID by file name in special folder
-        async def get_sheet_by_name(file_name, folder_name):
-            SCOPES = ['https://www.googleapis.com/auth/drive']  # Modified
-            credentials = service_account.Credentials.from_service_account_file('service-account.json', scopes=SCOPES)
-            drive_service = build('drive', 'v3', credentials=credentials)
-
-            results = drive_service.files().list(q="name='" + file_name + "' and mimeType='application/vnd.google-apps.spreadsheet' ",
-                                    pageSize=10, fields="nextPageToken, files(id, name)").execute()
-            items = results.get('files', [])
-            if not items:
-                return ''
-            else:
-                return items[0]['id']
-
         # add all gif users
         async def append_to_total_gif_users(total_users, sub_users):
             flag = False
@@ -214,6 +181,67 @@ class Chating:
                 }
                 snack_gifs_users.append(res)
                 return snack_gifs_users
+
+        # Create New Google Sheet
+        async def createGoogleSheet(filename):
+            SCOPES = ['https://www.googleapis.com/auth/drive']  # Modified
+            credentials = service_account.Credentials.from_service_account_file('service-account.json', scopes=SCOPES)
+
+            drive = build('drive', 'v3', credentials=credentials)
+            file_metadata = {
+                'name': filename,
+                'parents': ['1IkovXnPZ8y-aIgR6MnbykOVfXC34CJhT'],
+                'mimeType': 'application/vnd.google-apps.spreadsheet'
+            }
+            res = drive.files().create(body=file_metadata).execute()
+            permission_body = {
+                'role': 'writer',  # Set the desired role ('reader', 'writer', 'commenter', 'owner')
+                'type': 'anyone',  # Share with anyone
+            }
+            drive.permissions().create(fileId=res['id'], body=permission_body).execute()
+
+            return res['id']
+
+        # Get Sheet ID by file name in special folder
+        async def get_sheet_by_name(file_name, folder_name):
+            SCOPES = ['https://www.googleapis.com/auth/drive']  # Modified
+            credentials = service_account.Credentials.from_service_account_file('service-account.json', scopes=SCOPES)
+            drive_service = build('drive', 'v3', credentials=credentials)
+
+            results = drive_service.files().list(q="name='" + file_name + "' and mimeType='application/vnd.google-apps.spreadsheet' ",
+                                    pageSize=10, fields="nextPageToken, files(id, name)").execute()
+            items = results.get('files', [])
+            if not items:
+                return ''
+            else:
+                return items[0]['id']
+
+        # format cell type
+        async def format_cell_format(worksheet):
+            fmt = CellFormat(
+                    backgroundColor=Color(173, 168, 168),
+                    textFormat=TextFormat(bold=False, foregroundColor=Color(0, 0, 0)),
+                    horizontalAlignment='CENTER'
+                )
+
+            format_cell_range(worksheet, 'A5:H5', fmt)
+            format_cell_range(worksheet, 'E1:E5', fmt)
+
+        # init content of worksheet
+        async def init_content_of_worksheet(worksheet):
+            worksheet.update("E1", [["コイン数"]], value_input_option="USER_ENTERED")
+            worksheet.update("E2", [["ギフト人数"]], value_input_option="USER_ENTERED")
+            worksheet.update("E3", [["スナック数"]], value_input_option="USER_ENTERED")
+            worksheet.update("E4", [["スコア"]], value_input_option="USER_ENTERED")
+
+            worksheet.update("A5", [["リスナー名"]], value_input_option="USER_ENTERED")
+            worksheet.update("B5", [["ギフト名"]], value_input_option="USER_ENTERED")
+            worksheet.update("C5", [["ギフト個数"]], value_input_option="USER_ENTERED")
+            worksheet.update("D5", [["コイン数"]], value_input_option="USER_ENTERED")
+            worksheet.update("E5", [["リスナー名"]], value_input_option="USER_ENTERED")
+            worksheet.update("F5", [["スナック"]], value_input_option="USER_ENTERED")
+            worksheet.update("G5", [["ギフト個数"]], value_input_option="USER_ENTERED")
+            worksheet.update("H5", [["合計コイン"]], value_input_option="USER_ENTERED")
 
         # add data into database
         def result_response(value):
@@ -439,47 +467,36 @@ class Chating:
 
                     if(create_flag or tab_position == 1):
                         worksheet = spreadsheet.sheet1
+
+                        await format_cell_format(worksheet)
+
                         try:
                             worksheet.resize(rows=5000, cols=8)
 
                             worksheet.update_title(f"{current_month}-{current_day}")
 
-                            worksheet.update("E1", [["コイン数"]], value_input_option="USER_ENTERED")
-                            worksheet.update("E2", [["ギフト人数"]], value_input_option="USER_ENTERED")
-                            worksheet.update("E3", [["スナック数"]], value_input_option="USER_ENTERED")
-                            worksheet.update("E4", [["スコア"]], value_input_option="USER_ENTERED")
-
-                            worksheet.update("A5", [["リスナー名"]], value_input_option="USER_ENTERED")
-                            worksheet.update("B5", [["ギフト名"]], value_input_option="USER_ENTERED")
-                            worksheet.update("C5", [["ギフト個数"]], value_input_option="USER_ENTERED")
-                            worksheet.update("D5", [["コイン数"]], value_input_option="USER_ENTERED")
-                            worksheet.update("E5", [["リスナー名"]], value_input_option="USER_ENTERED")
-                            worksheet.update("F5", [["スナック"]], value_input_option="USER_ENTERED")
-                            worksheet.update("G5", [["ギフト個数"]], value_input_option="USER_ENTERED")
-                            worksheet.update("H5", [["合計コイン"]], value_input_option="USER_ENTERED")
+                            await init_content_of_worksheet(worksheet)
                         except:
                             print('quota <')
 
                         worksheet = spreadsheet.add_worksheet(title="total", rows='5000', cols='8')
 
-                        try:
-                            worksheet.update("E1", [["コイン数"]], value_input_option="USER_ENTERED")
-                            worksheet.update("E2", [["ギフト人数"]], value_input_option="USER_ENTERED")
-                            worksheet.update("E3", [["スナック数"]], value_input_option="USER_ENTERED")
-                            worksheet.update("E4", [["スコア"]], value_input_option="USER_ENTERED")
+                        await format_cell_format(worksheet)
 
-                            worksheet.update("A5", [["リスナー名"]], value_input_option="USER_ENTERED")
-                            worksheet.update("B5", [["ギフト名"]], value_input_option="USER_ENTERED")
-                            worksheet.update("C5", [["ギフト個数"]], value_input_option="USER_ENTERED")
-                            worksheet.update("D5", [["コイン数"]], value_input_option="USER_ENTERED")
-                            worksheet.update("E5", [["リスナー名"]], value_input_option="USER_ENTERED")
-                            worksheet.update("F5", [["スナック"]], value_input_option="USER_ENTERED")
-                            worksheet.update("G5", [["ギフト個数"]], value_input_option="USER_ENTERED")
-                            worksheet.update("H5", [["合計コイン"]], value_input_option="USER_ENTERED")
+                        try:
+                            await init_content_of_worksheet(worksheet)
                         except:
                             print('quota <')
 
                         worksheet = spreadsheet.add_worksheet(title="ギフト内訳", rows='5000', cols='3')
+
+                        fmt = CellFormat(
+                                backgroundColor=Color(173, 168, 168),
+                                textFormat=TextFormat(bold=False, foregroundColor=Color(0, 0, 0)),
+                                horizontalAlignment='CENTER'
+                            )
+
+                        format_cell_range(worksheet, 'A1:C1', fmt)
 
                         try:
                             worksheet.update("A1", [["ギフト名"]], value_input_option="USER_ENTERED")
@@ -498,19 +515,7 @@ class Chating:
                         worksheet = spreadsheet.add_worksheet(title=f"{current_month}-{current_day}", rows='5000', cols='8')
 
                         try:
-                            worksheet.update("E1", [["コイン数"]], value_input_option="USER_ENTERED")
-                            worksheet.update("E2", [["ギフト人数"]], value_input_option="USER_ENTERED")
-                            worksheet.update("E3", [["スナック数"]], value_input_option="USER_ENTERED")
-                            worksheet.update("E4", [["スコア"]], value_input_option="USER_ENTERED")
-
-                            worksheet.update("A5", [["リスナー名"]], value_input_option="USER_ENTERED")
-                            worksheet.update("B5", [["ギフト名"]], value_input_option="USER_ENTERED")
-                            worksheet.update("C5", [["ギフト個数"]], value_input_option="USER_ENTERED")
-                            worksheet.update("D5", [["コイン数"]], value_input_option="USER_ENTERED")
-                            worksheet.update("E5", [["リスナー名"]], value_input_option="USER_ENTERED")
-                            worksheet.update("F5", [["スナック"]], value_input_option="USER_ENTERED")
-                            worksheet.update("G5", [["ギフト個数"]], value_input_option="USER_ENTERED")
-                            worksheet.update("H5", [["合計コイン"]], value_input_option="USER_ENTERED")
+                            await init_content_of_worksheet(worksheet)
                         except:
                             print('quota <')
 
