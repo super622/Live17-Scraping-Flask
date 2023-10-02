@@ -36,6 +36,7 @@ class Chating:
         self.start_month = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).month
         self.start_day = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).day
         self.started_flag = False
+        self.temp_result = []
 
     # Get Data from Chating panel
     async def scanData(self):
@@ -168,7 +169,7 @@ class Chating:
         async def append_to_total_result(total_result, gif_users, snack_users):
             max_len = len(gif_users) if len(gif_users) > len(snack_users) else len(snack_users)
             temp_arr = None
-
+            result_array = []
             if max_len == len(gif_users):
                 temp_arr = gif_users
             else:
@@ -186,7 +187,8 @@ class Chating:
                 
                 print(len(gif_users), len(snack_users))
                 print(res_arr)
-                total_result.append(res_arr)
+                result_array.append(res_arr)
+            self.temp_result = total_result + result_array
 
         # add git and snack user
         async def append_to_snack_gifusers(snack_gifs_users, gifs_user, username, snack_cnt):
@@ -305,7 +307,7 @@ class Chating:
 
             while True:
                 chating_panel = browser.find_elements('css selector', '.ChatList__ListWrapper-sc-733d46-1')
-                print(len(chating_panel))
+                print('start')
                 if(len(chating_panel) > 0):
                     snack_cnt = 0
                     gif_man_cnt = 0
@@ -354,6 +356,7 @@ class Chating:
                             total_snack_cnt += snack_cnt
 
                     total_gif_man_cnt = gif_man_cnt
+                    print(gif_man_cnt, snack_cnt)
 
                     for user in gifs_users:
                         coin_cnt += int(user['Coin'])
@@ -362,7 +365,7 @@ class Chating:
                         if(int(user['Gif_Count']) == 0):
                             coin_cnt += int(user['Coin'])
 
-                    length = len(gifs_list) if len(gifs_list) > len(snack_gifs_users) else len(snack_gifs_users)
+                    length = len(gifs_users) if len(gifs_users) > len(snack_gifs_users) else len(snack_gifs_users)
                     temp_arr = None
 
                     if(length == len(gifs_users)):
@@ -379,7 +382,7 @@ class Chating:
                             res_arr = [gifs_users[i]['UserName'], gifs_users[i]['GifType'], gifs_users[i]['Gif_Count'], gifs_users[i]['Coin'], '','','','']
                         elif(i < len(gifs_users) and i < len(snack_gifs_users)):
                             res_arr = [gifs_users[i]['UserName'], gifs_users[i]['GifType'], gifs_users[i]['Gif_Count'], gifs_users[i]['Coin'], snack_gifs_users[i]['UserName'], snack_gifs_users[i]['Snack_Count'], snack_gifs_users[i]['Gif_Count'], snack_gifs_users[i]['Coin']]
-                        
+                        print(res_arr)
                         sub_result.append(res_arr)
                     
                     score_elements = browser.find_elements(By.XPATH, "//*[@style='transform: rotateX(0deg) translateZ(28px);']")
@@ -508,12 +511,15 @@ class Chating:
                             print('quota <')
 
                     # clear content in google sheet
-                    sheet_range = f'{current_month}-{current_day}!A6:Z'  # Adjust the range as needed
-                    service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
-                    sheet_range = f'total!A6:Z'
-                    service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
-                    sheet_range = f'ギフト内訳!A2:Z'  # Adjust the range as needed
-                    service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
+                    try:
+                        sheet_range = f'{current_month}-{current_day}!A6:Z'  # Adjust the range as needed
+                        service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
+                        sheet_range = f'total!A6:Z'
+                        service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
+                        sheet_range = f'ギフト内訳!A2:Z'  # Adjust the range as needed
+                        service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
+                    except:
+                        print('quota <')
 
                     # write content into google sheet
                     worksheet = spreadsheet.get_worksheet(tab_position - 3)
@@ -527,6 +533,9 @@ class Chating:
                         print('quota <')
                     
                     try:
+                        print('----------------------------')
+                        print(sub_result)
+                        print('----------------------------')
                         worksheet.insert_rows(sub_result, row=6)
                     except:
                         print('quota <')
@@ -542,7 +551,7 @@ class Chating:
                         print('quota <')
                     
                     try:
-                        worksheet.insert_rows(total_results, row=6)
+                        worksheet.insert_rows(self.temp_result, row=6)
                     except:
                         print('quota <')
 
@@ -556,6 +565,9 @@ class Chating:
                     current_hour = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).hour
                     current_minute = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).minute
 
+                    if self.start_time_hour == current_hour and self.start_time_minute == current_minute:
+                        total_results = self.temp_result
+                    
                     if current_month == self.end_date_month and current_day == self.end_date_day and current_hour == self.end_time_hour and current_minute == self.end_time_minute:
                         sys.exit(1)
 
@@ -566,7 +578,7 @@ class Chating:
     async def main(self):
         result = await self.scanData()
         return result
-    
+
     def run(self):
         result = asyncio.run(self.main)
         return result
