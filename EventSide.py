@@ -20,7 +20,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 from gspread_formatting import batch_updater
 
-class ContentSCraping:
+class EventScraping:
     # Init
     def __init__(self, start_date_month, start_date_day, start_time_hour, start_time_minute, end_date_month, end_date_day, end_time_hour, end_time_minute, event):
         self.start_date_month = start_date_month

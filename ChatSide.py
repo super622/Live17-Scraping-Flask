@@ -88,7 +88,10 @@ class Chating:
         # find special gif user
         async def find_in_gifusers(gifs_users, user_name):
             for user in gifs_users:
-                if(user['UserName'] == user_name):
+                hex = bytes(user_name, 'utf-8')
+                print(f"gif users => {user['UserName']}, {user_name}")
+                print(f"hex => {user['Hex']}, {hex}")
+                if(user['Hex'] == hex):
                     return user
             res = {
                 "UserName": '',
@@ -291,7 +294,7 @@ class Chating:
             options.add_argument('--log-level=DEBUG')
             options.add_argument('--enable-logging')
             options.add_argument('--disable-software-rasterizer')
-            options.binary_location = '/usr/bin/google-chrome'
+            # options.binary_location = '/usr/bin/google-chrome'
 
             browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
@@ -332,6 +335,7 @@ class Chating:
 
                             res = {
                                 "UserName": user_name,
+                                "Hex": bytes(user_name, "utf-8"),
                                 "GifType": gif_type,
                                 "Gif_Count": 1,
                                 "Coin": coin
@@ -356,7 +360,6 @@ class Chating:
                             total_snack_cnt += snack_cnt
 
                     total_gif_man_cnt = gif_man_cnt
-                    print(gif_man_cnt, snack_cnt)
 
                     for user in gifs_users:
                         coin_cnt += int(user['Coin'])
@@ -373,6 +376,8 @@ class Chating:
                     else:
                         temp_arr = snack_gifs_users
 
+                    print(f"gifs user => {gifs_users}")
+                    print(f"snack users => {snack_gifs_users}")
                     i = 0
                     for i in range(len(temp_arr)):
                         res_arr = None
@@ -382,7 +387,6 @@ class Chating:
                             res_arr = [gifs_users[i]['UserName'], gifs_users[i]['GifType'], gifs_users[i]['Gif_Count'], gifs_users[i]['Coin'], '','','','']
                         elif(i < len(gifs_users) and i < len(snack_gifs_users)):
                             res_arr = [gifs_users[i]['UserName'], gifs_users[i]['GifType'], gifs_users[i]['Gif_Count'], gifs_users[i]['Coin'], snack_gifs_users[i]['UserName'], snack_gifs_users[i]['Snack_Count'], snack_gifs_users[i]['Gif_Count'], snack_gifs_users[i]['Coin']]
-                        print(res_arr)
                         sub_result.append(res_arr)
                     
                     score_elements = browser.find_elements(By.XPATH, "//*[@style='transform: rotateX(0deg) translateZ(28px);']")
@@ -403,6 +407,9 @@ class Chating:
 
                     # total result
                     await append_to_total_result(total_results, total_gifs_user, total_snack_user)
+
+                    current_month = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).month
+                    current_day = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).day
 
                     # create google sheet
                     SCOPES = ['https://www.googleapis.com/auth/drive']
@@ -429,9 +436,6 @@ class Chating:
 
                     # write content into google sheet (init column name)
                     spreadsheet = client.open_by_key(sheetID)
-
-                    current_month = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).month
-                    current_day = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).day
 
                     if(create_flag or tab_position == 1):
                         worksheet = spreadsheet.sheet1

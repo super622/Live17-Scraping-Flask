@@ -2,7 +2,6 @@ import asyncio
 import json
 import math
 import datetime
-from multiprocessing import Process
 import threading
 import time
 import schedule
@@ -10,10 +9,11 @@ import pytz
 import config
 import mysql.connector
 
+from multiprocessing import Process
 from flask import Flask, request
 from flask_cors import CORS
-from getContents import ContentSCraping
-from Chating import Chating
+from EventSide import EventScraping
+from ChatSide import Chating
 
 app = Flask(__name__)
 CORS(app)
@@ -21,17 +21,19 @@ CORS(app)
 # Dictionary to store scheduled jobs
 scheduled_jobs = {}
 
+# Check if the server is working
 @app.route('/')
 def hello_world():
    return 'Server is running...'
 
+# Add 0 to one digit of the hour or minute
 def change_string(value):
    value = str(value)
    if(len(value) == 1):
       return f"0{value}"
    return value
 
-# add data into database
+# Store scraping status into database
 def result_response(url, type, start_date_year, start_date_month, start_date_day, start_time_hour, start_time_minute):
    try:
          with mysql.connector.connect(
@@ -48,7 +50,7 @@ def result_response(url, type, start_date_year, start_date_month, start_date_day
             if len(rows) > 0:
                for row in rows:
                   cursor.execute(f"DELETE FROM history WHERE id={row[0]}")
-            
+
             query = 'INSERT INTO history (url, start_date, end_date, type, status) VALUES (%s, %s, %s, %s, %s)'
             cursor.execute(query, (url, f"{start_date_year}-{start_date_month}-{start_date_day} {start_time_hour}:{start_time_minute}", "", type, '-',))
             cnx.commit()
@@ -56,19 +58,21 @@ def result_response(url, type, start_date_year, start_date_month, start_date_day
    except Exception as e:
          print(e)
 
-
+# Start scraping about chating side
 def chating_scraping(end_date_month, end_date_day, end_time_hour, end_time_minute, nick_url, start_date_year, start_date_month, start_date_day, start_time_hour, start_time_minute):
    result_response(nick_url, 'C', start_date_year, start_date_month, start_date_day, start_time_hour, start_time_minute)
    getChatingData = Chating(end_date_month, end_date_day, end_time_hour, end_time_minute, nick_url, start_time_hour, start_time_minute)
    response = asyncio.run(getChatingData.main())
    return json.dumps(response)
 
+# Start scraping about event side
 def event_scraping(start_date_year, start_date_month, start_date_day, start_time_hour, start_time_minute, end_date_month, end_date_day, end_time_hour, end_time_minute, event):
    result_response(event, 'C', start_date_year, start_date_month, start_date_day, start_time_hour, start_time_minute)
-   getData = ContentSCraping(start_date_month, start_date_day, start_time_hour, start_time_minute, end_date_month, end_date_day, end_time_hour, end_time_minute, event)
+   getData = EventScraping(start_date_month, start_date_day, start_time_hour, start_time_minute, end_date_month, end_date_day, end_time_hour, end_time_minute, event)
    response = asyncio.run(getData.main())
    return json.dumps(response)
 
+# Start Scraping about live site
 @app.route('/start', methods=['POST'])
 def start():
    url_type = request.values.get('type')
@@ -131,6 +135,7 @@ def start():
 
    return json.dumps([{"type": "success", "msg": "リクエストが受け付けられました。"}])
 
+# Cron job stop
 @app.route('/stop', methods=['POST'])
 def stop():
    job = list(scheduled_jobs.keys())[0]
