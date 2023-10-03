@@ -228,7 +228,7 @@ class Chating:
         async def format_cell_format(worksheet):
             fmt = CellFormat(
                     backgroundColor=Color(0, 0, 0, 0.2),
-                    textFormat=TextFormat(bold=False, foregroundColor=Color(0, 0, 0)),
+                    textFormat=TextFormat(bold=False, foregroundColor=Color(0, 0, 0, 0.7)),
                     horizontalAlignment='CENTER'
                 )
 
