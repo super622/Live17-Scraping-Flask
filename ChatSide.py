@@ -123,8 +123,8 @@ class Chating:
                 return temp
 
         # add all snack users
-        async def append_to_total_snack_users(total_users, sub_users, type):
-            temp = total_users
+        async def append_to_total_snack_users(snack_users, sub_users, type):
+            temp = snack_users
             flag = False
             for sub in sub_users:
                 for total in temp:
@@ -133,14 +133,14 @@ class Chating:
                         total['Coin'] = int(sub['Coin']) + int(total['Coin'])
                         total['Snack_Count'] = int(sub['Snack_Count']) + int(total['Snack_Count'])
                         flag = True
-            
+
                 if(flag):
                     flag = False
                 else:
                     temp.append(sub)
 
             if(type):
-                total_users = temp
+                snack_users = temp
             else:
                 return temp
 
@@ -227,13 +227,21 @@ class Chating:
         # format cell type
         async def format_cell_format(worksheet):
             fmt = CellFormat(
-                    backgroundColor=Color(173, 168, 168),
+                    backgroundColor=Color(240, 245, 241),
                     textFormat=TextFormat(bold=False, foregroundColor=Color(0, 0, 0)),
                     horizontalAlignment='CENTER'
                 )
 
             format_cell_range(worksheet, 'A5:H5', fmt)
             format_cell_range(worksheet, 'E1:E5', fmt)
+
+            fmt = CellFormat(
+                    backgroundColor=Color(255, 255, 255),
+                    textFormat=TextFormat(bold=False, foregroundColor=Color(0, 0, 0)),
+                    horizontalAlignment='CENTER'
+                )
+
+            format_cell_range(worksheet, 'A1:H5000', fmt)
 
         # init content of worksheet
         async def init_content_of_worksheet(worksheet):
@@ -320,17 +328,6 @@ class Chating:
             options.add_argument('--headless')
             options.add_argument('--no-sandbox')
 
-            # options.add_argument('--no-sandbox') 
-            # options.add_argument('--disable-dev-shm-usage') 
-            # options.add_argument('--headless')
-            # options.add_argument('--disable-gpu')
-            # options.add_argument('--disable-extensions')
-            # options.add_argument('--remote-debugging-port=9222')
-            # options.add_argument('--log-level=DEBUG')
-            # options.add_argument('--enable-logging')
-            # options.add_argument('--disable-software-rasterizer')
-            # options.binary_location = '/usr/bin/google-chrome'
-
             browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
             browser.get(url)
@@ -360,7 +357,12 @@ class Chating:
                     chating_elements = browser.find_elements('css selector', '.Chat__ChatWrapper-sc-clenhv-0')
                     for chat_element in chating_elements:
                         name_element = chat_element.find_elements('css selector', '.ChatUserName__NameWrapper-sc-1ca2hpy-0')
-                        user_name = name_element[0].text
+                        user_name = ''
+                        if(len(name_element) == 0):
+                            user_name = ''
+                        else:
+                            user_name = name_element[0].text
+                        
                         if len(chat_element.find_elements('css selector', '.GiftItem__GiftIcon-sc-g419cs-0')) > 0:
                             gif_element = chat_element.find_elements('css selector', '.Chat__ContentWrapper-sc-clenhv-1')
                             gif_type = gif_element[0].text
@@ -404,7 +406,7 @@ class Chating:
                         temp_arr = gifs_users
                     else:
                         temp_arr = snack_gifs_users
-                    
+
                     i = 0
                     for i in range(len(temp_arr)):
                         res_arr = None
@@ -433,12 +435,17 @@ class Chating:
                     temp_total_results = await append_to_total_result(total_results, temp_total_gifs_user, temp_total_snack_user, False)
 
                     print("-----------------------------------")
-                    print(f"result => {sub_result}")
+                    print(f"gifs user => {total_gifs_user}")
                     print("-----------------------------------")
-                    print(f"total => {temp_total_results}")
+                    print(f"snack user => {total_snack_user}")
+                    print("-----------------------------------")
+                    print(f"total => {total_results}")
 
                     current_month = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).month
                     current_day = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).day
+
+                    total_coin_cnt = coin_cnt
+                    total_score = score
 
                     if(self.start_day != current_day):
                         print('date==================')
@@ -446,8 +453,6 @@ class Chating:
 
                         total_snack_cnt += snack_cnt
                         total_gif_man_cnt += gif_man_cnt
-                        total_coin_cnt = coin_cnt
-                        total_score = score
 
                         # total_gifs_user
                         await append_to_total_gif_users(total_gifs_user, gifs_users, True)
