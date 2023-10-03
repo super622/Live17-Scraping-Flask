@@ -360,7 +360,8 @@ class Chating:
                         else:
                             user_name = name_element[0].text
                         
-                        if len(chat_element.find_elements('css selector', '.GiftItem__GiftIcon-sc-g419cs-0')) > 0:
+                        gifs_elements = chat_element.find_elements('css selector', '.GiftItem__GiftIcon-sc-g419cs-0')
+                        if len(gifs_elements) > 0:
                             gif_element = chat_element.find_elements('css selector', '.Chat__ContentWrapper-sc-clenhv-1')
                             gif_type = gif_element[0].text
                             coin_element = re.search(r'\((\d+)\)', gif_type)
@@ -378,7 +379,8 @@ class Chating:
                             gifs_list = await append_to_gif(gifs_list, gif_type, coin)
                             gifs_users = await append_to_gifusers(gifs_users, res)
 
-                        if len(chat_element.find_elements('css selector', '.LaborReward__ControlledText-sc-cxndew-0')) > 0:
+                        snacks_elements = chat_element.find_elements('css selector', '.LaborReward__ControlledText-sc-cxndew-0')
+                        if len(snacks_elements) > 0:
                             gif_state = await find_in_gifusers(gifs_users, user_name)
                             snack_cnt_element = chat_element.find_elements('css selector', '.LaborReward__ControlledText-sc-cxndew-0')
                             snack_cnt_element = snack_cnt_element[0].text
