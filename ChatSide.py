@@ -559,6 +559,7 @@ class Chating:
 
                     # write content into google sheet
                     worksheet = spreadsheet.get_worksheet(tab_position - 3)
+                    await format_cell_format(worksheet)
 
                     try:
                         worksheet.update("F1", [[str(coin_cnt)]], value_input_option="USER_ENTERED")
@@ -577,6 +578,7 @@ class Chating:
                         print('quota <')
 
                     worksheet = spreadsheet.worksheet("total")
+                    await format_cell_format(worksheet)
 
                     try:
                         worksheet.update("F1", [[str(total_coin_cnt)]], value_input_option="USER_ENTERED")
