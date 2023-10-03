@@ -93,15 +93,15 @@ def start():
    if(start_date_year > current_year):
       current_year = start_date_year
 
-   # # Create datetime objects for start and end times
-   # japan_timezone = pytz.timezone('Asia/Tokyo')
-   # start_datetime = japan_timezone.localize(datetime.datetime(current_year, start_date_month, start_date_day, start_time_hour, start_time_minute, 0))
-   # end_datetime = japan_timezone.localize(datetime.datetime(end_date_year, end_date_month, end_date_day, end_time_hour, end_time_minute, 0))
+   # Create datetime objects for start and end times
+   japan_timezone = pytz.timezone('Asia/Tokyo')
+   start_datetime = japan_timezone.localize(datetime.datetime(current_year, start_date_month, start_date_day, start_time_hour, start_time_minute, 0))
+   end_datetime = japan_timezone.localize(datetime.datetime(end_date_year, end_date_month, end_date_day, end_time_hour, end_time_minute, 0))
 
 
-   # Convert start_date and end_date to datetime objects
-   start_datetime = datetime.datetime.strptime(f"{current_year}-{start_date_month}-{start_date_day} {start_time_hour}:{start_time_minute}:0", '%Y-%m-%d %H:%M:%S')
-   end_datetime = datetime.datetime.strptime(f"{end_date_year}-{end_date_month}-{end_date_day} {start_time_hour}:{start_time_minute}:0", '%Y-%m-%d %H:%M:%S')
+   # # Convert start_date and end_date to datetime objects
+   # start_datetime = datetime.datetime.strptime(f"{current_year}-{start_date_month}-{start_date_day} {start_time_hour}:{start_time_minute}:0", '%Y-%m-%d %H:%M:%S')
+   # end_datetime = datetime.datetime.strptime(f"{end_date_year}-{end_date_month}-{end_date_day} {start_time_hour}:{start_time_minute}:0", '%Y-%m-%d %H:%M:%S')
 
    # Convert current time to Japan time zone and make it offset-aware
    cur_time = datetime.datetime.now(pytz.timezone('Asia/Tokyo'))

@@ -103,26 +103,31 @@ class Chating:
             return res
         
         # add all gif users
-        async def append_to_total_gif_users(total_users, sub_users):
+        async def append_to_total_gif_users(total_users, sub_users, type):
+            temp = total_users
             flag = False
             for sub in sub_users:
-                for total in total_users:
-                    if(total['UserName'] == sub['UserName'] and total['GifType'] == sub['GifType']):
+                for total in temp:
+                    if(total['Hex'] == sub['Hex'] and total['GifType'] == sub['GifType']):
                         total['Coin'] = int(sub['Coin']) + int(total['Coin'])
                         total['Gif_Count'] = int(total['Gif_Count']) + int(sub['Gif_Count'])
                         flag = True
-                    
+
                 if(flag != True):
-                    total_users.append(sub)
-                    return total_users
+                    temp.append(sub)
                 else:
                     flag = False
+            if(type):
+                total_users = temp
+            else:
+                return temp
 
         # add all snack users
-        async def append_to_total_snack_users(total_users, sub_users):
+        async def append_to_total_snack_users(total_users, sub_users, type):
+            temp = total_users
             flag = False
             for sub in sub_users:
-                for total in total_users:
+                for total in temp:
                     if(total['UserName'] == sub['UserName']):
                         total['Gif_Count'] = int(sub['Gif_Count']) + int(total['Gif_Count'])
                         total['Coin'] = int(sub['Coin']) + int(total['Coin'])
@@ -132,11 +137,15 @@ class Chating:
                 if(flag):
                     flag = False
                 else:
-                    total_users.append(sub)
-                    return total_users
+                    temp.append(sub)
+
+            if(type):
+                total_users = temp
+            else:
+                return temp
 
         # add all result
-        async def append_to_total_result(total_result, gif_users, snack_users):
+        async def append_to_total_result(total_result, gif_users, snack_users, type):
             max_len = len(gif_users) if len(gif_users) > len(snack_users) else len(snack_users)
             temp_arr = None
             result_array = []
@@ -155,10 +164,10 @@ class Chating:
                 elif(i >= len(snack_users)):
                     res_arr = [gif_users[i]['UserName'], gif_users[i]['GifType'], gif_users[i]['Gif_Count'], gif_users[i]['Coin'], '','','','']
                 
-                print(len(gif_users), len(snack_users))
-                print(res_arr)
                 result_array.append(res_arr)
-            self.temp_result = total_result + result_array
+            total_result = result_array
+            if(type == False):
+                return total_result
 
         # add git and snack user
         async def append_to_snack_gifusers(snack_gifs_users, gifs_user, username, snack_cnt):
@@ -208,8 +217,7 @@ class Chating:
             credentials = service_account.Credentials.from_service_account_file('service-account.json', scopes=SCOPES)
             drive_service = build('drive', 'v3', credentials=credentials)
 
-            results = drive_service.files().list(q="name='" + file_name + "' and mimeType='application/vnd.google-apps.spreadsheet' ",
-                                    pageSize=10, fields="nextPageToken, files(id, name)").execute()
+            results = drive_service.files().list(q="name='" + file_name + "' and mimeType='application/vnd.google-apps.spreadsheet' ", pageSize=10, fields="nextPageToken, files(id, name)").execute()
             items = results.get('files', [])
             if not items:
                 return ''
@@ -309,19 +317,20 @@ class Chating:
             print(url)
 
             options = webdriver.ChromeOptions()
-            # options.add_argument('--headless')
-            # options.add_argument("--remote-debugging-port=9222")
-            # options.add_argument('--disable-dev-shm-usage')
-            # options.add_argument('--no-sandbox')
-            options.add_argument('--no-sandbox') 
-            options.add_argument('--disable-dev-shm-usage') 
             options.add_argument('--headless')
-            options.add_argument('--disable-gpu')
-            options.add_argument('--disable-extensions')
-            options.add_argument('--remote-debugging-port=9222')
-            options.add_argument('--log-level=DEBUG')
-            options.add_argument('--enable-logging')
-            options.add_argument('--disable-software-rasterizer')
+            options.add_argument("--remote-debugging-port=9222")
+            options.add_argument('--disable-dev-shm-usage')
+            options.add_argument('--no-sandbox')
+
+            # options.add_argument('--no-sandbox') 
+            # options.add_argument('--disable-dev-shm-usage') 
+            # options.add_argument('--headless')
+            # options.add_argument('--disable-gpu')
+            # options.add_argument('--disable-extensions')
+            # options.add_argument('--remote-debugging-port=9222')
+            # options.add_argument('--log-level=DEBUG')
+            # options.add_argument('--enable-logging')
+            # options.add_argument('--disable-software-rasterizer')
             # options.binary_location = '/usr/bin/google-chrome'
 
             browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
@@ -351,9 +360,9 @@ class Chating:
 
                     chating_elements = browser.find_elements('css selector', '.Chat__ChatWrapper-sc-clenhv-0')
                     for chat_element in chating_elements:
+                        name_element = chat_element.find_elements('css selector', '.ChatUserName__NameWrapper-sc-1ca2hpy-0')
+                        user_name = name_element[0].text
                         if len(chat_element.find_elements('css selector', '.GiftItem__GiftIcon-sc-g419cs-0')) > 0:
-                            name_element = chat_element.find_elements('css selector', '.ChatUserName__NameWrapper-sc-1ca2hpy-0')
-                            user_name = name_element[0].text
                             gif_element = chat_element.find_elements('css selector', '.Chat__ContentWrapper-sc-clenhv-1')
                             gif_type = gif_element[0].text
                             coin_element = re.search(r'\((\d+)\)', gif_type)
@@ -371,11 +380,7 @@ class Chating:
                             gifs_list = await append_to_gif(gifs_list, gif_type, coin)
                             gifs_users = await append_to_gifusers(gifs_users, res)
 
-                            gif_man_cnt = len(gifs_users)
-
                         if len(chat_element.find_elements('css selector', '.LaborReward__ControlledText-sc-cxndew-0')) > 0:
-                            name_element = chat_element.find_elements('css selector', '.ChatUserName__NameWrapper-sc-1ca2hpy-0')
-                            user_name = name_element[0].text
                             gif_state = await find_in_gifusers(gifs_users, user_name)
                             snack_cnt_element = chat_element.find_elements('css selector', '.LaborReward__ControlledText-sc-cxndew-0')
                             snack_cnt_element = snack_cnt_element[0].text
@@ -383,11 +388,8 @@ class Chating:
                             snack_cnt = snack_cnt[0]
                             snack_gifs_users = await append_to_snack_gifusers(snack_gifs_users, gif_state, user_name, snack_cnt)
 
-                            gif_man_cnt = len(gifs_users)
-                            snack_cnt = len(snack_gifs_users)
-                            total_snack_cnt += snack_cnt
-
-                    total_gif_man_cnt = gif_man_cnt
+                    gif_man_cnt = len(gifs_users)
+                    snack_cnt = len(snack_gifs_users)
 
                     for user in gifs_users:
                         coin_cnt += int(user['Coin'])
@@ -403,9 +405,7 @@ class Chating:
                         temp_arr = gifs_users
                     else:
                         temp_arr = snack_gifs_users
-
-                    print(f"gifs user => {gifs_users}")
-                    print(f"snack users => {snack_gifs_users}")
+                    
                     i = 0
                     for i in range(len(temp_arr)):
                         res_arr = None
@@ -420,25 +420,48 @@ class Chating:
                     score_elements = browser.find_elements(By.XPATH, "//*[@style='transform: rotateX(0deg) translateZ(28px);']")
                     for element in score_elements:
                         while element.text == '':
-                            time.sleep(2)
+                            time.sleep(1)
                         score += element.text
                     print(f"coin = {coin_cnt}, score = {score}")
 
-                    total_coin_cnt += coin_cnt
-                    total_score = score
-
                     # total_gifs_user
-                    await append_to_total_gif_users(total_gifs_user, gifs_users)
+                    temp_total_gifs_user = await append_to_total_gif_users(total_gifs_user, gifs_users, False)
 
                     # total_snack_user
-                    await append_to_total_snack_users(total_snack_user, snack_gifs_users)
+                    temp_total_snack_user = await append_to_total_snack_users(total_snack_user, snack_gifs_users, False)
 
                     # total result
-                    await append_to_total_result(total_results, total_gifs_user, total_snack_user)
+                    temp_total_results = await append_to_total_result(total_results, temp_total_gifs_user, temp_total_snack_user, False)
+
+                    print("-----------------------------------")
+                    print(f"result => {sub_result}")
+                    print("-----------------------------------")
+                    print(f"total => {temp_total_results}")
 
                     current_month = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).month
                     current_day = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).day
 
+                    if(self.start_day != current_day):
+                        print('date==================')
+                        self.start_day = current_day
+
+                        total_snack_cnt += snack_cnt
+                        total_gif_man_cnt += gif_man_cnt
+                        total_coin_cnt = coin_cnt
+                        total_score = score
+
+                        # total_gifs_user
+                        await append_to_total_gif_users(total_gifs_user, gifs_users, True)
+
+                        # total_snack_user
+                        await append_to_total_snack_users(total_snack_user, snack_gifs_users, True)
+
+                        # total result
+                        await append_to_total_result(total_results, total_gifs_user, total_snack_user, True)
+
+                        # refresh
+                        browser.refresh()
+                        
                     # create google sheet
                     SCOPES = ['https://www.googleapis.com/auth/drive']
                     SERVICE_ACCOUNT_FILE = 'service-account.json'
@@ -553,14 +576,14 @@ class Chating:
 
                     try:
                         worksheet.update("F1", [[str(total_coin_cnt)]], value_input_option="USER_ENTERED")
-                        worksheet.update("F2", [[str(total_snack_cnt)]], value_input_option="USER_ENTERED")
-                        worksheet.update("F3", [[str(total_gif_man_cnt)]], value_input_option="USER_ENTERED")
+                        worksheet.update("F2", [[str(total_snack_cnt + snack_cnt)]], value_input_option="USER_ENTERED")
+                        worksheet.update("F3", [[str(total_gif_man_cnt + gif_man_cnt)]], value_input_option="USER_ENTERED")
                         worksheet.update("F4", [[str(total_score)]], value_input_option="USER_ENTERED")
                     except:
                         print('quota <')
-                    
+
                     try:
-                        worksheet.insert_rows(self.temp_result, row=6)
+                        worksheet.insert_rows(temp_total_results, row=6)
                     except:
                         print('quota <')
 
