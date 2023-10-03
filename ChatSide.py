@@ -237,7 +237,6 @@ class Chating:
 
             fmt = CellFormat(
                     backgroundColor=Color(255, 255, 255),
-                    textFormat=TextFormat(bold=False, foregroundColor=Color(0, 0, 0)),
                     horizontalAlignment='CENTER'
                 )
 
