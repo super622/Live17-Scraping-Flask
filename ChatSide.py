@@ -334,6 +334,7 @@ class Chating:
             browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
             browser.get(url)
+            time.sleep(5)
 
             total_snack_cnt = 0
             total_coin_cnt = 0
