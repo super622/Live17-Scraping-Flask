@@ -236,7 +236,6 @@ class Chating:
             format_cell_range(worksheet, 'E1:E5', fmt)
 
             fmt = CellFormat(
-                    backgroundColor=Color(255, 255, 255),
                     horizontalAlignment='CENTER'
                 )
 
