@@ -232,6 +232,7 @@ class EventScraping:
                             i += 1
                         elif class_name == 'fpiBVx':
                             insert_image = f"=IMAGE(\"{child.get_attribute('src')}\", 1)"
+                            print(insert_image)
                             try:
                                 batch = batch_updater(worksheet.spreadsheet)
                                 batch.set_row_height(worksheet, f'1:{i}', 200)
@@ -300,9 +301,6 @@ class EventScraping:
                                     res_str = ''
 
                                 i += 1
-                                print(f"----------------{i}-------------------")
-
-                        print(f"----------------{i}-------------------")
 
         # Get attr of element
         async def handleGetAttr(elements, type):
@@ -313,9 +311,9 @@ class EventScraping:
         # Insert jpg, html content into spreadsheet
         async def insert_image(sheetID, event_id):
             chrome_options = webdriver.ChromeOptions()
-            chrome_options.add_argument("--headless")
-            chrome_options.add_argument("--no-sandbox")
-            chrome_options.add_argument("--disable-dev-shm-usage")
+            # chrome_options.add_argument("--headless")
+            # chrome_options.add_argument("--no-sandbox")
+            # chrome_options.add_argument("--disable-dev-shm-usage")
 
             browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
@@ -352,7 +350,19 @@ class EventScraping:
                 tab_title = tab_elements[i].text
                 print(tab_title)
                 print('================')
-                tab_elements[i].click()
+                
+                try:
+                    tab_elements[i].click()
+                    time.sleep(10)
+                except:
+                    time.sleep(5)
+                    refresh_button = browser.find_elements('css selector', '.sc-kHOZQx')
+
+                    if(len(refresh_button) > 0):
+                        try:
+                            refresh_button.click()
+                        except:
+                            print('refresh button not exist')
 
                 sub_tab_group = browser.find_elements('css selector', '.gOMukq')
                 if(len(sub_tab_group) > 0):
@@ -411,7 +421,13 @@ class EventScraping:
                 row_index = 2  # Assuming you want to insert the data in the 2nd row
                 col_index = int(count) * 4 + 1
 
-                worksheet.insert_rows(data[i]['List'], row=row_index)
+                if(count == 0):
+                    worksheet.insert_rows(data[i]['List'], row=row_index)
+                else:
+                    sheet_data = worksheet.get_all_values()
+                    print('-================================')
+                    print(sheet_data)
+                    print('-================================')
                 time.sleep(10)
 
         # add data into database
@@ -518,11 +534,13 @@ class EventScraping:
             current_month = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).month
             current_day = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).day
 
-            filename = f"Ranking_{event_json_data[i]['ID']}_{current_year}_{self.start_date_month}_{self.start_date_day}"
+            filename = f"Ranking_{event_json_data[i]['ID']}"
+            folder_name = '11seQXAOIxXozPsCy7rG_CgJW0L8rdPmM'
 
             if((int(self.start_date_month) == current_month and int(self.start_date_day) == current_day) or (int(self.start_date_month) < current_month and int(self.start_date_day) < current_day)):
-                # create new sheet
-                sheetID = await createGoogleSheet(filename)
+                sheetID = await get_sheet_by_name(filename, folder_name)
+                if sheetID == '':
+                    sheetID = await createGoogleSheet(filename)
                 print(sheetID)
                 event_json_data[i]['Count'] == 0
                 await insert_image(sheetID, event_json_data[i]['ID'])
@@ -530,7 +548,6 @@ class EventScraping:
                 time.sleep(20)
                 write_into_googlesheet(sheetID, event_json_data[i])
             else:
-                folder_name = '11seQXAOIxXozPsCy7rG_CgJW0L8rdPmM'
                 sheetID = await get_sheet_by_name(filename, folder_name)
                 print(sheetID)
                 event_json_data[i]['Count'] = calculate_date(current_year, current_month, current_day)
