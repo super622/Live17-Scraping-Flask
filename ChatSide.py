@@ -38,6 +38,13 @@ class Chating:
         self.start_day = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).day
         self.started_flag = False
         self.temp_result = []
+        self.total_snack_cnt = 0
+        self.total_coin_cnt = 0
+        self.total_score = 0
+        self.total_gif_man_cnt = 0
+        self.total_gifs_user = []
+        self.total_snack_user = []
+        self.total_results = []
 
     # Get Data from Chating panel
     async def scanData(self):
@@ -88,64 +95,57 @@ class Chating:
 
         # find special gif user
         async def find_in_gifusers(gifs_users, user_name):
+            result_arr = []
             for user in gifs_users:
                 hex = bytes(user_name, 'utf-8')
-                print(f"gif users => {user['UserName']}, {user_name}")
-                print(f"hex => {user['Hex']}, {hex}")
-                if(user['Hex'] == hex):
-                    return user
-            res = {
-                "UserName": '',
-                "GifType": '',
-                "Gif_Count": 0,
-                "Coin": 0
-            }
-            return res
+                if(user['UserName'] == user_name):
+                    result_arr.append(user)
+                
+            return result_arr
         
         # add all gif users
         async def append_to_total_gif_users(total_users, sub_users, type):
-            temp = total_users
             flag = False
             for sub in sub_users:
-                for total in temp:
+                for total in total_users:
                     if(total['Hex'] == sub['Hex'] and total['GifType'] == sub['GifType']):
                         total['Coin'] = int(sub['Coin']) + int(total['Coin'])
                         total['Gif_Count'] = int(total['Gif_Count']) + int(sub['Gif_Count'])
                         flag = True
 
                 if(flag != True):
-                    temp.append(sub)
+                    total_users.append(sub)
                 else:
                     flag = False
-            if(type):
-                total_users = temp
+
+            if(type == True):
+                self.total_gifs_user = total_users
             else:
-                return temp
+                return total_users
 
         # add all snack users
         async def append_to_total_snack_users(snack_users, sub_users, type):
-            temp = snack_users
             flag = False
             for sub in sub_users:
-                for total in temp:
+                for total in snack_users:
                     if(total['UserName'] == sub['UserName']):
                         total['Gif_Count'] = int(sub['Gif_Count']) + int(total['Gif_Count'])
                         total['Coin'] = int(sub['Coin']) + int(total['Coin'])
                         total['Snack_Count'] = int(sub['Snack_Count']) + int(total['Snack_Count'])
                         flag = True
 
-                if(flag):
+                if(flag == True):
                     flag = False
                 else:
-                    temp.append(sub)
+                    snack_users.append(sub)
 
-            if(type):
-                snack_users = temp
+            if(type == True):
+                self.total_snack_user = snack_users
             else:
-                return temp
+                return snack_users
 
         # add all result
-        async def append_to_total_result(total_result, gif_users, snack_users, type):
+        async def append_to_total_result(gif_users, snack_users):
             max_len = len(gif_users) if len(gif_users) > len(snack_users) else len(snack_users)
             temp_arr = None
             result_array = []
@@ -165,31 +165,42 @@ class Chating:
                     res_arr = [gif_users[i]['UserName'], gif_users[i]['GifType'], gif_users[i]['Gif_Count'], gif_users[i]['Coin'], '','','','']
                 
                 result_array.append(res_arr)
-            total_result = result_array
-            if(type == False):
-                return total_result
+            self.total_results = result_array
+            return self.total_results
 
         # add git and snack user
-        async def append_to_snack_gifusers(snack_gifs_users, gifs_user, username, snack_cnt):
+        async def append_to_snack_gifusers(snack_gifs_users, gifs_user, snack_cnt):
             flag = False
-            for user in snack_gifs_users:
-                if(user['UserName'] == username):
-                    user['Gif_Count'] = gifs_user['Gif_Count']
-                    user['Coin'] = int(gifs_user['Coin'])
-                    user['Snack_Count'] = int(snack_cnt) + int(user['Snack_Count'])
-                    flag = True
+            if(len(gifs_user) == 0):
+                return snack_gifs_users
+        
+            for snack in snack_gifs_users:
+                for gif in gifs_user:
+                    if(snack['UserName'] == gif['UserName']):
+                        snack['Gif_Count'] = gif['Gif_Count']
+                        snack['Coin'] = int(gif['Coin'])
+                        snack['Snack_Count'] = int(snack_cnt) + int(snack['Snack_Count'])
+                        flag = True
 
             if flag:
                 return snack_gifs_users
             else:
+                count = 0
+                coin = 0
+                name = ''
+                for gif in gifs_user:
+                    name = gif['UserName']
+                    count += int(gif['Gif_Count'])
+                    coin += int(gif['Coin'])
+                
                 res = {
-                    "UserName": username,
-                    "Gif_Count": gifs_user['Gif_Count'],
+                    "UserName": name,
+                    "Gif_Count": count,
                     "Snack_Count": int(snack_cnt),
-                    "Coin": int(gifs_user['Coin'])
+                    "Coin": coin
                 }
                 snack_gifs_users.append(res)
-                return snack_gifs_users
+            return snack_gifs_users
 
         # Create New Google Sheet
         async def createGoogleSheet(filename):
@@ -217,7 +228,7 @@ class Chating:
             credentials = service_account.Credentials.from_service_account_file('service-account.json', scopes=SCOPES)
             drive_service = build('drive', 'v3', credentials=credentials)
 
-            results = drive_service.files().list(q="name='" + file_name + "' and mimeType='application/vnd.google-apps.spreadsheet' ", pageSize=10, fields="nextPageToken, files(id, name)").execute()
+            results = drive_service.files().list(q="name='" + file_name + "' and mimeType='application/vnd.google-apps.spreadsheet' and parents in '" + folder_name + "'", pageSize=10, fields="nextPageToken, files(id, name)").execute()
             items = results.get('files', [])
             if not items:
                 return ''
@@ -226,20 +237,23 @@ class Chating:
 
         # format cell type
         async def format_cell_format(worksheet):
-            fmt = CellFormat(
-                    backgroundColor=Color(173, 168, 168),
-                    textFormat=TextFormat(bold=False, foregroundColor=Color(0, 0, 0)),
-                    horizontalAlignment='CENTER'
-                )
+            try:
+                fmt = CellFormat(
+                        backgroundColor=Color(173, 168, 168),
+                        textFormat=TextFormat(bold=False, foregroundColor=Color(0, 0, 0)),
+                        horizontalAlignment='CENTER'
+                    )
 
-            format_cell_range(worksheet, 'A5:H5', fmt)
-            format_cell_range(worksheet, 'E1:E5', fmt)
+                format_cell_range(worksheet, 'A5:H5', fmt)
+                format_cell_range(worksheet, 'E1:E5', fmt)
 
-            fmt = CellFormat(
-                    horizontalAlignment='CENTER'
-                )
+                fmt = CellFormat(
+                        horizontalAlignment='CENTER'
+                    )
 
-            format_cell_range(worksheet, 'A1:H5000', fmt)
+                format_cell_range(worksheet, 'A1:H5000', fmt)
+            except Exception as e:
+                print('quota <')
 
         # init content of worksheet
         async def init_content_of_worksheet(worksheet):
@@ -280,6 +294,8 @@ class Chating:
                     if len(rows) > 0:
                         for row in rows:
                             cursor.execute(f"DELETE FROM history WHERE id={row[0]}")
+                            if(value == 3):
+                                return
                     
                     query = 'INSERT INTO history (url, start_date, end_date, type, status) VALUES (%s, %s, %s, %s, %s)'
                     cursor.execute(query, (self.name, f"{self.start_year}-{self.start_month}-{self.start_day} {self.start_time_hour}:{self.start_time_minute}", f"{self.start_year}-{self.end_date_month}-{self.end_date_day} {self.end_time_hour}:{self.end_time_minute}", 'C', result,))
@@ -316,7 +332,6 @@ class Chating:
             result_response(0)
             self.started_flag = True
 
-        print(len(live_stream_id_arr))
         logging.basicConfig(level=logging.INFO)
         for live_room_id in live_stream_id_arr:
             url = f'https://17.live/ja/live/{live_room_id}'
@@ -331,14 +346,6 @@ class Chating:
             browser.get(url)
             time.sleep(5)
 
-            total_snack_cnt = 0
-            total_coin_cnt = 0
-            total_score = 0
-            total_gif_man_cnt = 0
-            total_gifs_user = []
-            total_snack_user = []
-            total_results = []
-
             while True:
                 chating_panel = browser.find_elements('css selector', '.ChatList__ListWrapper-sc-733d46-1')
                 print('start')
@@ -351,7 +358,7 @@ class Chating:
                     snack_gifs_users = []
                     gifs_list = []
                     sub_result = []
-
+                    print('***********************************))))))')
                     chating_elements = browser.find_elements('css selector', '.Chat__ChatWrapper-sc-clenhv-0')
                     for chat_element in chating_elements:
                         name_element = chat_element.find_elements('css selector', '.ChatUserName__NameWrapper-sc-1ca2hpy-0')
@@ -360,7 +367,7 @@ class Chating:
                             user_name = ''
                         else:
                             user_name = name_element[0].text
-                        
+
                         gifs_elements = chat_element.find_elements('css selector', '.GiftItem__GiftIcon-sc-g419cs-0')
                         if len(gifs_elements) > 0:
                             gif_element = chat_element.find_elements('css selector', '.Chat__ContentWrapper-sc-clenhv-1')
@@ -387,8 +394,8 @@ class Chating:
                             snack_cnt_element = snack_cnt_element[0].text
                             snack_cnt = re.findall(r'\d+', snack_cnt_element)
                             snack_cnt = snack_cnt[0]
-                            snack_gifs_users = await append_to_snack_gifusers(snack_gifs_users, gif_state, user_name, snack_cnt)
-
+                            snack_gifs_users = await append_to_snack_gifusers(snack_gifs_users, gif_state, snack_cnt)
+                    print('*******************************************')
                     gif_man_cnt = len(gifs_users)
                     snack_cnt = len(snack_gifs_users)
 
@@ -417,7 +424,7 @@ class Chating:
                         elif(i < len(gifs_users) and i < len(snack_gifs_users)):
                             res_arr = [gifs_users[i]['UserName'], gifs_users[i]['GifType'], gifs_users[i]['Gif_Count'], gifs_users[i]['Coin'], snack_gifs_users[i]['UserName'], snack_gifs_users[i]['Snack_Count'], snack_gifs_users[i]['Gif_Count'], snack_gifs_users[i]['Coin']]
                         sub_result.append(res_arr)
-                    
+
                     score_elements = browser.find_elements(By.XPATH, "//*[@style='transform: rotateX(0deg) translateZ(28px);']")
                     for element in score_elements:
                         while element.text == '':
@@ -426,42 +433,39 @@ class Chating:
                     print(f"coin = {coin_cnt}, score = {score}")
 
                     # total_gifs_user
-                    temp_total_gifs_user = await append_to_total_gif_users(total_gifs_user, gifs_users, False)
+                    temp_gifs_arr = self.total_gifs_user.copy()
+                    temp_total_gifs_user = await append_to_total_gif_users(temp_gifs_arr, gifs_users, False)
 
                     # total_snack_user
-                    temp_total_snack_user = await append_to_total_snack_users(total_snack_user, snack_gifs_users, False)
+                    temp_snack_arr = self.total_snack_user.copy()
+                    temp_total_snack_user = await append_to_total_snack_users(temp_snack_arr, snack_gifs_users, False)
 
                     # total result
-                    temp_total_results = await append_to_total_result(total_results, temp_total_gifs_user, temp_total_snack_user, False)
-
-                    print("-----------------------------------")
-                    print(f"gifs user => {total_gifs_user}")
-                    print("-----------------------------------")
-                    print(f"snack user => {total_snack_user}")
-                    print("-----------------------------------")
-                    print(f"total => {total_results}")
+                    temp_total_results = await append_to_total_result(temp_total_gifs_user, temp_total_snack_user)
 
                     current_month = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).month
                     current_day = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).day
 
-                    total_coin_cnt = coin_cnt
-                    total_score = score
+                    self.total_coin_cnt = coin_cnt
+                    self.total_score = score
 
                     if(self.start_day != current_day):
                         print('date==================')
                         self.start_day = current_day
 
-                        total_snack_cnt += snack_cnt
-                        total_gif_man_cnt += gif_man_cnt
+                        self.total_snack_cnt += snack_cnt
+                        self.total_gif_man_cnt += gif_man_cnt
 
                         # total_gifs_user
-                        await append_to_total_gif_users(total_gifs_user, gifs_users, True)
+                        temp_gifs_arr = self.total_gifs_user
+                        temp_total_gifs_user = await append_to_total_gif_users(temp_gifs_arr, gifs_users, False)
 
                         # total_snack_user
-                        await append_to_total_snack_users(total_snack_user, snack_gifs_users, True)
+                        temp_snack_arr = self.total_snack_user
+                        temp_total_snack_user = await append_to_total_snack_users(temp_snack_arr, snack_gifs_users, False)
 
                         # total result
-                        await append_to_total_result(total_results, total_gifs_user, total_snack_user, True)
+                        temp_total_results = await append_to_total_result(temp_total_gifs_user, temp_total_snack_user)
 
                         # refresh
                         browser.refresh()
@@ -525,6 +529,12 @@ class Chating:
 
                         format_cell_range(worksheet, 'A1:C1', fmt)
 
+                        fmt = CellFormat(
+                                horizontalAlignment='CENTER'
+                            )
+
+                        format_cell_range(worksheet, 'A1:H5000', fmt)
+
                         try:
                             worksheet.update("A1", [["ギフト名"]], value_input_option="USER_ENTERED")
                             worksheet.update("B1", [["ギフト個数"]], value_input_option="USER_ENTERED")
@@ -534,7 +544,7 @@ class Chating:
 
                     worksheet = None
                     try:
-                        worksheet = spreadsheet.get_worksheet(tab_position - 3)
+                        worksheet = spreadsheet.worksheet(f"{current_month}-{current_day}")
                     except:
                         worksheet = None
                     
@@ -570,9 +580,6 @@ class Chating:
                         print('quota <')
                     
                     try:
-                        print('----------------------------')
-                        print(sub_result)
-                        print('----------------------------')
                         worksheet.insert_rows(sub_result, row=6)
                     except:
                         print('quota <')
@@ -581,10 +588,10 @@ class Chating:
                     await format_cell_format(worksheet)
 
                     try:
-                        worksheet.update("F1", [[str(total_coin_cnt)]], value_input_option="USER_ENTERED")
-                        worksheet.update("F2", [[str(total_snack_cnt + snack_cnt)]], value_input_option="USER_ENTERED")
-                        worksheet.update("F3", [[str(total_gif_man_cnt + gif_man_cnt)]], value_input_option="USER_ENTERED")
-                        worksheet.update("F4", [[str(total_score)]], value_input_option="USER_ENTERED")
+                        worksheet.update("F1", [[str(self.total_coin_cnt)]], value_input_option="USER_ENTERED")
+                        worksheet.update("F2", [[str(self.total_snack_cnt + snack_cnt)]], value_input_option="USER_ENTERED")
+                        worksheet.update("F3", [[str(self.total_gif_man_cnt + gif_man_cnt)]], value_input_option="USER_ENTERED")
+                        worksheet.update("F4", [[str(self.total_score)]], value_input_option="USER_ENTERED")
                     except:
                         print('quota <')
 
@@ -602,12 +609,10 @@ class Chating:
 
                     current_hour = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).hour
                     current_minute = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).minute
-
-                    if self.start_time_hour == current_hour and self.start_time_minute == current_minute:
-                        total_results = self.temp_result
                     
                     if current_month == self.end_date_month and current_day == self.end_date_day and current_hour == self.end_time_hour and current_minute == self.end_time_minute:
-                        sys.exit(1)
+                        result_response(3)
+                        return 
 
                 else:
                     result_response(2)

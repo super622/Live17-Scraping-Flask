@@ -178,9 +178,22 @@ class EventScraping:
 
             creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
             client = gspread.authorize(creds)
+            service = build('sheets', 'v4', credentials=creds)
             spreadsheet = client.open_by_key(sheetID)
+            worksheet = None
+            try:
+                worksheet = spreadsheet.worksheet(f"{parent_title} - {title}")
+            except:
+                worksheet = None
             
-            worksheet = spreadsheet.add_worksheet(title=f"{parent_title} - {title}", rows='500', cols='500')
+            if(worksheet == None):
+                worksheet = spreadsheet.add_worksheet(title=f"{parent_title} - {title}", rows='1000', cols='500')
+            else:
+                try:
+                    sheet_range = f'{parent_title} - {title}!A1:A500'  # Adjust the range as needed
+                    service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
+                except:
+                    print('quota <')
 
             search_panel = element.find_elements('css selector', '.bpEaZC')
             if(len(search_panel) > 0):
