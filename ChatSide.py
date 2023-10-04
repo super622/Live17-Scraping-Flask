@@ -174,25 +174,24 @@ class Chating:
             if(len(gifs_user) == 0):
                 return snack_gifs_users
         
+            count = 0
+            coin = 0
+            name = ''
+            for gif in gifs_user:
+                name = gif['UserName']
+                count += int(gif['Gif_Count'])
+                coin += int(gif['Coin'])
+            
             for snack in snack_gifs_users:
-                for gif in gifs_user:
-                    if(snack['UserName'] == gif['UserName']):
-                        snack['Gif_Count'] = gif['Gif_Count']
-                        snack['Coin'] = int(gif['Coin'])
-                        snack['Snack_Count'] = int(snack_cnt) + int(snack['Snack_Count'])
-                        flag = True
+                if(snack['UserName'] == name):
+                    snack['Gif_Count'] = count
+                    snack['Coin'] = coin
+                    snack['Snack_Count'] = int(snack_cnt) + int(snack['Snack_Count'])
+                    flag = True
 
             if flag:
                 return snack_gifs_users
             else:
-                count = 0
-                coin = 0
-                name = ''
-                for gif in gifs_user:
-                    name = gif['UserName']
-                    count += int(gif['Gif_Count'])
-                    coin += int(gif['Coin'])
-                
                 res = {
                     "UserName": name,
                     "Gif_Count": count,
@@ -358,7 +357,6 @@ class Chating:
                     snack_gifs_users = []
                     gifs_list = []
                     sub_result = []
-                    print('***********************************))))))')
                     chating_elements = browser.find_elements('css selector', '.Chat__ChatWrapper-sc-clenhv-0')
                     for chat_element in chating_elements:
                         name_element = chat_element.find_elements('css selector', '.ChatUserName__NameWrapper-sc-1ca2hpy-0')
@@ -395,7 +393,7 @@ class Chating:
                             snack_cnt = re.findall(r'\d+', snack_cnt_element)
                             snack_cnt = snack_cnt[0]
                             snack_gifs_users = await append_to_snack_gifusers(snack_gifs_users, gif_state, snack_cnt)
-                    print('*******************************************')
+                        
                     gif_man_cnt = len(gifs_users)
                     snack_cnt = len(snack_gifs_users)
 
