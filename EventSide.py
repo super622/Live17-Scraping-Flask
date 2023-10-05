@@ -136,7 +136,7 @@ class EventScraping:
 
             data = data['Data']
             for i in range(len(data)):
-                worksheet = spreadsheet.add_worksheet(title=data[i]['EventID'], rows='1000', cols='500')
+                worksheet = spreadsheet.add_worksheet(title=data[i]['EventID'], rows='1000', cols='300')
 
         # Insert image into worksheet
         async def insert_image_in_googlesheet(sheetID, image):
@@ -169,6 +169,9 @@ class EventScraping:
                 sheet.update(sheet_range, [[insert_image]], value_input_option="USER_ENTERED")
                 sheet.update("A2", [[self.date_str]], value_input_option="USER_ENTERED")
             except:
+                time.sleep(5)
+                sheet.update(sheet_range, [[insert_image]], value_input_option="USER_ENTERED")
+                sheet.update("A2", [[self.date_str]], value_input_option="USER_ENTERED")
                 print('quota <')
 
         # Insert html content into worksheet
@@ -185,16 +188,17 @@ class EventScraping:
                 worksheet = spreadsheet.worksheet(f"{parent_title} - {title}")
             except:
                 worksheet = None
-            
+            print(worksheet)
             if(worksheet == None):
-                worksheet = spreadsheet.add_worksheet(title=f"{parent_title} - {title}", rows='1000', cols='500')
+                worksheet = spreadsheet.add_worksheet(title=f"{parent_title} - {title}", rows='1000', cols='2')
+                print(worksheet)
             else:
                 try:
                     sheet_range = f'{parent_title} - {title}!A1:A500'  # Adjust the range as needed
                     service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
                 except:
                     print('quota <')
-
+            
             search_panel = element.find_elements('css selector', '.bpEaZC')
             if(len(search_panel) > 0):
                 return 
@@ -379,11 +383,12 @@ class EventScraping:
                                     for l in range(len(last_sub_tab_elements)):
                                         sub_tab_title = last_sub_tab_elements[l].text
                                         last_sub_tab_elements[l].click()
-                                        time.sleep(30)
+                                        time.sleep(20)
                                         await insert_content_in_googlesheet(sheetID, browser, tab_title, sub_tab_title)
-                            # 
-                            time.sleep(30)
-                            await insert_content_in_googlesheet(sheetID, browser, tab_title, sub_tab_title)
+
+                            print(len(last_sub_tab_group))
+                            if(len(last_sub_tab_group) == 1):
+                                await insert_content_in_googlesheet(sheetID, browser, tab_title, sub_tab_title)
 
         # Write content into google sheets
         def write_into_googlesheet(sheetID, data):
@@ -419,15 +424,31 @@ class EventScraping:
                 worksheet.update_cells([merged_cell])
 
                 row_index = 2  # Assuming you want to insert the data in the 2nd row
-                col_index = int(count) * 4 + 1
+                col_index = int(count) * 3 + int(count) + 3
+                temp_arr = [''] * col_index
+                all_data = []
 
                 if(count == 0):
                     worksheet.insert_rows(data[i]['List'], row=row_index)
                 else:
                     sheet_data = worksheet.get_all_values()
+                    
                     print('-================================')
                     print(sheet_data)
                     print('-================================')
+
+                    j = 0
+                    for row in sheet_data:
+                        l = 0
+                        for k in range(col_index):
+                            if row[k] != None:
+                                temp_arr[j][k] = row[k]
+                            else:
+                                temp_arr[j][k] = data[i]['List'][j][l]
+                                l += 1
+                        all_data.append(temp_arr)
+
+                    worksheet.insert_rows(all_data, row=row_index)
                 time.sleep(10)
 
         # add data into database
@@ -517,6 +538,7 @@ class EventScraping:
                     }
                     event_json_data.append(res)
                 else:
+                    print('not exist')
                     result_response(1)
                     return 'Failure'
             except Exception as e:
@@ -538,14 +560,19 @@ class EventScraping:
             folder_name = '11seQXAOIxXozPsCy7rG_CgJW0L8rdPmM'
 
             if((int(self.start_date_month) == current_month and int(self.start_date_day) == current_day) or (int(self.start_date_month) < current_month and int(self.start_date_day) < current_day)):
+                event_json_data[i]['Count'] == 0
                 sheetID = await get_sheet_by_name(filename, folder_name)
+                create_flag = False
                 if sheetID == '':
                     sheetID = await createGoogleSheet(filename)
+                    create_flag = True
+                
                 print(sheetID)
-                event_json_data[i]['Count'] == 0
+
                 await insert_image(sheetID, event_json_data[i]['ID'])
-                await create_sheet_into_spreadsheet(sheetID, event_json_data[i])
-                time.sleep(20)
+                if create_flag == True:
+                    await create_sheet_into_spreadsheet(sheetID, event_json_data[i])
+                
                 write_into_googlesheet(sheetID, event_json_data[i])
             else:
                 sheetID = await get_sheet_by_name(filename, folder_name)
@@ -554,6 +581,7 @@ class EventScraping:
                 time.sleep(20)
                 write_into_googlesheet(sheetID, event_json_data[i])
 
+        print('end================================')
         return event_json_data
 
     async def main(self):
