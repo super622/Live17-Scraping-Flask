@@ -359,13 +359,14 @@ class Chating:
                     sub_result = []
                     chating_elements = browser.find_elements('css selector', '.Chat__ChatWrapper-sc-clenhv-0')
                     for chat_element in chating_elements:
-                        name_element = chat_element.find_elements('css selector', '.ChatUserName__NameWrapper-sc-1ca2hpy-0')
                         user_name = ''
-                        if(len(name_element) == 0):
-                            user_name = ''
-                        else:
-                            print(name_element[0])
-                            user_name = name_element[0].text
+                        try:
+                            name_element = chat_element.find_elements('css selector', '.ChatUserName__NameWrapper-sc-1ca2hpy-0')
+                            
+                            if(len(name_element) > 0):
+                                user_name = name_element[0].text
+                        except:
+                            continue
 
                         gifs_elements = chat_element.find_elements('css selector', '.GiftItem__GiftIcon-sc-g419cs-0')
                         if len(gifs_elements) > 0:
