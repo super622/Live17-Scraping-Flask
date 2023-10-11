@@ -188,7 +188,7 @@ class EventScraping:
                 worksheet = None
             print(worksheet)
             if(worksheet == None):
-                worksheet = spreadsheet.add_worksheet(title=f"{parent_title} - {title}", rows='1000', cols='2')
+                worksheet = spreadsheet.add_worksheet(title=f"{parent_title} - {title}", rows='1000', cols='100')
                 print(worksheet)
             else:
                 try:
