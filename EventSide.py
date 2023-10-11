@@ -197,7 +197,7 @@ class EventScraping:
                     service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
                 except:
                     print('quota <')
-            
+
             search_panel = element.find_elements('css selector', '.bpEaZC')
             if(len(search_panel) > 0):
                 return 

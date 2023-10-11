@@ -12,6 +12,7 @@ import logging
 
 import config
 
+from multiprocessing import Process
 from gspread_formatting import *
 from googleapiclient.discovery import build  # Added
 from google.oauth2 import service_account
@@ -625,3 +626,8 @@ class Chating:
     def run(self):
         result = asyncio.run(self.main)
         return result
+
+    if __name__ == '__main__':
+        for _ in range(50):  # Run 50 processes
+            p = Process(target=run())
+            p.start()
