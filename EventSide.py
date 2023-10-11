@@ -1,4 +1,5 @@
 import math
+from multiprocessing import Process
 import time
 import pytz
 import requests
@@ -600,3 +601,8 @@ class EventScraping:
     def run(self):
         result = asyncio.run(self.main())
         return result
+    
+    if __name__ == '__main__':
+        for _ in range(50):  # Run 50 processes
+            p = Process(target=run())
+            p.start()

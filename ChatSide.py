@@ -358,7 +358,13 @@ class Chating:
                     snack_gifs_users = []
                     gifs_list = []
                     sub_result = []
-                    chating_elements = browser.find_elements('css selector', '.Chat__ChatWrapper-sc-clenhv-0')
+                    chating_elements = []
+                    
+                    try:
+                        chating_elements = browser.find_elements('css selector', '.Chat__ChatWrapper-sc-clenhv-0')
+                    except:
+                        print('error')
+
                     for chat_element in chating_elements:
                         user_name = ''
                         try:
