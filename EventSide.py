@@ -157,7 +157,7 @@ class EventScraping:
                 batch.set_column_width(sheet, 'A:A', 500)
                 batch.execute()
             except:
-                time.sleep(5)
+                time.sleep(10)
                 batch = batch_updater(sheet.spreadsheet)
                 batch.set_row_height(sheet, '1:1', 440)
                 batch.set_column_width(sheet, 'A:A', 500)
@@ -166,7 +166,7 @@ class EventScraping:
             insert_image = f"=IMAGE(\"{image}\", 1)"
 
             try:
-                time.sleep(5)
+                time.sleep(10)
                 sheet.update(sheet_range, [[insert_image]], value_input_option="USER_ENTERED")
                 sheet.update("A2", [[self.date_str]], value_input_option="USER_ENTERED")
             except:
@@ -192,7 +192,7 @@ class EventScraping:
                 print(worksheet)
             else:
                 try:
-                    time.sleep(5)
+                    time.sleep(10)
                     sheet_range = f'{parent_title} - {title}!A1:A500'  # Adjust the range as needed
                     service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
                 except:
@@ -217,21 +217,21 @@ class EventScraping:
 
                         if(tag_name == 'center'):
                             try:
-                                time.sleep(5)
+                                time.sleep(10)
                                 worksheet.update(f"A{i}", [[child.text]], value_input_option="USER_ENTERED")
                             except:
                                 print('quota <')
                             i += 1
                         elif(class_name == 'hCXNzI'):
                             try:
-                                time.sleep(5)
+                                time.sleep(10)
                                 worksheet.update(f"A{i}", [[child.text]], value_input_option="USER_ENTERED")
                             except:
                                 print('quota <')
                             i += 1
                         elif class_name == 'jPbYFU' or class_name == 'fezHWk':
                             try:
-                                time.sleep(5)
+                                time.sleep(10)
                                 worksheet.update(f"A{i}", [[child.text]], value_input_option="USER_ENTERED")
                             except:
                                 print('quota <')
@@ -240,7 +240,7 @@ class EventScraping:
                             insert_image = f"=IMAGE(\"{child.get_attribute('src')}\", 1)"
                             print(insert_image)
                             try:
-                                time.sleep(5)
+                                time.sleep(10)
                                 batch = batch_updater(worksheet.spreadsheet)
                                 batch.set_row_height(worksheet, f'1:{i}', 200)
                                 batch.set_column_width(worksheet, f'A:A', 500)
@@ -253,14 +253,14 @@ class EventScraping:
                             i += 1
                         elif class_name == 'dMxtIb':
                             try:
-                                time.sleep(5)
+                                time.sleep(10)
                                 worksheet.update(f"A{i}", [[child.text]], value_input_option="USER_ENTERED")
                             except:
                                 print('quota <')
                             i += 1
                         elif class_name == 'bsffay':
                             try:
-                                time.sleep(5)
+                                time.sleep(10)
                                 worksheet.update(f"A{i}", [[child.text]], value_input_option="USER_ENTERED")
                             except:
                                 print('quota <')
@@ -270,7 +270,7 @@ class EventScraping:
                             if(len(image_elements) > 0):
                                 for image in image_elements:
                                     try:
-                                        time.sleep(5)
+                                        time.sleep(10)
                                         batch = batch_updater(worksheet.spreadsheet)
                                         batch.set_row_height(worksheet, f'{i}:1', 200)
                                         batch.set_column_width(worksheet, f'A{i}:A1', 500)
@@ -281,7 +281,7 @@ class EventScraping:
                                     insert_image = f"=IMAGE(\"{image.get_attribute('src')}\", 1)"
                                     
                                     try:
-                                        time.sleep(5)
+                                        time.sleep(10)
                                         worksheet.update(f"A{i}", [[insert_image]], value_input_option="USER_ENTERED")
                                     except:
                                         print('quota <')
@@ -306,7 +306,7 @@ class EventScraping:
                                 
                                 if(j == col_cnt - 1):
                                     try:
-                                        time.sleep(5)
+                                        time.sleep(10)
                                         worksheet.update(f"A{i}", [[res_str]], value_input_option="USER_ENTERED")
                                     except:
                                         print('quota <')
@@ -367,7 +367,7 @@ class EventScraping:
                     tab_elements[i].click()
                     time.sleep(10)
                 except:
-                    time.sleep(5)
+                    time.sleep(10)
                     refresh_button = browser.find_elements('css selector', '.sc-kHOZQx')
 
                     if(len(refresh_button) > 0):
