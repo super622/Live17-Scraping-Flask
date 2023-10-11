@@ -364,6 +364,7 @@ class Chating:
                         if(len(name_element) == 0):
                             user_name = ''
                         else:
+                            print(name_element[0])
                             user_name = name_element[0].text
 
                         gifs_elements = chat_element.find_elements('css selector', '.GiftItem__GiftIcon-sc-g419cs-0')
