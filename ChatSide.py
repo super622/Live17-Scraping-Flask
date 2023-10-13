@@ -237,7 +237,7 @@ class Chating:
 
         # format cell type
         async def format_cell_format(worksheet, spreadsheet):
-            # try:
+            try:
                 fmt1 = CellFormat(
                         # backgroundColor=Color(111, 111, 11),
                         textFormat=TextFormat(bold=False, foregroundColor=Color(0, 0, 0)),
@@ -270,15 +270,15 @@ class Chating:
                 batch.set_column_width(worksheet, 'A:A', 200)
                 batch.execute()
 
-                # batch = batch_updater(worksheet)
-                # batch.set_column_width(worksheet, 'E:E', 200)
-                # batch.execute()
+                batch = batch_updater(spreadsheet)
+                batch.set_column_width(worksheet, 'E:E', 200)
+                batch.execute()
 
-                # batch = batch_updater(worksheet)
-                # batch.set_column_width(worksheet, 'B:B', 350)
-                # batch.execute()
-            # except Exception as e:
-            #     print('quota <')
+                batch = batch_updater(spreadsheet)
+                batch.set_column_width(worksheet, 'B:B', 350)
+                batch.execute()
+            except Exception as e:
+                print('quota <')
 
         # init content of worksheet
         async def init_content_of_worksheet(worksheet):
@@ -563,19 +563,27 @@ class Chating:
 
                         worksheet = spreadsheet.add_worksheet(title="ギフト内訳", rows='5000', cols='3')
 
-                        fmt = CellFormat(
-                                backgroundColor=Color(239, 239, 239),
-                                textFormat=TextFormat(bold=False, foregroundColor=Color(0, 0, 0)),
-                                horizontalAlignment='CENTER'
-                            )
+                        try:
+                            fmt = CellFormat(
+                                    # backgroundColor=Color(239, 239, 239),
+                                    textFormat=TextFormat(bold=False, foregroundColor=Color(0, 0, 0)),
+                                    horizontalAlignment='CENTER',
+                                    borders=Borders(bottom=Border("Double", color=Color(0, 0, 0)))
+                                )
 
-                        format_cell_range(worksheet, 'A1:C1', fmt)
+                            format_cell_range(worksheet, 'A1:C1', fmt)
 
-                        fmt = CellFormat(
-                                horizontalAlignment='CENTER'
-                            )
+                            fmt = CellFormat(
+                                    horizontalAlignment='CENTER'
+                                )
 
-                        format_cell_range(worksheet, 'A1:H5000', fmt)
+                            format_cell_range(worksheet, 'A1:H5000', fmt)
+
+                            batch = batch_updater(spreadsheet)
+                            batch.set_column_width(worksheet, 'A:A', 350)
+                            batch.execute()
+                        except:
+                            print('quota <')
 
                         try:
                             worksheet.update("A1", [["ギフト名"]], value_input_option="USER_ENTERED")
