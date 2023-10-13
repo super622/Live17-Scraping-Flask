@@ -239,17 +239,17 @@ class Chating:
         async def format_cell_format(worksheet):
             try:
                 fmt1 = CellFormat(
-                        backgroundColor=Color(239, 239, 239),
+                        backgroundColor=Color(239, 239, 239, 1),
                         textFormat=TextFormat(bold=False, foregroundColor=Color(0, 0, 0)),
                         horizontalAlignment='CENTER',
-                        borders=Borders(top=Border('Double', color=Color(239, 239, 239)), bottom=Border('Double', color=Color(239, 239, 239)))
+                        borders=Borders(top=Border('Double', color=Color(239, 239, 239, 1)), bottom=Border('Double', color=Color(239, 239, 239, 1)))
                     )
 
                 fmt2 = CellFormat(
-                        backgroundColor=Color(239, 239, 239),
+                        backgroundColor=Color(239, 239, 239, 1),
                         textFormat=TextFormat(bold=False, foregroundColor=Color(0, 0, 0)),
                         horizontalAlignment='CENTER',
-                        borders=Borders(left=Border('Double', color=Color(239, 239, 239)))
+                        borders=Borders(left=Border('Double', color=Color(239, 239, 239, 1)))
                     )
 
                 format_cell_range(worksheet, 'A5:H5', fmt1)
@@ -261,17 +261,17 @@ class Chating:
 
                 format_cell_range(worksheet, 'A1:H5000', fmt)
 
-                batch = batch_updater(worksheet)
-                batch.set_column_width(worksheet, 'A:A', 200)
-                batch.execute()
+                # batch = batch_updater(worksheet)
+                # batch.set_column_width(worksheet, 'A:A', 200)
+                # batch.execute()
 
-                batch = batch_updater(worksheet)
-                batch.set_column_width(worksheet, 'E:E', 200)
-                batch.execute()
+                # batch = batch_updater(worksheet)
+                # batch.set_column_width(worksheet, 'E:E', 200)
+                # batch.execute()
 
-                batch = batch_updater(worksheet)
-                batch.set_column_width(worksheet, 'B:B', 350)
-                batch.execute()
+                # batch = batch_updater(worksheet)
+                # batch.set_column_width(worksheet, 'B:B', 350)
+                # batch.execute()
             except Exception as e:
                 print('quota <')
 
