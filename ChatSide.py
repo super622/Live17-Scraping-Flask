@@ -236,7 +236,7 @@ class Chating:
                 return items[0]['id']
 
         # format cell type
-        async def format_cell_format(worksheet):
+        async def format_cell_format(worksheet, spreadsheet):
             # try:
                 fmt1 = CellFormat(
                         # backgroundColor=Color(111, 111, 11),
@@ -266,9 +266,9 @@ class Chating:
                 
                 format_cell_range(worksheet, "E1:E5000", fmt3)
 
-                # batch = batch_updater(worksheet)
-                # batch.set_column_width(worksheet, 'A:A', 200)
-                # batch.execute()
+                batch = batch_updater(spreadsheet)
+                batch.set_column_width(worksheet, 'A:A', 200)
+                batch.execute()
 
                 # batch = batch_updater(worksheet)
                 # batch.set_column_width(worksheet, 'E:E', 200)
@@ -541,7 +541,7 @@ class Chating:
                     if(create_flag or tab_position == 1):
                         worksheet = spreadsheet.sheet1
 
-                        await format_cell_format(worksheet)
+                        await format_cell_format(worksheet, spreadsheet)
 
                         try:
                             worksheet.resize(rows=5000, cols=8)
@@ -554,7 +554,7 @@ class Chating:
 
                         worksheet = spreadsheet.add_worksheet(title="total", rows='5000', cols='8')
 
-                        await format_cell_format(worksheet)
+                        await format_cell_format(worksheet, spreadsheet)
 
                         try:
                             await init_content_of_worksheet(worksheet)
@@ -611,7 +611,7 @@ class Chating:
 
                     # write content into google sheet
                     worksheet = spreadsheet.get_worksheet(tab_position - 3)
-                    await format_cell_format(worksheet)
+                    await format_cell_format(worksheet, spreadsheet)
 
                     try:
                         worksheet.update("F1", [[str(coin_cnt)]], value_input_option="USER_ENTERED")
@@ -627,7 +627,7 @@ class Chating:
                         print('quota <')
 
                     worksheet = spreadsheet.worksheet("total")
-                    await format_cell_format(worksheet)
+                    await format_cell_format(worksheet, spreadsheet)
 
                     try:
                         worksheet.update("F1", [[str(self.total_coin_cnt)]], value_input_option="USER_ENTERED")
