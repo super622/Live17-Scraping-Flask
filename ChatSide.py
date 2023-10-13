@@ -249,7 +249,6 @@ class Chating:
                         # backgroundColor=Color(111, 111, 11),
                         textFormat=TextFormat(bold=False, foregroundColor=Color(0, 0, 0)),
                         horizontalAlignment='CENTER',
-                        borders=Borders(left=Border('Double', color=Color(0, 0, 0)))
                     )
 
                 format_cell_range(worksheet, 'A5:H5', fmt1)
@@ -260,6 +259,12 @@ class Chating:
                     )
 
                 format_cell_range(worksheet, 'A1:H5000', fmt)
+
+                fmt3 = CellFormat(
+                        borders=Borders(left=Border('Double', color=Color(0, 0, 0)))
+                    )
+                
+                format_cell_range(worksheet, "E1:E5000", fmt3)
 
                 # batch = batch_updater(worksheet)
                 # batch.set_column_width(worksheet, 'A:A', 200)
