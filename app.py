@@ -135,7 +135,6 @@ def start():
          print(purpose_url)
          res = threading.Timer(delay, chating_scraping, args=(end_date_month, end_date_day, end_time_hour, end_time_minute, purpose_url, start_date_year, start_date_month, start_date_day, start_time_hour, start_time_minute)).start()
 
-
    return json.dumps([{"type": "success", "msg": "リクエストが受け付けられました。"}])
 
 # Cron job stop

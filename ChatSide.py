@@ -238,20 +238,40 @@ class Chating:
         # format cell type
         async def format_cell_format(worksheet):
             try:
-                fmt = CellFormat(
-                        backgroundColor=Color(173, 168, 168),
+                fmt1 = CellFormat(
+                        backgroundColor=Color(239, 239, 239),
                         textFormat=TextFormat(bold=False, foregroundColor=Color(0, 0, 0)),
-                        horizontalAlignment='CENTER'
+                        horizontalAlignment='CENTER',
+                        borders=Borders(top=Border('Double', color=Color(239, 239, 239)), bottom=Border('Double', color=Color(239, 239, 239)))
                     )
 
-                format_cell_range(worksheet, 'A5:H5', fmt)
-                format_cell_range(worksheet, 'E1:E5', fmt)
+                fmt2 = CellFormat(
+                        backgroundColor=Color(239, 239, 239),
+                        textFormat=TextFormat(bold=False, foregroundColor=Color(0, 0, 0)),
+                        horizontalAlignment='CENTER',
+                        borders=Borders(left=Border('Double', color=Color(239, 239, 239)))
+                    )
+
+                format_cell_range(worksheet, 'A5:H5', fmt1)
+                format_cell_range(worksheet, 'E1:E5', fmt2)
 
                 fmt = CellFormat(
                         horizontalAlignment='CENTER'
                     )
 
                 format_cell_range(worksheet, 'A1:H5000', fmt)
+
+                batch = batch_updater(worksheet)
+                batch.set_column_width(worksheet, 'A:A', 200)
+                batch.execute()
+
+                batch = batch_updater(worksheet)
+                batch.set_column_width(worksheet, 'E:E', 200)
+                batch.execute()
+
+                batch = batch_updater(worksheet)
+                batch.set_column_width(worksheet, 'B:B', 350)
+                batch.execute()
             except Exception as e:
                 print('quota <')
 
@@ -270,6 +290,16 @@ class Chating:
             worksheet.update("F5", [["スナック"]], value_input_option="USER_ENTERED")
             worksheet.update("G5", [["ギフト個数"]], value_input_option="USER_ENTERED")
             worksheet.update("H5", [["合計コイン"]], value_input_option="USER_ENTERED")
+
+            batch = batch_updater(worksheet)
+            batch.set_column_width(worksheet, 'A:A', 200)
+            batch.execute()
+
+            batch = batch_updater(worksheet)
+            batch.set_column_width(worksheet, 'E:E', 200)
+            batch.execute()
+
+
 
         # add data into database
         def result_response(value):
@@ -529,7 +559,7 @@ class Chating:
                         worksheet = spreadsheet.add_worksheet(title="ギフト内訳", rows='5000', cols='3')
 
                         fmt = CellFormat(
-                                backgroundColor=Color(173, 168, 168),
+                                backgroundColor=Color(239, 239, 239),
                                 textFormat=TextFormat(bold=False, foregroundColor=Color(0, 0, 0)),
                                 horizontalAlignment='CENTER'
                             )
