@@ -2,6 +2,7 @@ import asyncio
 import json
 import math
 import datetime
+import multiprocessing
 import threading
 import time
 import schedule
@@ -72,6 +73,10 @@ def event_scraping(start_date_year, start_date_month, start_date_day, start_time
    response = asyncio.run(getData.main())
    return json.dumps(response)
 
+# start threading about chating
+def chating_start(delay, end_date_month, end_date_day, end_time_hour, end_time_minute, purpose_url, start_date_year, start_date_month, start_date_day, start_time_hour, start_time_minute):
+   res = threading.Timer(delay, chating_scraping, args=(end_date_month, end_date_day, end_time_hour, end_time_minute, purpose_url, start_date_year, start_date_month, start_date_day, start_time_hour, start_time_minute)).start()
+
 # Start Scraping about live site
 @app.route('/start', methods=['POST'])
 def start():
@@ -110,6 +115,7 @@ def start():
    delay = (start_datetime - cur_time).total_seconds()
    delay = math.floor(delay)
    print(delay)
+   processes = []
 
    # url_type true: event, false: chat 
    if(url_type != 'false'):
@@ -130,10 +136,14 @@ def start():
       if(purpose_url.find(';') > -1):
          nick_name_arr = purpose_url.split(';')
          for nick_name in nick_name_arr:
-            res = threading.Timer(delay, chating_scraping, args=(end_date_month, end_date_day, end_time_hour, end_time_minute, nick_name, start_date_year, start_date_month, start_date_day, start_time_hour, start_time_minute)).start()
+            p = multiprocessing.Process(target=chating_start, args=(delay, end_date_month, end_date_day, end_time_hour, end_time_minute, nick_name, start_date_year, start_date_month, start_date_day, start_time_hour, start_time_minute)).start()
+            processes.append(p)
+            p.start()
       else:
          print(purpose_url)
-         res = threading.Timer(delay, chating_scraping, args=(end_date_month, end_date_day, end_time_hour, end_time_minute, purpose_url, start_date_year, start_date_month, start_date_day, start_time_hour, start_time_minute)).start()
+         p = multiprocessing.Process(target=chating_start, args=(delay, end_date_month, end_date_day, end_time_hour, end_time_minute, purpose_url, start_date_year, start_date_month, start_date_day, start_time_hour, start_time_minute)).start()
+         processes.append(p)
+         p.start()
 
    return json.dumps([{"type": "success", "msg": "リクエストが受け付けられました。"}])
 
