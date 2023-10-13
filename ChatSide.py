@@ -239,17 +239,17 @@ class Chating:
         async def format_cell_format(worksheet):
             # try:
                 fmt1 = CellFormat(
-                        backgroundColor=Color(239, 239, 239, 1),
+                        backgroundColor=Color(239, 239, 239, 0.1),
                         textFormat=TextFormat(bold=False, foregroundColor=Color(0, 0, 0)),
                         horizontalAlignment='CENTER',
-                        borders=Borders(top=Border('Double', color=Color(239, 239, 239, 1)), bottom=Border('Double', color=Color(239, 239, 239, 1)))
+                        borders=Borders(top=Border('Double', color=Color(239, 239, 239, 0.1)), bottom=Border('Double', color=Color(239, 239, 239, 0.1)))
                     )
 
                 fmt2 = CellFormat(
-                        backgroundColor=Color(239, 239, 239, 1),
+                        backgroundColor=Color(239, 239, 239, 0.1),
                         textFormat=TextFormat(bold=False, foregroundColor=Color(0, 0, 0)),
                         horizontalAlignment='CENTER',
-                        borders=Borders(left=Border('Double', color=Color(239, 239, 239, 1)))
+                        borders=Borders(left=Border('Double', color=Color(239, 239, 239, 0.1)))
                     )
 
                 format_cell_range(worksheet, 'A5:H5', fmt1)
