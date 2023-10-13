@@ -237,7 +237,7 @@ class Chating:
 
         # format cell type
         async def format_cell_format(worksheet):
-            try:
+            # try:
                 fmt1 = CellFormat(
                         backgroundColor=Color(239, 239, 239, 1),
                         textFormat=TextFormat(bold=False, foregroundColor=Color(0, 0, 0)),
@@ -272,8 +272,8 @@ class Chating:
                 # batch = batch_updater(worksheet)
                 # batch.set_column_width(worksheet, 'B:B', 350)
                 # batch.execute()
-            except Exception as e:
-                print('quota <')
+            # except Exception as e:
+            #     print('quota <')
 
         # init content of worksheet
         async def init_content_of_worksheet(worksheet):
