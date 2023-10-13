@@ -2,7 +2,6 @@ import asyncio
 import json
 import math
 import datetime
-import multiprocessing
 import threading
 import time
 import schedule
@@ -136,14 +135,12 @@ def start():
       if(purpose_url.find(';') > -1):
          nick_name_arr = purpose_url.split(';')
          for nick_name in nick_name_arr:
-            p = multiprocessing.Process(target=chating_start, args=(delay, end_date_month, end_date_day, end_time_hour, end_time_minute, nick_name, start_date_year, start_date_month, start_date_day, start_time_hour, start_time_minute)).start()
+            p = Process(target=chating_start, args=(delay, end_date_month, end_date_day, end_time_hour, end_time_minute, nick_name, start_date_year, start_date_month, start_date_day, start_time_hour, start_time_minute)).start()
             processes.append(p)
-            p.start()
       else:
          print(purpose_url)
-         p = multiprocessing.Process(target=chating_start, args=(delay, end_date_month, end_date_day, end_time_hour, end_time_minute, purpose_url, start_date_year, start_date_month, start_date_day, start_time_hour, start_time_minute)).start()
+         p = Process(target=chating_start, args=(delay, end_date_month, end_date_day, end_time_hour, end_time_minute, purpose_url, start_date_year, start_date_month, start_date_day, start_time_hour, start_time_minute)).start()
          processes.append(p)
-         p.start()
 
    return json.dumps([{"type": "success", "msg": "リクエストが受け付けられました。"}])
 
