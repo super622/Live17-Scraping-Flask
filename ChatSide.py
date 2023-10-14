@@ -304,8 +304,6 @@ class Chating:
             batch.set_column_width(worksheet, 'E:E', 200)
             batch.execute()
 
-
-
         # add data into database
         def result_response(value):
             result = ''
@@ -429,7 +427,12 @@ class Chating:
                             gifs_list = await append_to_gif(gifs_list, gif_type, coin)
                             gifs_users = await append_to_gifusers(gifs_users, res)
 
-                        snacks_elements = chat_element.find_elements('css selector', '.LaborReward__ControlledText-sc-cxndew-0')
+                        snacks_elements = []
+                        try:
+                            snacks_elements = chat_element.find_elements('css selector', '.LaborReward__ControlledText-sc-cxndew-0')
+                        except:
+                            snacks_elements = []
+
                         if len(snacks_elements) > 0:
                             gif_state = await find_in_gifusers(gifs_users, user_name)
                             snack_cnt_element = chat_element.find_elements('css selector', '.LaborReward__ControlledText-sc-cxndew-0')
@@ -437,7 +440,7 @@ class Chating:
                             snack_cnt = re.findall(r'\d+', snack_cnt_element)
                             snack_cnt = snack_cnt[0]
                             snack_gifs_users = await append_to_snack_gifusers(snack_gifs_users, gif_state, snack_cnt)
-                        
+
                     gif_man_cnt = len(gifs_users)
                     snack_cnt = len(snack_gifs_users)
 
