@@ -99,7 +99,7 @@ class Chating:
             result_arr = []
             for user in gifs_users:
                 hex = bytes(user_name, 'utf-8')
-                if(user['UserName'] == user_name):
+                if(user['Hex'] == hex):
                     result_arr.append(user)
             
             print('**********************')
