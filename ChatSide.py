@@ -101,7 +101,10 @@ class Chating:
                 hex = bytes(user_name, 'utf-8')
                 if(user['UserName'] == user_name):
                     result_arr.append(user)
-                
+            
+            print('**********************')
+            print(result_arr)
+            print('**********************')
             return result_arr
         
         # add all gif users
@@ -409,7 +412,7 @@ class Chating:
 
                             gifs_elements = chat_element.find_elements('css selector', '.GiftItem__GiftIcon-sc-g419cs-0')
                         except:
-                            continue
+                            gifs_elements = []
 
                         if len(gifs_elements) > 0:
                             gif_element = chat_element.find_elements('css selector', '.Chat__ContentWrapper-sc-clenhv-1')
@@ -445,6 +448,10 @@ class Chating:
 
                     gif_man_cnt = len(gifs_users)
                     snack_cnt = len(snack_gifs_users)
+
+                    print('=========================')
+                    print(snack_gifs_users)
+                    print('=========================')
 
                     for user in gifs_users:
                         coin_cnt += int(user['Coin'])
