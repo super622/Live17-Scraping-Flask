@@ -400,15 +400,17 @@ class Chating:
 
                     for chat_element in chating_elements:
                         user_name = ''
+                        gifs_elements = []
                         try:
                             name_element = chat_element.find_elements('css selector', '.ChatUserName__NameWrapper-sc-1ca2hpy-0')
                             
                             if(len(name_element) > 0):
                                 user_name = name_element[0].text
+
+                            gifs_elements = chat_element.find_elements('css selector', '.GiftItem__GiftIcon-sc-g419cs-0')
                         except:
                             continue
 
-                        gifs_elements = chat_element.find_elements('css selector', '.GiftItem__GiftIcon-sc-g419cs-0')
                         if len(gifs_elements) > 0:
                             gif_element = chat_element.find_elements('css selector', '.Chat__ContentWrapper-sc-clenhv-1')
                             gif_type = gif_element[0].text
