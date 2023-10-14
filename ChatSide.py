@@ -423,7 +423,7 @@ class Chating:
                                 gif_type = gif_element[0].text
                             except:
                                 continue
-
+                            
                             coin_element = re.search(r'\((\d+)\)', gif_type)
                             coin = 0
                             if coin_element:
@@ -446,15 +446,8 @@ class Chating:
                             snacks_elements = []
 
                         if len(snacks_elements) > 0:
-                            snack_cnt_element = []
                             gif_state = await find_in_gifusers(gifs_users, user_name)
-                            
-                            try:
-                                snack_cnt_element = chat_element.find_elements('css selector', '.LaborReward__ControlledText-sc-cxndew-0')
-                                snack_cnt_element = snack_cnt_element[0].text
-                            except:
-                                continue
-
+                            snack_cnt_element = snacks_elements[0].text
                             snack_cnt = re.findall(r'\d+', snack_cnt_element)
                             snack_cnt = snack_cnt[0]
                             snack_gifs_users = await append_to_snack_gifusers(snack_gifs_users, gif_state, snack_cnt)
