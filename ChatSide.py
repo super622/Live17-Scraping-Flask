@@ -170,31 +170,30 @@ class Chating:
             return self.total_results
 
         # add git and snack user
-        async def append_to_snack_gifusers(snack_gifs_users, gifs_user, snack_cnt):
+        async def append_to_snack_gifusers(snack_gifs_users, user_name, gifs_user, snack_cnt):
             flag = False
-            if(len(gifs_user) == 0):
-                return snack_gifs_users
-        
             count = 0
             coin = 0
             name = ''
-            for gif in gifs_user:
-                name = gif['UserName']
-                count += int(gif['Gif_Count'])
-                coin += int(gif['Coin'])
-            
-            for snack in snack_gifs_users:
-                if(snack['UserName'] == name):
-                    snack['Gif_Count'] = count
-                    snack['Coin'] = coin
-                    snack['Snack_Count'] = int(snack_cnt) + int(snack['Snack_Count'])
-                    flag = True
+
+            if len(gifs_user) > 0:
+                for gif in gifs_user:
+                    name = gif['UserName']
+                    count += int(gif['Gif_Count'])
+                    coin += int(gif['Coin'])
+                
+                for snack in snack_gifs_users:
+                    if(snack['UserName'] == name):
+                        snack['Gif_Count'] = count
+                        snack['Coin'] = coin
+                        snack['Snack_Count'] = int(snack_cnt) + int(snack['Snack_Count'])
+                        flag = True
 
             if flag:
                 return snack_gifs_users
             else:
                 res = {
-                    "UserName": name,
+                    "UserName": user_name,
                     "Gif_Count": count,
                     "Snack_Count": int(snack_cnt),
                     "Coin": coin
@@ -441,15 +440,14 @@ class Chating:
                             snacks_elements = chat_element.find_elements('css selector', '.LaborReward__ControlledText-sc-cxndew-0')
                         except:
                             snacks_elements = []
-                        
-                        print(len(snacks_elements))
 
                         if len(snacks_elements) > 0:
+                            print(user_name)
                             gif_state = await find_in_gifusers(gifs_users, user_name)
                             snack_cnt_element = snacks_elements[0].text
                             snack_cnt = re.findall(r'\d+', snack_cnt_element)
                             snack_cnt = snack_cnt[0]
-                            snack_gifs_users = await append_to_snack_gifusers(snack_gifs_users, gif_state, snack_cnt)
+                            snack_gifs_users = await append_to_snack_gifusers(snack_gifs_users, user_name, gif_state, snack_cnt)
 
                     gif_man_cnt = len(gifs_users)
                     snack_cnt = len(snack_gifs_users)
