@@ -418,6 +418,9 @@ class Chating:
                         except:
                             gifs_elements = []
 
+                        if(user_name == ''):
+                            continue
+
                         if len(gifs_elements) > 0:
                             gif_element = []
                             gif_type = ''
@@ -445,11 +448,20 @@ class Chating:
 
                     print('======================')
                     for chat_element in chating_elements:
+                        user_name = ''
                         snacks_elements = []
                         try:
+                            name_element = chat_element.find_elements('css selector', '.ChatUserName__NameWrapper-sc-1ca2hpy-0')
+                            
+                            if(len(name_element) > 0):
+                                user_name = name_element[0].text
+
                             snacks_elements = chat_element.find_elements('css selector', '.LaborReward__ControlledText-sc-cxndew-0')
                         except:
                             snacks_elements = []
+
+                        if(user_name == ''):
+                            continue
 
                         if len(snacks_elements) > 0:
                             print(user_name)
