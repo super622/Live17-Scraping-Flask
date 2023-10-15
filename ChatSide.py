@@ -386,6 +386,10 @@ class Chating:
 
             browser.get(url)
             time.sleep(5)
+            
+            gifs_users = []
+            snack_gifs_users = []
+            gifs_list = []
 
             while True:
                 chating_panel = browser.find_elements('css selector', '.ChatList__ListWrapper-sc-733d46-1')
@@ -395,9 +399,6 @@ class Chating:
                     gif_man_cnt = 0
                     coin_cnt = 0
                     score = ''
-                    gifs_users = []
-                    snack_gifs_users = []
-                    gifs_list = []
                     sub_result = []
                     chating_elements = []
                     
