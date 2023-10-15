@@ -190,10 +190,12 @@ class Chating:
                         flag = True
             else:
                 for snack in snack_gifs_users:
+                    print(f"{snack['UserName']} === {user_name}")
                     if(snack['UserName'] == user_name):
                         snack['Snack_Count'] = int(snack_cnt) + int(snack['Snack_Count'])
                         flag = True
 
+            print(flag)
             if flag:
                 return snack_gifs_users
             else:
