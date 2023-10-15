@@ -188,6 +188,11 @@ class Chating:
                         snack['Coin'] = coin
                         snack['Snack_Count'] = int(snack_cnt) + int(snack['Snack_Count'])
                         flag = True
+            else:
+                for snack in snack_gifs_users:
+                    if(snack['UserName'] == user_name):
+                        snack['Snack_Count'] = int(snack_cnt) + int(snack['Snack_Count'])
+                        flag = True
 
             if flag:
                 return snack_gifs_users
