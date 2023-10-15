@@ -396,8 +396,6 @@ class Chating:
                         chating_elements = browser.find_elements('css selector', '.Chat__ChatWrapper-sc-clenhv-0')
                     except:
                         print('error')
-                    
-                    print(len(chating_elements))
 
                     for chat_element in chating_elements:
                         user_name = ''
@@ -437,13 +435,14 @@ class Chating:
                             gifs_list = await append_to_gif(gifs_list, gif_type, coin)
                             gifs_users = await append_to_gifusers(gifs_users, res)
 
-                    print(len(chating_elements))
                     for chat_element in chating_elements:
                         snacks_elements = []
                         try:
                             snacks_elements = chat_element.find_elements('css selector', '.LaborReward__ControlledText-sc-cxndew-0')
                         except:
                             snacks_elements = []
+                        
+                        print(len(snacks_elements))
 
                         if len(snacks_elements) > 0:
                             gif_state = await find_in_gifusers(gifs_users, user_name)
