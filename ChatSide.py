@@ -188,12 +188,14 @@ class Chating:
                         snack['Coin'] = coin
                         snack['Snack_Count'] = int(snack_cnt) + int(snack['Snack_Count'])
                         flag = True
+                        break
             else:
                 for snack in snack_gifs_users:
                     print(f"{snack['UserName']} === {user_name}")
                     if(snack['UserName'] == user_name):
                         snack['Snack_Count'] = int(snack_cnt) + int(snack['Snack_Count'])
                         flag = True
+                        break
 
             print(flag)
             if flag:
@@ -441,6 +443,7 @@ class Chating:
                             gifs_list = await append_to_gif(gifs_list, gif_type, coin)
                             gifs_users = await append_to_gifusers(gifs_users, res)
 
+                    print('======================')
                     for chat_element in chating_elements:
                         snacks_elements = []
                         try:
@@ -454,7 +457,11 @@ class Chating:
                             snack_cnt_element = snacks_elements[0].text
                             snack_cnt = re.findall(r'\d+', snack_cnt_element)
                             snack_cnt = snack_cnt[0]
+                            print(snack_gifs_users)
                             snack_gifs_users = await append_to_snack_gifusers(snack_gifs_users, user_name, gif_state, snack_cnt)
+                            print(snack_gifs_users)
+                    
+                    print('======================')
 
                     gif_man_cnt = len(gifs_users)
                     snack_cnt = len(snack_gifs_users)
