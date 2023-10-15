@@ -97,20 +97,11 @@ class Chating:
         # find special gif user
         async def find_in_gifusers(gifs_users, user_name):
             result_arr = []
-            print(f"total count of gifs => {len(gifs_users)}")
-            print(gifs_users)
-            print('============================================================')
             for user in gifs_users:
-                print('-----------------------------------------')
-                print(f"{user['UserName']} === {user_name}")
-                print('-----------------------------------------')
                 hex = bytes(user_name, 'utf-8')
                 if(user['Hex'] == hex):
                     result_arr.append(user)
-            
-            print('**********************')
-            print(result_arr)
-            print('**********************')
+
             return result_arr
         
         # add all gif users
@@ -405,6 +396,8 @@ class Chating:
                         chating_elements = browser.find_elements('css selector', '.Chat__ChatWrapper-sc-clenhv-0')
                     except:
                         print('error')
+                    
+                    print(len(chating_elements))
 
                     for chat_element in chating_elements:
                         user_name = ''
@@ -444,6 +437,7 @@ class Chating:
                             gifs_list = await append_to_gif(gifs_list, gif_type, coin)
                             gifs_users = await append_to_gifusers(gifs_users, res)
 
+                    print(len(chating_elements))
                     for chat_element in chating_elements:
                         snacks_elements = []
                         try:
