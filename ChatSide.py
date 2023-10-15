@@ -97,6 +97,7 @@ class Chating:
         # find special gif user
         async def find_in_gifusers(gifs_users, user_name):
             result_arr = []
+            print(f"total count of gifs => {len(gifs_users)}")
             for user in gifs_users:
                 hex = bytes(user_name, 'utf-8')
                 if(user['Hex'] == hex):
