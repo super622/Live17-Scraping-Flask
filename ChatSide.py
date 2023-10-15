@@ -98,7 +98,12 @@ class Chating:
         async def find_in_gifusers(gifs_users, user_name):
             result_arr = []
             print(f"total count of gifs => {len(gifs_users)}")
+            print(gifs_users)
+            print('============================================================')
             for user in gifs_users:
+                print('-----------------------------------------')
+                print(f"{user['UserName']} === {user_name}")
+                print('-----------------------------------------')
                 hex = bytes(user_name, 'utf-8')
                 if(user['Hex'] == hex):
                     result_arr.append(user)
@@ -372,7 +377,6 @@ class Chating:
         logging.basicConfig(level=logging.INFO)
         for live_room_id in live_stream_id_arr:
             url = f'https://17.live/ja/live/{live_room_id}'
-            print(url)
 
             options = webdriver.ChromeOptions()
             options.add_argument('--headless')
@@ -455,10 +459,6 @@ class Chating:
 
                     gif_man_cnt = len(gifs_users)
                     snack_cnt = len(snack_gifs_users)
-
-                    print('=========================')
-                    print(snack_gifs_users)
-                    print('=========================')
 
                     for user in gifs_users:
                         coin_cnt += int(user['Coin'])
