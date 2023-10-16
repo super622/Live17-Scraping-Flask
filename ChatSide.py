@@ -415,7 +415,10 @@ class Chating:
                         print('error')
 
                     print('start -- gifs')
+                    print('==========================')
+                    print(len(chating_elements))
                     for chat_element in chating_elements:
+                        print('----------------')
                         user_name = ''
                         gifs_elements = []
                         try:
@@ -427,6 +430,8 @@ class Chating:
                             gifs_elements = chat_element.find_elements('css selector', '.GiftItem__GiftIcon-sc-g419cs-0')
                         except:
                             gifs_elements = []
+
+                        print(user_name)
 
                         if(user_name == ''):
                             continue
@@ -453,8 +458,10 @@ class Chating:
                                 "Gif_Count": 1,
                                 "Coin": coin
                             }
+                            print(' add data ---')
                             gifs_list = await append_to_gif(gifs_list, gif_type, coin)
                             gifs_users = await append_to_gifusers(gifs_users, res)
+                            print('----------------------------------')
 
                     print('start - snack')
                     for chat_element in chating_elements:
@@ -480,8 +487,11 @@ class Chating:
                             snack_cnt = snack_cnt[0]
                             snack_gifs_users = await append_to_snack_gifusers(snack_gifs_users, user_name, gif_state, snack_cnt)
 
+                    snack_cnt = 0
+                    for snack in snack_gifs_users:
+                        snack_cnt += int(snack['Snack_Count'])
+
                     gif_man_cnt = len(gifs_users)
-                    snack_cnt = len(snack_gifs_users)
 
                     print('start - all')
                     temp_gifs_users = []
