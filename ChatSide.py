@@ -191,13 +191,11 @@ class Chating:
                         break
             else:
                 for snack in snack_gifs_users:
-                    print(f"{snack['UserName']} === {user_name}")
                     if(snack['UserName'] == user_name):
                         snack['Snack_Count'] = int(snack_cnt) + int(snack['Snack_Count'])
                         flag = True
                         break
 
-            print(flag)
             if flag:
                 return snack_gifs_users
             else:
@@ -446,7 +444,6 @@ class Chating:
                             gifs_list = await append_to_gif(gifs_list, gif_type, coin)
                             gifs_users = await append_to_gifusers(gifs_users, res)
 
-                    print('======================')
                     for chat_element in chating_elements:
                         user_name = ''
                         snacks_elements = []
@@ -464,16 +461,12 @@ class Chating:
                             continue
 
                         if len(snacks_elements) > 0:
-                            print(user_name)
                             gif_state = await find_in_gifusers(gifs_users, user_name)
                             snack_cnt_element = snacks_elements[0].text
                             snack_cnt = re.findall(r'\d+', snack_cnt_element)
                             snack_cnt = snack_cnt[0]
-                            print(snack_gifs_users)
                             snack_gifs_users = await append_to_snack_gifusers(snack_gifs_users, user_name, gif_state, snack_cnt)
-                            print(snack_gifs_users)
-                    
-                    print('======================')
+
                     gif_man_cnt = len(gifs_users)
                     snack_cnt = len(snack_gifs_users)
 
@@ -648,7 +641,7 @@ class Chating:
                         worksheet = spreadsheet.worksheet(f"{self.start_month}-{self.start_day}")
                     except:
                         worksheet = None
-                    
+
                     if(worksheet == None):
                         worksheet = spreadsheet.add_worksheet(title=f"{self.start_month}-{self.start_day}", rows='5000', cols='8', index=(tab_position - 1))
 
@@ -668,6 +661,8 @@ class Chating:
                     except:
                         print('quota <')
 
+
+
                     # write content into google sheet
                     worksheet = spreadsheet.get_worksheet(tab_position - 3)
                     await format_cell_format(worksheet, spreadsheet)
@@ -684,6 +679,13 @@ class Chating:
                         worksheet.insert_rows(sub_result, row=6)
                     except:
                         print('quota <')
+
+                    worksheet_data1 = worksheet.get_all_values()
+                    worksheet_data1 = [[int(cell) * 2 for cell in row] for row in worksheet_data1]
+
+                    print('======================================')
+                    print(worksheet_data1)
+                    print('======================================')
 
                     worksheet = spreadsheet.worksheet("total")
                     await format_cell_format(worksheet, spreadsheet)
