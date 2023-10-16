@@ -310,6 +310,16 @@ class Chating:
             batch.set_column_width(worksheet, 'E:E', 200)
             batch.execute()
 
+        # get score data
+        async def get_score_data(elements):
+            score = ''
+            for element in elements:
+                print(element.text)
+                if element.text == '':
+                    return ''
+                score += element.text
+            return score
+
         # add data into database
         def result_response(value):
             result = ''
@@ -509,12 +519,10 @@ class Chating:
 
                     score_elements = browser.find_elements(By.XPATH, "//*[@style='transform: rotateX(0deg) translateZ(28px);']")
                     print(len(score_elements))
-                    for element in score_elements:
-                        print(element.text)
-                        while element.text == '':
-                            time.sleep(2)
-                            print(f"-> {element.text}")
-                        score += element.text
+                    socre = await get_score_data(score_elements)
+                    while socre != '':
+                        time.sleep(2)
+                        socre = await get_score_data(score_elements)
                     
                     print(f"coin = {coin_cnt}, score = {score}")
 
@@ -661,8 +669,6 @@ class Chating:
                     except:
                         print('quota <')
 
-
-
                     # write content into google sheet
                     worksheet = spreadsheet.get_worksheet(tab_position - 3)
                     await format_cell_format(worksheet, spreadsheet)
@@ -674,19 +680,11 @@ class Chating:
                         worksheet.update("F4", [[str(score)]], value_input_option="USER_ENTERED")
                     except:
                         print('quota <')
-                    
+
                     try:
                         worksheet.insert_rows(sub_result, row=6)
                     except:
                         print('quota <')
-
-                    worksheet_data1 = worksheet.get_all_values()
-                    print(worksheet_data1)
-                    worksheet_data1 = [[int(cell) * 2 for cell in row] for row in worksheet_data1]
-
-                    print('======================================')
-                    print(worksheet_data1)
-                    print('======================================')
 
                     worksheet = spreadsheet.worksheet("total")
                     await format_cell_format(worksheet, spreadsheet)
