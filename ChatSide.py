@@ -247,14 +247,14 @@ class Chating:
         async def format_cell_format(worksheet, spreadsheet):
             try:
                 fmt1 = CellFormat(
-                        # backgroundColor=Color(111, 111, 11),
+                        backgroundColor=Color(0.93, 0.93, 0.93),
                         textFormat=TextFormat(bold=False, foregroundColor=Color(0, 0, 0)),
                         horizontalAlignment='CENTER',
                         borders=Borders(top=Border('Double', color=Color(0, 0, 0)), bottom=Border('Double', color=Color(0, 0, 0)))
                     )
 
                 fmt2 = CellFormat(
-                        # backgroundColor=Color(111, 111, 11),
+                        backgroundColor=Color(0.93, 0.93, 0.93),
                         textFormat=TextFormat(bold=False, foregroundColor=Color(0, 0, 0)),
                         horizontalAlignment='CENTER',
                     )
@@ -505,10 +505,12 @@ class Chating:
                         sub_result.append(res_arr)
 
                     score_elements = browser.find_elements(By.XPATH, "//*[@style='transform: rotateX(0deg) translateZ(28px);']")
+                    
                     for element in score_elements:
                         while element.text == '':
                             time.sleep(1)
                         score += element.text
+                    
                     print(f"coin = {coin_cnt}, score = {score}")
 
                     # total_gifs_user
@@ -602,7 +604,7 @@ class Chating:
 
                         try:
                             fmt = CellFormat(
-                                    # backgroundColor=Color(239, 239, 239),
+                                    backgroundColor=Color(0.93, 0.93, 0.93),
                                     textFormat=TextFormat(bold=False, foregroundColor=Color(0, 0, 0)),
                                     horizontalAlignment='CENTER',
                                     borders=Borders(bottom=Border("Double", color=Color(0, 0, 0)))
