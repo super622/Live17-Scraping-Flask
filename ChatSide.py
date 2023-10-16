@@ -250,7 +250,7 @@ class Chating:
                         backgroundColor=Color(0.93, 0.93, 0.93),
                         textFormat=TextFormat(bold=False, foregroundColor=Color(0, 0, 0)),
                         horizontalAlignment='CENTER',
-                        borders=Borders(top=Border('Double', color=Color(0.93, 0.93, 0.93)), bottom=Border('Double', color=Color(0.93, 0.93, 0.93)))
+                        borders=Borders(top=Border('Double', color=Color(0.57, 0.57, 0.57)), bottom=Border('Double', color=Color(0.57, 0.57, 0.57)))
                     )
 
                 fmt2 = CellFormat(
@@ -269,7 +269,7 @@ class Chating:
                 format_cell_range(worksheet, 'A1:H5000', fmt)
 
                 fmt3 = CellFormat(
-                        borders=Borders(left=Border('Double', color=Color(0.93, 0.93, 0.93)))
+                        borders=Borders(left=Border('Double', color=Color(0.57, 0.57, 0.57)))
                     )
                 
                 format_cell_range(worksheet, "E1:E5000", fmt3)
@@ -612,7 +612,7 @@ class Chating:
                                     backgroundColor=Color(0.93, 0.93, 0.93),
                                     textFormat=TextFormat(bold=False, foregroundColor=Color(0, 0, 0)),
                                     horizontalAlignment='CENTER',
-                                    borders=Borders(bottom=Border("Double", color=Color(0.93, 0.93, 0.93)))
+                                    borders=Borders(bottom=Border("Double", color=Color(0.57, 0.57, 0.57)))
                                 )
 
                             format_cell_range(worksheet, 'A1:C1', fmt)
