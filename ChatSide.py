@@ -658,17 +658,6 @@ class Chating:
                         except:
                             print('quota <')
 
-                    # clear content in google sheet
-                    try:
-                        sheet_range = f'{self.start_month}-{self.start_day}!A6:Z'  # Adjust the range as needed
-                        service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
-                        sheet_range = f'total!A6:Z'
-                        service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
-                        sheet_range = f'ギフト内訳!A2:Z'  # Adjust the range as needed
-                        service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
-                    except:
-                        print('quota <')
-
                     # write content into google sheet
                     worksheet = spreadsheet.get_worksheet(tab_position - 3)
                     await format_cell_format(worksheet, spreadsheet)
@@ -682,6 +671,8 @@ class Chating:
                         print('quota <')
 
                     try:
+                        sheet_range = f'{self.start_month}-{self.start_day}!A6:Z'  # Adjust the range as needed
+                        service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
                         worksheet.insert_rows(sub_result, row=6)
                     except:
                         print('quota <')
@@ -698,6 +689,8 @@ class Chating:
                         print('quota <')
 
                     try:
+                        sheet_range = f'total!A6:Z'
+                        service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
                         worksheet.insert_rows(temp_total_results, row=6)
                     except:
                         print('quota <')
@@ -705,6 +698,8 @@ class Chating:
                     worksheet = spreadsheet.worksheet("ギフト内訳")
 
                     try:
+                        sheet_range = f'ギフト内訳!A2:Z'  # Adjust the range as needed
+                        service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
                         worksheet.insert_rows(gifs_list, row=2)
                     except:
                         print('quota <')
