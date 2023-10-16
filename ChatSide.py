@@ -250,7 +250,7 @@ class Chating:
                         backgroundColor=Color(0.93, 0.93, 0.93),
                         textFormat=TextFormat(bold=False, foregroundColor=Color(0, 0, 0)),
                         horizontalAlignment='CENTER',
-                        borders=Borders(top=Border('Double', color=Color(0, 0, 0)), bottom=Border('Double', color=Color(0, 0, 0)))
+                        borders=Borders(top=Border('Double', color=Color(0.93, 0.93, 0.93)), bottom=Border('Double', color=Color(0.93, 0.93, 0.93)))
                     )
 
                 fmt2 = CellFormat(
@@ -269,7 +269,7 @@ class Chating:
                 format_cell_range(worksheet, 'A1:H5000', fmt)
 
                 fmt3 = CellFormat(
-                        borders=Borders(left=Border('Double', color=Color(0, 0, 0)))
+                        borders=Borders(left=Border('Double', color=Color(0.93, 0.93, 0.93)))
                     )
                 
                 format_cell_range(worksheet, "E1:E5000", fmt3)
@@ -378,8 +378,8 @@ class Chating:
             url = f'https://17.live/ja/live/{live_room_id}'
 
             options = webdriver.ChromeOptions()
-            options.add_argument('--headless')
-            options.add_argument('--no-sandbox')
+            # options.add_argument('--headless')
+            # options.add_argument('--no-sandbox')
 
             browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
@@ -399,7 +399,7 @@ class Chating:
                     gifs_list = []
                     sub_result = []
                     chating_elements = []
-                    
+
                     try:
                         chating_elements = browser.find_elements('css selector', '.Chat__ChatWrapper-sc-clenhv-0')
                     except:
@@ -474,6 +474,11 @@ class Chating:
                             print(snack_gifs_users)
                     
                     print('======================')
+
+                    # temp_gifs_users = []
+                    # for user in snack_gifs_users:
+                    #     for gif in gifs_users:
+                            
 
                     gif_man_cnt = len(gifs_users)
                     snack_cnt = len(snack_gifs_users)
@@ -607,7 +612,7 @@ class Chating:
                                     backgroundColor=Color(0.93, 0.93, 0.93),
                                     textFormat=TextFormat(bold=False, foregroundColor=Color(0, 0, 0)),
                                     horizontalAlignment='CENTER',
-                                    borders=Borders(bottom=Border("Double", color=Color(0, 0, 0)))
+                                    borders=Borders(bottom=Border("Double", color=Color(0.93, 0.93, 0.93)))
                                 )
 
                             format_cell_range(worksheet, 'A1:C1', fmt)
