@@ -518,12 +518,11 @@ class Chating:
 
                     score_elements = browser.find_elements(By.XPATH, "//*[@style='transform: rotateX(0deg) translateZ(28px);']")
 
-                    socre = await get_score_data(score_elements)
+                    score = await get_score_data(score_elements)
                     if(score == ''):
                         while socre == '':
                             time.sleep(2)
                             socre = await get_score_data(score_elements)
-                            print(score)
                     
                     print(f"coin = {coin_cnt}, score = {score}")
 
