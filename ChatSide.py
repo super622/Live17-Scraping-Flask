@@ -314,7 +314,6 @@ class Chating:
         async def get_score_data(elements):
             score = ''
             for element in elements:
-                print(element.text)
                 if element.text == '':
                     return ''
                 score += element.text
@@ -520,9 +519,11 @@ class Chating:
                     score_elements = browser.find_elements(By.XPATH, "//*[@style='transform: rotateX(0deg) translateZ(28px);']")
 
                     socre = await get_score_data(score_elements)
-                    while socre == '':
-                        time.sleep(2)
-                        socre = await get_score_data(score_elements)
+                    if(score == ''):
+                        while socre == '':
+                            time.sleep(2)
+                            socre = await get_score_data(score_elements)
+                            print(score)
                     
                     print(f"coin = {coin_cnt}, score = {score}")
 
