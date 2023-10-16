@@ -391,7 +391,7 @@ class Chating:
             browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
             browser.get(url)
-            time.sleep(5)
+            time.sleep(2)
 
             while True:
                 chating_panel = browser.find_elements('css selector', '.ChatList__ListWrapper-sc-733d46-1')
@@ -518,10 +518,10 @@ class Chating:
 
                     score_elements = browser.find_elements(By.XPATH, "//*[@style='transform: rotateX(0deg) translateZ(28px);']")
 
+                    print('get score')
                     score = await get_score_data(score_elements)
                     if(score == ''):
                         while score == '':
-                            time.sleep(2)
                             score = await get_score_data(score_elements)
                     
                     print(f"coin = {coin_cnt}, score = {score}")
