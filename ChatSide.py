@@ -681,6 +681,7 @@ class Chating:
                         print('quota <')
 
                     worksheet_data1 = worksheet.get_all_values()
+                    print(worksheet_data1)
                     worksheet_data1 = [[int(cell) * 2 for cell in row] for row in worksheet_data1]
 
                     print('======================================')
