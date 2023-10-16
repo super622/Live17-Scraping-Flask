@@ -597,7 +597,7 @@ class Chating:
                         try:
                             worksheet.resize(rows=5000, cols=8)
 
-                            worksheet.update_title(f"{current_month}-{current_day}")
+                            worksheet.update_title(f"{self.start_month}-{self.start_day}")
 
                             await init_content_of_worksheet(worksheet)
                         except:
@@ -645,12 +645,12 @@ class Chating:
 
                     worksheet = None
                     try:
-                        worksheet = spreadsheet.worksheet(f"{current_month}-{current_day}")
+                        worksheet = spreadsheet.worksheet(f"{self.start_month}-{self.start_day}")
                     except:
                         worksheet = None
                     
                     if(worksheet == None):
-                        worksheet = spreadsheet.add_worksheet(title=f"{current_month}-{current_day}", rows='5000', cols='8')
+                        worksheet = spreadsheet.add_worksheet(title=f"{self.start_month}-{self.start_day}", rows='5000', cols='8', index=(tab_position - 1))
 
                         try:
                             await init_content_of_worksheet(worksheet)
@@ -659,7 +659,7 @@ class Chating:
 
                     # clear content in google sheet
                     try:
-                        sheet_range = f'{current_month}-{current_day}!A6:Z'  # Adjust the range as needed
+                        sheet_range = f'{self.start_month}-{self.start_day}!A6:Z'  # Adjust the range as needed
                         service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
                         sheet_range = f'total!A6:Z'
                         service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
