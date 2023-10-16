@@ -487,7 +487,7 @@ class Chating:
                                 same_flag = True
                         
                         if(same_flag == False):
-                            temp_gifs_users.append(gif)
+                            temp_gifs_users = await find_in_gifusers(gifs_users, gif['UserName'])
                             snack_gifs_users = await append_to_snack_gifusers(snack_gifs_users, gif['UserName'], temp_gifs_users, 0)
 
                     for user in gifs_users:
