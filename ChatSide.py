@@ -518,9 +518,9 @@ class Chating:
                         sub_result.append(res_arr)
 
                     score_elements = browser.find_elements(By.XPATH, "//*[@style='transform: rotateX(0deg) translateZ(28px);']")
-                    print(len(score_elements))
+
                     socre = await get_score_data(score_elements)
-                    while socre != '':
+                    while socre == '':
                         time.sleep(2)
                         socre = await get_score_data(score_elements)
                     
