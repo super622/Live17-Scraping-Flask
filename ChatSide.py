@@ -475,10 +475,16 @@ class Chating:
                     
                     print('======================')
 
-                    # temp_gifs_users = []
-                    # for user in snack_gifs_users:
-                    #     for gif in gifs_users:
-                            
+                    temp_gifs_users = []
+                    for gif in gifs_users:
+                        same_flag = False
+                        for user in snack_gifs_users:
+                            if(gif['UserName'] == user['UserName']):
+                                same_flag = True
+                        
+                        if(same_flag == False):
+                            temp_gifs_users.append(gif)
+                            snack_gifs_users = await append_to_snack_gifusers(snack_gifs_users, gif['UserName'], temp_gifs_users, 0)
 
                     gif_man_cnt = len(gifs_users)
                     snack_cnt = len(snack_gifs_users)
