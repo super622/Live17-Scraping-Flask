@@ -474,6 +474,8 @@ class Chating:
                             print(snack_gifs_users)
                     
                     print('======================')
+                    gif_man_cnt = len(gifs_users)
+                    snack_cnt = len(snack_gifs_users)
 
                     temp_gifs_users = []
                     for gif in gifs_users:
@@ -485,9 +487,6 @@ class Chating:
                         if(same_flag == False):
                             temp_gifs_users.append(gif)
                             snack_gifs_users = await append_to_snack_gifusers(snack_gifs_users, gif['UserName'], temp_gifs_users, 0)
-
-                    gif_man_cnt = len(gifs_users)
-                    snack_cnt = len(snack_gifs_users)
 
                     for user in gifs_users:
                         coin_cnt += int(user['Coin'])
@@ -516,10 +515,12 @@ class Chating:
                         sub_result.append(res_arr)
 
                     score_elements = browser.find_elements(By.XPATH, "//*[@style='transform: rotateX(0deg) translateZ(28px);']")
-                    
+                    print(len(score_elements))
                     for element in score_elements:
+                        print(element.text)
                         while element.text == '':
-                            time.sleep(1)
+                            time.sleep(2)
+                            print(f"-> {element.text}")
                         score += element.text
                     
                     print(f"coin = {coin_cnt}, score = {score}")
