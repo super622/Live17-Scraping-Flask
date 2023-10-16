@@ -520,9 +520,9 @@ class Chating:
 
                     score = await get_score_data(score_elements)
                     if(score == ''):
-                        while socre == '':
+                        while score == '':
                             time.sleep(2)
-                            socre = await get_score_data(score_elements)
+                            score = await get_score_data(score_elements)
                     
                     print(f"coin = {coin_cnt}, score = {score}")
 
