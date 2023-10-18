@@ -105,15 +105,12 @@ class EventScraping:
             drive_service = build('drive', 'v3', credentials=credentials)
             sheet_id = None
 
-            results = drive_service.files().list(q="name='" + file_name + "' and mimeType='application/vnd.google-apps.spreadsheet' ",
-                                    pageSize=10, fields="nextPageToken, files(id, name)").execute()
+            results = drive_service.files().list(q="name='" + file_name + "' and mimeType='application/vnd.google-apps.spreadsheet' and parents in '" + folder_name + "'", pageSize=10, fields="nextPageToken, files(id, name)").execute()
             items = results.get('files', [])
             if not items:
                 return ''
             else:
-                sheet_id = items[0]['id']
-
-            return sheet_id
+                return items[0]['id']
 
         # Get Calculate result
         def calculate_date(year, month, day):
