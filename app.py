@@ -76,6 +76,13 @@ def event_scraping(start_date_year, start_date_month, start_date_day, start_time
 def chating_start(delay, end_date_month, end_date_day, end_time_hour, end_time_minute, purpose_url, start_date_year, start_date_month, start_date_day, start_time_hour, start_time_minute):
    res = threading.Timer(delay, chating_scraping, args=(end_date_month, end_date_day, end_time_hour, end_time_minute, purpose_url, start_date_year, start_date_month, start_date_day, start_time_hour, start_time_minute)).start()
 
+# start threading about event
+def event_start(start_time_hour, start_time_minute, start_date_year, start_date_month, start_date_day, end_date_month, end_date_day, end_time_hour, end_time_minute, event):
+   schedule.every().day.at(f"{change_string(start_time_hour)}:{change_string(start_time_minute)}").do(event_scraping, start_date_year, start_date_month, start_date_day, start_time_hour, start_time_minute, end_date_month, end_date_day, end_time_hour, end_time_minute, event)
+   while True:
+      schedule.run_pending()
+      time.sleep(10)
+
 # Start Scraping about live site
 @app.route('/start', methods=['POST'])
 def start():
@@ -121,16 +128,11 @@ def start():
       if(purpose_url.find(';') > -1):
          event_url_arr = purpose_url.split(';')
          for event in event_url_arr:
-            job = schedule.every().day.at(f"{change_string(start_time_hour)}:{change_string(start_time_minute)}").do(event_scraping, start_date_year, start_date_month, start_date_day, start_time_hour, start_time_minute, end_date_month, end_date_day, end_time_hour, end_time_minute, event)
-            print(job)
-            scheduled_jobs[job] = {'start_datetime': start_datetime, 'end_datetime': end_datetime}
+            p = Process(target=event_start, args=(start_time_hour, start_time_minute, start_date_year, start_date_month, start_date_day, end_date_month, end_date_day, end_time_hour, end_time_minute, event)).start()
+            processes.append(p)
       else:
-         job = schedule.every().day.at(f"{change_string(start_time_hour)}:{change_string(start_time_minute)}").do(event_scraping, start_date_year, start_date_month, start_date_day, start_time_hour, start_time_minute, end_date_month, end_date_day, end_time_hour, end_time_minute, purpose_url)
-         print(job)
-         scheduled_jobs[job] = {'start_datetime': start_datetime, 'end_datetime': end_datetime}
-      while True:
-         schedule.run_pending()
-         time.sleep(1)
+         p = Process(target=event_start, args=(start_time_hour, start_time_minute, start_date_year, start_date_month, start_date_day, end_date_month, end_date_day, end_time_hour, end_time_minute, purpose_url)).start()
+         processes.append(p)
    else:
       if(purpose_url.find(';') > -1):
          nick_name_arr = purpose_url.split(';')
