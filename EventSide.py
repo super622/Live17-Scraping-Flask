@@ -176,6 +176,10 @@ class EventScraping:
 
         # Insert html content into worksheet
         async def insert_content_in_googlesheet(sheetID, element, parent_title, title):
+            search_panel = element.find_elements('css selector', '.bpEaZC')
+            if(len(search_panel) > 0):
+                return 
+            
             SCOPES = ['https://www.googleapis.com/auth/drive']
             SERVICE_ACCOUNT_FILE = 'service-account.json'
 
@@ -198,10 +202,6 @@ class EventScraping:
                     service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
                 except:
                     print('quota <')
-
-            search_panel = element.find_elements('css selector', '.bpEaZC')
-            if(len(search_panel) > 0):
-                return 
 
             i = 1
             contents = element.find_elements('css selector', '.bjzlAe')
@@ -404,7 +404,6 @@ class EventScraping:
                                         time.sleep(20)
                                         await insert_content_in_googlesheet(sheetID, browser, tab_title, sub_tab_title)
 
-                            print(len(last_sub_tab_group))
                             if(len(last_sub_tab_group) == 1):
                                 await insert_content_in_googlesheet(sheetID, browser, tab_title, sub_tab_title)
 
