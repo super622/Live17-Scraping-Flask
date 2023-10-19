@@ -138,7 +138,7 @@ class EventScraping:
                 try:
                     worksheet = spreadsheet.worksheet(f"{data[i]['EventID']}")
                 except:
-                    worksheet = spreadsheet.add_worksheet(title=data[i]['EventID'], rows='3000', cols='300')
+                    worksheet = spreadsheet.add_worksheet(title=data[i]['EventID'], rows='2000', cols='100')
 
         # Insert image into worksheet
         async def insert_image_in_googlesheet(sheetID, image):
@@ -194,7 +194,7 @@ class EventScraping:
                 worksheet = None
                 
             if(worksheet == None):
-                worksheet = spreadsheet.add_worksheet(title=f"{parent_title} - {title}", rows='3000', cols='100')
+                worksheet = spreadsheet.add_worksheet(title=f"{parent_title} - {title}", rows='3000', cols='20')
             else:
                 try:
                     time.sleep(10)
@@ -243,8 +243,8 @@ class EventScraping:
                             try:
                                 time.sleep(10)
                                 batch = batch_updater(worksheet.spreadsheet)
-                                batch.set_row_height(worksheet, f'{i}:{i}', 100)
-                                # batch.set_column_width(worksheet, f'A:A', 500)
+                                batch.set_row_height(worksheet, f'{i}:{i}', 200)
+                                batch.set_column_width(worksheet, f'A:A', 500)
                                 batch.execute()
 
                                 worksheet.update(f"A{i}", [[insert_image]], value_input_option="USER_ENTERED")
@@ -273,8 +273,8 @@ class EventScraping:
                                     try:
                                         time.sleep(10)
                                         batch = batch_updater(worksheet.spreadsheet)
-                                        batch.set_row_height(worksheet, f'{i}:{i}', 100)
-                                        # batch.set_column_width(worksheet, f'A:A', 500)
+                                        batch.set_row_height(worksheet, f'{i}:{i}', 200)
+                                        batch.set_column_width(worksheet, f'A:A', 500)
                                         batch.execute()
                                     except:
                                         print('quota <')
