@@ -430,11 +430,14 @@ class Chating:
                             gifs_elements = []
                             try:
                                 name_element = chat_element.find_elements('css selector', '.ChatUserName__NameWrapper-sc-1ca2hpy-0')
+                                print(len(name_element))
                                 
                                 if(len(name_element) > 0):
                                     user_name = name_element[0].text
+                                print(user_name)
 
                                 gifs_elements = chat_element.find_elements('css selector', '.GiftItem__GiftIcon-sc-g419cs-0')
+                                print(len(gifs_elements))
                             except:
                                 gifs_elements = []
 
