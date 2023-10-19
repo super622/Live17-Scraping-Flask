@@ -585,8 +585,11 @@ class EventScraping:
             else:
                 sheetID = await get_sheet_by_name(filename, folder_name)
                 print(sheetID)
+                print(event_json_data[i]['Count'])
                 event_json_data[i]['Count'] = calculate_date(current_year, current_month, current_day)
                 time.sleep(20)
+                await insert_image(sheetID, event_json_data[i]['ID'])
+                await create_sheet_into_spreadsheet(sheetID, event_json_data[i])
                 write_into_googlesheet(sheetID, event_json_data[i])
 
         print('end================================')
