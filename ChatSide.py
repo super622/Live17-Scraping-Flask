@@ -494,7 +494,7 @@ class Chating:
                                 continue
 
                             if len(snacks_elements) > 0:
-                                print('snack user = >  {user_name}')
+                                print(f'snack user = >  {user_name}')
                                 gif_state = await find_in_gifusers(gifs_users, user_name)
                                 snack_cnt_element = snacks_elements[0].text
                                 snack_cnt = re.findall(r'\d+', snack_cnt_element)
