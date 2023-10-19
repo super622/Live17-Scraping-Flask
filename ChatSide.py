@@ -548,6 +548,7 @@ class Chating:
                             score = await get_score_data(score_elements)
                     
                     if(end_delivery_flag == True):
+                        result_response(3)
                         return
                     
                     print(f"coin = {coin_cnt}, score = {score}")
