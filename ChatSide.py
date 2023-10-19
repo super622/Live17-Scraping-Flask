@@ -437,8 +437,6 @@ class Chating:
                             except:
                                 gifs_elements = []
 
-                            print(user_name)
-
                             if(user_name == ''):
                                 continue
 
@@ -471,7 +469,6 @@ class Chating:
 
                     print(f"gifs = users =>  {gifs_users}")
                     print(f"snack users  =>  {snack_gifs_users}")
-                    print('start - snack')
                     snack_element_count = 0
                     for chat_element in chating_elements:
                         user_name = ''
@@ -502,13 +499,11 @@ class Chating:
                                 snack_gifs_users = await append_to_snack_gifusers(snack_gifs_users, user_name, gif_state, snack_cnt)
 
                     snack_cnt = 0
-                    print(f"snack count => {snack_gifs_users}")
                     for snack in snack_gifs_users:
                         snack_cnt += int(snack['Snack_Count'])
 
                     gif_man_cnt = len(gifs_users)
 
-                    print('start - all')
                     temp_gifs_users = []
                     for gif in gifs_users:
                         same_flag = False
@@ -520,7 +515,6 @@ class Chating:
                             temp_gifs_users = await find_in_gifusers(gifs_users, gif['UserName'])
                             snack_gifs_users = await append_to_snack_gifusers(snack_gifs_users, gif['UserName'], temp_gifs_users, 0)
 
-                    print('start count of coin , score')
                     coin_cnt = 0
                     for user in gifs_users:
                         coin_cnt += int(user['Coin'])
@@ -537,7 +531,6 @@ class Chating:
                     else:
                         temp_arr = snack_gifs_users
 
-                    print('start - get total')
                     i = 0
                     sub_result = []
                     for i in range(len(temp_arr)):
@@ -552,7 +545,6 @@ class Chating:
 
                     score_elements = browser.find_elements(By.XPATH, "//*[@style='transform: rotateX(0deg) translateZ(28px);']")
 
-                    print('get score')
                     score = await get_score_data(score_elements)
                     if(score == ''):
                         while score == '':
