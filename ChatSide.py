@@ -407,6 +407,7 @@ class Chating:
             cur_position = 0
 
             while True:
+                print(f"cur position => {cur_position}")
                 chating_panel = browser.find_elements('css selector', '.ChatList__ListWrapper-sc-733d46-1')
                 print('start')
                 if(len(chating_panel) > 0):
@@ -532,6 +533,7 @@ class Chating:
 
                     print('start - get total')
                     i = 0
+                    sub_result = []
                     for i in range(len(temp_arr)):
                         res_arr = None
                         if(i >= len(gifs_users)):
