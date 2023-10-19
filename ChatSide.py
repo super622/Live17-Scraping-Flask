@@ -499,9 +499,9 @@ class Chating:
                                 snack_gifs_users = await append_to_snack_gifusers(snack_gifs_users, user_name, gif_state, snack_cnt)
 
                     snack_cnt = 0
+                    print(f"snack count => {snack_gifs_users}")
                     for snack in snack_gifs_users:
-                        print(f"snack cnt => {snack_cnt}")
-                        snack_cnt = int(snack['Snack_Count'])
+                        snack_cnt += int(snack['Snack_Count'])
 
                     gif_man_cnt = len(gifs_users)
 
