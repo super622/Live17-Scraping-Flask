@@ -387,109 +387,118 @@ class Chating:
             url = f'https://17.live/ja/live/{live_room_id}'
 
             options = webdriver.ChromeOptions()
-            # options.add_argument('--headless')
-            # options.add_argument('--no-sandbox')
+            options.add_argument('--headless')
+            options.add_argument('--no-sandbox')
 
             browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
             browser.get(url)
             time.sleep(2)
 
+            snack_cnt = 0
+            gif_man_cnt = 0
+            coin_cnt = 0
+            score = ''
+            gifs_users = []
+            snack_gifs_users = []
+            gifs_list = []
+            sub_result = []
+            chating_elements = []
+            cur_position = 0
+
             while True:
                 chating_panel = browser.find_elements('css selector', '.ChatList__ListWrapper-sc-733d46-1')
                 print('start')
                 if(len(chating_panel) > 0):
-                    snack_cnt = 0
-                    gif_man_cnt = 0
-                    coin_cnt = 0
-                    score = ''
-                    gifs_users = []
-                    snack_gifs_users = []
-                    gifs_list = []
-                    sub_result = []
-                    chating_elements = []
 
                     try:
                         chating_elements = browser.find_elements('css selector', '.Chat__ChatWrapper-sc-clenhv-0')
                     except:
-                        print('error')
+                        chating_elements = []
 
                     print('start -- gifs')
                     print('==========================')
                     print(len(chating_elements))
+
+                    chat_element_count = 0
                     for chat_element in chating_elements:
-                        print('----------------')
-                        user_name = ''
-                        gifs_elements = []
-                        try:
-                            name_element = chat_element.find_elements('css selector', '.ChatUserName__NameWrapper-sc-1ca2hpy-0')
-                            
-                            if(len(name_element) > 0):
-                                user_name = name_element[0].text
-
-                            gifs_elements = chat_element.find_elements('css selector', '.GiftItem__GiftIcon-sc-g419cs-0')
-                        except:
+                        chat_element_count += 1
+                        if chat_element_count == (cur_position + 1):
+                            user_name = ''
                             gifs_elements = []
-
-                        print(user_name)
-
-                        if(user_name == ''):
-                            continue
-
-                        if len(gifs_elements) > 0:
-                            gif_element = []
-                            gif_type = ''
-
                             try:
-                                gif_element = chat_element.find_elements('css selector', '.Chat__ContentWrapper-sc-clenhv-1')
-                                gif_type = gif_element[0].text
-                            except:
-                                continue
-                            
-                            coin_element = re.search(r'\((\d+)\)', gif_type)
-                            coin = 0
-                            if coin_element:
-                                coin = coin_element.group(1)
+                                name_element = chat_element.find_elements('css selector', '.ChatUserName__NameWrapper-sc-1ca2hpy-0')
+                                
+                                if(len(name_element) > 0):
+                                    user_name = name_element[0].text
 
-                            res = {
-                                "UserName": user_name,
-                                "Hex": bytes(user_name, "utf-8"),
-                                "GifType": gif_type,
-                                "Gif_Count": 1,
-                                "Coin": coin
-                            }
-                            print(' add data ---')
-                            gifs_list = await append_to_gif(gifs_list, gif_type, coin)
-                            gifs_users = await append_to_gifusers(gifs_users, res)
-                            print('----------------------------------')
+                                gifs_elements = chat_element.find_elements('css selector', '.GiftItem__GiftIcon-sc-g419cs-0')
+                            except:
+                                gifs_elements = []
+
+                            print(user_name)
+
+                            if(user_name == ''):
+                                continue
+
+                            if len(gifs_elements) > 0:
+                                gif_element = []
+                                gif_type = ''
+
+                                try:
+                                    gif_element = chat_element.find_elements('css selector', '.Chat__ContentWrapper-sc-clenhv-1')
+                                    gif_type = gif_element[0].text
+                                except:
+                                    continue
+                                
+                                coin_element = re.search(r'\((\d+)\)', gif_type)
+                                coin = 0
+                                if coin_element:
+                                    coin = coin_element.group(1)
+
+                                res = {
+                                    "UserName": user_name,
+                                    "Hex": bytes(user_name, "utf-8"),
+                                    "GifType": gif_type,
+                                    "Gif_Count": 1,
+                                    "Coin": coin
+                                }
+                                print(' add data ---')
+                                gifs_list = await append_to_gif(gifs_list, gif_type, coin)
+                                gifs_users = await append_to_gifusers(gifs_users, res)
+                                print('----------------------------------')
 
                     print('start - snack')
+                    snack_element_count = 0
                     for chat_element in chating_elements:
                         user_name = ''
                         snacks_elements = []
-                        try:
-                            name_element = chat_element.find_elements('css selector', '.ChatUserName__NameWrapper-sc-1ca2hpy-0')
-                            
-                            if(len(name_element) > 0):
-                                user_name = name_element[0].text
+                        snack_element_count += 1
+                        if snack_element_count == (cur_position + 1):
+                            cur_position += 1
 
-                            snacks_elements = chat_element.find_elements('css selector', '.LaborReward__ControlledText-sc-cxndew-0')
-                        except:
-                            snacks_elements = []
+                            try:
+                                name_element = chat_element.find_elements('css selector', '.ChatUserName__NameWrapper-sc-1ca2hpy-0')
+                                
+                                if(len(name_element) > 0):
+                                    user_name = name_element[0].text
 
-                        if(user_name == ''):
-                            continue
+                                snacks_elements = chat_element.find_elements('css selector', '.LaborReward__ControlledText-sc-cxndew-0')
+                            except:
+                                snacks_elements = []
 
-                        if len(snacks_elements) > 0:
-                            gif_state = await find_in_gifusers(gifs_users, user_name)
-                            snack_cnt_element = snacks_elements[0].text
-                            snack_cnt = re.findall(r'\d+', snack_cnt_element)
-                            snack_cnt = snack_cnt[0]
-                            snack_gifs_users = await append_to_snack_gifusers(snack_gifs_users, user_name, gif_state, snack_cnt)
+                            if(user_name == ''):
+                                continue
 
-                    snack_cnt = 0
+                            if len(snacks_elements) > 0:
+                                gif_state = await find_in_gifusers(gifs_users, user_name)
+                                snack_cnt_element = snacks_elements[0].text
+                                snack_cnt = re.findall(r'\d+', snack_cnt_element)
+                                snack_cnt = snack_cnt[0]
+                                snack_gifs_users = await append_to_snack_gifusers(snack_gifs_users, user_name, gif_state, snack_cnt)
+
                     for snack in snack_gifs_users:
-                        snack_cnt += int(snack['Snack_Count'])
+                        snack_cnt = int(snack['Snack_Count'])
 
                     gif_man_cnt = len(gifs_users)
 
