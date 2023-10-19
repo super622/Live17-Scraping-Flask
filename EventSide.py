@@ -552,7 +552,7 @@ class EventScraping:
                     event_data = []
                     for i in range(len(data)):
                         event_data.append({
-                            "EventID": data[i]['id'][12:],
+                            "EventID": data[i]['id'][6:],
                             "ContainerID": data[i]['value']['args'][0],
                             "List": []
                         })
