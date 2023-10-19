@@ -463,13 +463,9 @@ class Chating:
                                     "Gif_Count": 1,
                                     "Coin": coin
                                 }
-                                print(' add data ---')
                                 self.gifs_list = await append_to_gif(self.gifs_list, gif_type, coin)
                                 gifs_users = await append_to_gifusers(gifs_users, res)
-                                print('----------------------------------')
 
-                    print(f"gifs = users =>  {gifs_users}")
-                    print(f"snack users  =>  {snack_gifs_users}")
                     snack_element_count = 0
                     for chat_element in chating_elements:
                         user_name = ''
@@ -492,7 +488,6 @@ class Chating:
                                 continue
 
                             if len(snacks_elements) > 0:
-                                print(f'snack user = >  {user_name}')
                                 gif_state = await find_in_gifusers(gifs_users, user_name)
                                 snack_cnt_element = snacks_elements[0].text
                                 snack_cnt = re.findall(r'\d+', snack_cnt_element)
@@ -507,14 +502,8 @@ class Chating:
 
                     temp_gifs_users = []
                     for gif in gifs_users:
-                        same_flag = False
-                        for user in snack_gifs_users:
-                            if(gif['UserName'] == user['UserName']):
-                                same_flag = True
-                        
-                        if(same_flag == False):
-                            temp_gifs_users = await find_in_gifusers(gifs_users, gif['UserName'])
-                            snack_gifs_users = await append_to_snack_gifusers(snack_gifs_users, gif['UserName'], temp_gifs_users, 0)
+                        temp_gifs_users = await find_in_gifusers(gifs_users, gif['UserName'])
+                        snack_gifs_users = await append_to_snack_gifusers(snack_gifs_users, gif['UserName'], temp_gifs_users, 0)
 
                     coin_cnt = 0
                     for user in gifs_users:
