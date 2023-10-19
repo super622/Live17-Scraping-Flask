@@ -359,7 +359,7 @@ class EventScraping:
                         except:
                             print('refresh button not exist')
 
-                total_text_elements = browser.find_elements_by_xpath("//*[contains(text(), '総合')]")
+                total_text_elements = browser.find_elements(By.XPATH, "//*[contains(text(), '総合')]")
                 if len(total_text_elements) > 0:
                     date_element = browser.find_elements('css selector', '.sc-egiSv')
                     if(len(date_element) > 0):
