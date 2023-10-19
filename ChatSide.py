@@ -418,7 +418,6 @@ class Chating:
                     except:
                         chating_elements = []
 
-                    print('start -- gifs')
                     print('==========================')
                     print(len(chating_elements))
 
@@ -443,9 +442,11 @@ class Chating:
 
                             if len(gifs_elements) > 0:
                                 gif_type = ''
+                                print('********************************************************')
 
                                 icon_elements = chat_element.find_elements('css selector', '.GiftItem__GiftIcon-sc-g419cs-0')
                                 if len(icon_elements) > 0:
+                                    print('*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_**')
                                     gif_type = gifs_elements[0].text
                                     
                                     coin_element = re.search(r'\((\d+)\)', gif_type)
