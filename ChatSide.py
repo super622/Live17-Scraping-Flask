@@ -430,14 +430,11 @@ class Chating:
                             gifs_elements = []
                             try:
                                 name_element = chat_element.find_elements('css selector', '.ChatUserName__NameWrapper-sc-1ca2hpy-0')
-                                print(len(name_element))
                                 
                                 if(len(name_element) > 0):
                                     user_name = name_element[0].text
-                                print(user_name)
 
-                                gifs_elements = chat_element.find_elements('css selector', '.GiftItem__GiftIcon-sc-g419cs-0')
-                                print(len(gifs_elements))
+                                gifs_elements = chat_element.find_elements('css selector', '.bPvttk')
                             except:
                                 gifs_elements = []
 
@@ -445,29 +442,26 @@ class Chating:
                                 continue
 
                             if len(gifs_elements) > 0:
-                                gif_element = []
                                 gif_type = ''
 
-                                try:
-                                    gif_element = chat_element.find_elements('css selector', '.Chat__ContentWrapper-sc-clenhv-1')
-                                    gif_type = gif_element[0].text
-                                except:
-                                    continue
-                                
-                                coin_element = re.search(r'\((\d+)\)', gif_type)
-                                coin = 0
-                                if coin_element:
-                                    coin = coin_element.group(1)
+                                icon_elements = chat_element.find_elements('css selector', '.GiftItem__GiftIcon-sc-g419cs-0')
+                                if len(icon_elements) > 0:
+                                    gif_type = gifs_elements[0].text
+                                    
+                                    coin_element = re.search(r'\((\d+)\)', gif_type)
+                                    coin = 0
+                                    if coin_element:
+                                        coin = coin_element.group(1)
 
-                                res = {
-                                    "UserName": user_name,
-                                    "Hex": bytes(user_name, "utf-8"),
-                                    "GifType": gif_type,
-                                    "Gif_Count": 1,
-                                    "Coin": coin
-                                }
-                                self.gifs_list = await append_to_gif(self.gifs_list, gif_type, coin)
-                                gifs_users = await append_to_gifusers(gifs_users, res)
+                                    res = {
+                                        "UserName": user_name,
+                                        "Hex": bytes(user_name, "utf-8"),
+                                        "GifType": gif_type,
+                                        "Gif_Count": 1,
+                                        "Coin": coin
+                                    }
+                                    self.gifs_list = await append_to_gif(self.gifs_list, gif_type, coin)
+                                    gifs_users = await append_to_gifusers(gifs_users, res)
 
                     snack_element_count = 0
                     for chat_element in chating_elements:
