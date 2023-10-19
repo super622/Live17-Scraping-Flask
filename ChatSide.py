@@ -46,6 +46,7 @@ class Chating:
         self.total_gifs_user = []
         self.total_snack_user = []
         self.total_results = []
+        self.gifs_list = []
 
     # Get Data from Chating panel
     async def scanData(self):
@@ -401,7 +402,6 @@ class Chating:
             score = ''
             gifs_users = []
             snack_gifs_users = []
-            gifs_list = []
             sub_result = []
             chating_elements = []
             cur_position = 0
@@ -465,7 +465,7 @@ class Chating:
                                     "Coin": coin
                                 }
                                 print(' add data ---')
-                                gifs_list = await append_to_gif(gifs_list, gif_type, coin)
+                                self.gifs_list = await append_to_gif(self.gifs_list, gif_type, coin)
                                 gifs_users = await append_to_gifusers(gifs_users, res)
                                 print('----------------------------------')
 
@@ -498,7 +498,9 @@ class Chating:
                                 snack_cnt = snack_cnt[0]
                                 snack_gifs_users = await append_to_snack_gifusers(snack_gifs_users, user_name, gif_state, snack_cnt)
 
+                    snack_cnt = 0
                     for snack in snack_gifs_users:
+                        print(f"snack cnt => {snack_cnt}")
                         snack_cnt = int(snack['Snack_Count'])
 
                     gif_man_cnt = len(gifs_users)
@@ -516,6 +518,7 @@ class Chating:
                             snack_gifs_users = await append_to_snack_gifusers(snack_gifs_users, gif['UserName'], temp_gifs_users, 0)
 
                     print('start count of coin , score')
+                    coin_cnt = 0
                     for user in gifs_users:
                         coin_cnt += int(user['Coin'])
 
@@ -569,11 +572,11 @@ class Chating:
                     current_month = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).month
                     current_day = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).day
 
-                    self.total_coin_cnt = coin_cnt
-                    self.total_score = score
-
                     if(self.start_day != current_day):
                         print('date==================')
+                        self.total_coin_cnt = coin_cnt
+                        self.total_score = score
+
                         self.start_day = current_day
 
                         self.total_snack_cnt += snack_cnt
@@ -710,10 +713,10 @@ class Chating:
                     await format_cell_format(worksheet, spreadsheet)
 
                     try:
-                        worksheet.update("F1", [[str(self.total_coin_cnt)]], value_input_option="USER_ENTERED")
+                        worksheet.update("F1", [[str(self.total_coin_cnt + coin_cnt)]], value_input_option="USER_ENTERED")
                         worksheet.update("F3", [[str(self.total_snack_cnt + snack_cnt)]], value_input_option="USER_ENTERED")
                         worksheet.update("F2", [[str(self.total_gif_man_cnt + gif_man_cnt)]], value_input_option="USER_ENTERED")
-                        worksheet.update("F4", [[str(self.total_score)]], value_input_option="USER_ENTERED")
+                        worksheet.update("F4", [[str(self.total_score + score)]], value_input_option="USER_ENTERED")
                     except:
                         print('quota <')
 
@@ -729,7 +732,7 @@ class Chating:
                     try:
                         sheet_range = f'ギフト内訳!A2:Z'  # Adjust the range as needed
                         service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
-                        worksheet.insert_rows(gifs_list, row=2)
+                        worksheet.insert_rows(self.gifs_list, row=2)
                     except:
                         print('quota <')
 
