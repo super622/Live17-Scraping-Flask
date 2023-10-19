@@ -424,7 +424,8 @@ class Chating:
                     chat_element_count = 0
                     for chat_element in chating_elements:
                         chat_element_count += 1
-                        if chat_element_count >= (cur_position + 1):
+                        print(f"flag => {chat_element_count > cur_position}")
+                        if chat_element_count > cur_position:
                             user_name = ''
                             gifs_elements = []
                             try:
