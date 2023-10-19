@@ -424,7 +424,7 @@ class Chating:
                     chat_element_count = 0
                     for chat_element in chating_elements:
                         chat_element_count += 1
-                        if chat_element_count == (cur_position + 1):
+                        if chat_element_count >= (cur_position + 1):
                             user_name = ''
                             gifs_elements = []
                             try:
@@ -469,7 +469,7 @@ class Chating:
                         user_name = ''
                         snacks_elements = []
                         snack_element_count += 1
-                        if snack_element_count == (cur_position + 1):
+                        if snack_element_count >= (cur_position + 1):
                             cur_position += 1
 
                             try:
