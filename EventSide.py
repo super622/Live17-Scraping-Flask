@@ -134,7 +134,14 @@ class EventScraping:
 
             data = data['Data']
             for i in range(len(data)):
-                worksheet = spreadsheet.add_worksheet(title=data[i]['EventID'], rows='1000', cols='300')
+                worksheet = None
+                try:
+                    worksheet = spreadsheet.worksheet(f"{data[i]['EventID']}")
+                except:
+                    worksheet = None
+                    
+                if(worksheet == None):
+                    worksheet = spreadsheet.add_worksheet(title=data[i]['EventID'], rows='3000', cols='300')
 
         # Insert image into worksheet
         async def insert_image_in_googlesheet(sheetID, image):
@@ -184,14 +191,13 @@ class EventScraping:
                 worksheet = spreadsheet.worksheet(f"{parent_title} - {title}")
             except:
                 worksheet = None
-            print(worksheet)
+                
             if(worksheet == None):
-                worksheet = spreadsheet.add_worksheet(title=f"{parent_title} - {title}", rows='1000', cols='100')
-                print(worksheet)
+                worksheet = spreadsheet.add_worksheet(title=f"{parent_title} - {title}", rows='3000', cols='100')
             else:
                 try:
                     time.sleep(10)
-                    sheet_range = f'{parent_title} - {title}!A1:A500'  # Adjust the range as needed
+                    sheet_range = f'{parent_title} - {title}!A1:A3000'  # Adjust the range as needed
                     service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
                 except:
                     print('quota <')
@@ -240,7 +246,7 @@ class EventScraping:
                             try:
                                 time.sleep(10)
                                 batch = batch_updater(worksheet.spreadsheet)
-                                batch.set_row_height(worksheet, f'1:{i}', 200)
+                                batch.set_row_height(worksheet, f'A:{i}', 200)
                                 batch.set_column_width(worksheet, f'A:A', 500)
                                 batch.execute()
 
@@ -270,8 +276,8 @@ class EventScraping:
                                     try:
                                         time.sleep(10)
                                         batch = batch_updater(worksheet.spreadsheet)
-                                        batch.set_row_height(worksheet, f'{i}:1', 200)
-                                        batch.set_column_width(worksheet, f'A{i}:A1', 500)
+                                        batch.set_row_height(worksheet, f'A:{i}', 200)
+                                        batch.set_column_width(worksheet, f'A:A', 500)
                                         batch.execute()
                                     except:
                                         print('quota <')
@@ -327,13 +333,6 @@ class EventScraping:
 
             browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
-
-            # Maximize the browser window
-            # browser.maximize_window()
-
-            # Bring the browser window to the front
-            # browser.execute_script("window.focus();")
-            
             browser.get(f'https://event.17.live/{event_id}')
             time.sleep(10)
             main_image = ''
@@ -345,8 +344,6 @@ class EventScraping:
             else:
                 main_image = await handleGetAttr(main_video_elements, 'src')
             
-            print(main_image)
-
             date_element = browser.find_elements('css selector', '.sc-egiSv')
             if(len(date_element) > 0):
                 self.date_str = date_element[0].text
@@ -404,10 +401,12 @@ class EventScraping:
             creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
             client = gspread.authorize(creds)
             spreadsheet = client.open_by_key(sheetID)
+            service = build('sheets', 'v4', credentials=creds)
 
             count = data['Count']
             data = data['Data']
             for i in range(len(data)):
+                worksheet_name = data[i]['EventID']
                 worksheet = spreadsheet.worksheet(data[i]['EventID'])
                 start_row = 1  # Replace with the starting row index
                 start_col = 2  # Replace with the starting column index
@@ -453,6 +452,9 @@ class EventScraping:
                                 temp_arr[j][k] = data[i]['List'][j][l]
                                 l += 1
                         all_data.append(temp_arr)
+
+                    sheet_range = f'{worksheet_name}!A6:Z'  # Adjust the range as needed
+                    service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
 
                     worksheet.insert_rows(all_data, row=row_index)
                 time.sleep(10)
