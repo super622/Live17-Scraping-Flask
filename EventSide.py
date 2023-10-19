@@ -29,7 +29,7 @@ class EventScraping:
         self.event_url = event
         self.start_time_hour = start_time_hour
         self.start_time_minute = start_time_minute
-        self.date_str = ''
+        self.date_str = '-'
         self.end_date_month = end_date_month
         self.end_date_day = end_date_day
         self.end_time_hour = end_time_hour
@@ -138,9 +138,6 @@ class EventScraping:
                 try:
                     worksheet = spreadsheet.worksheet(f"{data[i]['EventID']}")
                 except:
-                    worksheet = None
-                    
-                if(worksheet == None):
                     worksheet = spreadsheet.add_worksheet(title=data[i]['EventID'], rows='3000', cols='300')
 
         # Insert image into worksheet
@@ -246,7 +243,7 @@ class EventScraping:
                             try:
                                 time.sleep(10)
                                 batch = batch_updater(worksheet.spreadsheet)
-                                batch.set_row_height(worksheet, f'{i}:{i}', 200)
+                                batch.set_row_height(worksheet, f'{i}:{i}', 100)
                                 # batch.set_column_width(worksheet, f'A:A', 500)
                                 batch.execute()
 
@@ -276,7 +273,7 @@ class EventScraping:
                                     try:
                                         time.sleep(10)
                                         batch = batch_updater(worksheet.spreadsheet)
-                                        batch.set_row_height(worksheet, f'{i}:{i}', 200)
+                                        batch.set_row_height(worksheet, f'{i}:{i}', 100)
                                         # batch.set_column_width(worksheet, f'A:A', 500)
                                         batch.execute()
                                     except:
@@ -344,10 +341,30 @@ class EventScraping:
             else:
                 main_image = await handleGetAttr(main_video_elements, 'src')
             
-            date_element = browser.find_elements('css selector', '.sc-egiSv')
-            if(len(date_element) > 0):
-                self.date_str = date_element[0].text
-            
+            tab_elements = browser.find_elements('css selector', '.kGvAFP')
+            for i in range(len(tab_elements)):
+                if(i == 0):
+                    continue
+                
+                try:
+                    tab_elements[i].click()
+                    time.sleep(10)
+                except:
+                    time.sleep(10)
+                    refresh_button = browser.find_elements('css selector', '.sc-kHOZQx')
+
+                    if(len(refresh_button) > 0):
+                        try:
+                            refresh_button.click()
+                        except:
+                            print('refresh button not exist')
+
+                total_text_elements = browser.find_elements_by_xpath("//*[contains(text(), '総合')]")
+                if len(total_text_elements) > 0:
+                    date_element = browser.find_elements('css selector', '.sc-egiSv')
+                    if(len(date_element) > 0):
+                        self.date_str = date_element[0].text
+
             await insert_image_in_googlesheet(sheetID, main_image)
 
             tab_elements = browser.find_elements('css selector', '.kGvAFP')
@@ -407,7 +424,12 @@ class EventScraping:
             data = data['Data']
             for i in range(len(data)):
                 worksheet_name = data[i]['EventID']
-                worksheet = spreadsheet.worksheet(data[i]['EventID'])
+                worksheet = None
+                try:
+                    worksheet = spreadsheet.worksheet(worksheet_name)
+                except:
+                    worksheet = spreadsheet.add_worksheet(worksheet_name)
+                
                 start_row = 1  # Replace with the starting row index
                 start_col = 2  # Replace with the starting column index
                 end_row = 1    # Replace with the ending row index
@@ -564,7 +586,7 @@ class EventScraping:
             current_month = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).month
             current_day = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).day
 
-            filename = f"Ranking_{event_json_data[i]['ID']}"
+            filename = f"{event_json_data[i]['ID']}_{current_year}_{self.start_date_month}_{self.start_date_day}"
             folder_name = '11seQXAOIxXozPsCy7rG_CgJW0L8rdPmM'
 
             if((int(self.start_date_month) == current_month and int(self.start_date_day) == current_day) or (int(self.start_date_month) < current_month and int(self.start_date_day) < current_day)):
