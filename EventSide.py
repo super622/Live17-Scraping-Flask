@@ -246,8 +246,8 @@ class EventScraping:
                             try:
                                 time.sleep(10)
                                 batch = batch_updater(worksheet.spreadsheet)
-                                batch.set_row_height(worksheet, f'A:{i}', 200)
-                                batch.set_column_width(worksheet, f'A:A', 500)
+                                batch.set_row_height(worksheet, f'{i}:{i}', 200)
+                                # batch.set_column_width(worksheet, f'A:A', 500)
                                 batch.execute()
 
                                 worksheet.update(f"A{i}", [[insert_image]], value_input_option="USER_ENTERED")
@@ -276,8 +276,8 @@ class EventScraping:
                                     try:
                                         time.sleep(10)
                                         batch = batch_updater(worksheet.spreadsheet)
-                                        batch.set_row_height(worksheet, f'A:{i}', 200)
-                                        batch.set_column_width(worksheet, f'A:A', 500)
+                                        batch.set_row_height(worksheet, f'{i}:{i}', 200)
+                                        # batch.set_column_width(worksheet, f'A:A', 500)
                                         batch.execute()
                                     except:
                                         print('quota <')
