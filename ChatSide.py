@@ -172,6 +172,7 @@ class Chating:
 
         # add git and snack user
         async def append_to_snack_gifusers(snack_gifs_users, user_name, gifs_user, snack_cnt):
+            print(f"compare ==== > {user_name} =< {gifs_user}")
             flag = False
             count = 0
             coin = 0
