@@ -303,7 +303,7 @@ class EventScraping:
                                 if(j == 0):
                                     res_str += data[k]
                                 else:
-                                    res_str += f" | {data[k]}"
+                                    res_str += f"  ==>  {data[k]}"
                                 
                                 if(j == col_cnt - 1):
                                     try:
@@ -343,9 +343,9 @@ class EventScraping:
             
             tab_elements = browser.find_elements('css selector', '.kGvAFP')
             for i in range(len(tab_elements)):
-                if(i == 0):
-                    continue
-                
+                print('---------------------------------------------')
+                print(tab_elements[i].text)
+                print('---------------------------------------------')
                 try:
                     tab_elements[i].click()
                     time.sleep(10)
@@ -369,8 +369,6 @@ class EventScraping:
 
             tab_elements = browser.find_elements('css selector', '.kGvAFP')
             for i in range(len(tab_elements)):
-                if(i == 0):
-                    continue
                 tab_title = tab_elements[i].text
                 print(tab_title)
                 print('================')
