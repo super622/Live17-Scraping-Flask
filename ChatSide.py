@@ -435,7 +435,8 @@ class Chating:
                                     user_name = name_element[0].text
 
                                 gifs_elements = chat_element.find_elements('css selector', '.bPvttk')
-                            except:
+                            except Exception as e:
+                                print(e)
                                 gifs_elements = []
 
                             if(user_name == ''):
@@ -445,25 +446,26 @@ class Chating:
                                 gif_type = ''
                                 print('********************************************************')
 
-                                icon_elements = chat_element.find_elements('css selector', '.GiftItem__GiftIcon-sc-g419cs-0')
-                                if len(icon_elements) > 0:
-                                    print('*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_**')
-                                    gif_type = gifs_elements[0].text
-                                    
-                                    coin_element = re.search(r'\((\d+)\)', gif_type)
-                                    coin = 0
-                                    if coin_element:
-                                        coin = coin_element.group(1)
+                                gif_type = gifs_elements[0].text
+                                
+                                coin_element = re.search(r'\((\d+)\)', gif_type)
+                                coin = 0
+                                if coin_element:
+                                    coin = coin_element.group(1)
+                                else:
+                                    continue
 
-                                    res = {
-                                        "UserName": user_name,
-                                        "Hex": bytes(user_name, "utf-8"),
-                                        "GifType": gif_type,
-                                        "Gif_Count": 1,
-                                        "Coin": coin
-                                    }
-                                    self.gifs_list = await append_to_gif(self.gifs_list, gif_type, coin)
-                                    gifs_users = await append_to_gifusers(gifs_users, res)
+                                print(f"coin => {coin}")
+
+                                res = {
+                                    "UserName": user_name,
+                                    "Hex": bytes(user_name, "utf-8"),
+                                    "GifType": gif_type,
+                                    "Gif_Count": 1,
+                                    "Coin": coin
+                                }
+                                self.gifs_list = await append_to_gif(self.gifs_list, gif_type, coin)
+                                gifs_users = await append_to_gifusers(gifs_users, res)
 
                     snack_element_count = 0
                     for chat_element in chating_elements:
