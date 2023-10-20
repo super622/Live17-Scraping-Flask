@@ -440,6 +440,7 @@ class Chating:
                                 gifs_elements = []
 
                             print(user_name)
+                            print(f"gifs => {len(gifs_elements)}")
                             if(user_name == ''):
                                 continue
 
