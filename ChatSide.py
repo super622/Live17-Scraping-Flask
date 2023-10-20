@@ -439,6 +439,7 @@ class Chating:
                                 print(e)
                                 gifs_elements = []
 
+                            print(user_name)
                             if(user_name == ''):
                                 continue
 
