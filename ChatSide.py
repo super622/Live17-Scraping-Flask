@@ -494,7 +494,6 @@ class Chating:
 
                     snack_element_flag = False
                     before_name = ''
-                    same_cnt = 0
                     for chat_element in chating_elements:
                         user_name = ''
                         snacks_elements = []
@@ -512,7 +511,11 @@ class Chating:
                                 cur_name = ''
                             
                             if(cur_name == last_name):
-                                snack_element_flag = True
+                                if(same_cnt > 0):
+                                    same_cnt -= 1
+                                else:
+                                    chat_element_flag = True
+                                    same_cnt = 0
                                 continue
                         else:
                             try:
