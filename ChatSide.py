@@ -172,7 +172,6 @@ class Chating:
 
         # add git and snack user
         async def append_to_snack_gifusers(snack_gifs_users, user_name, gifs_user, snack_cnt):
-            print(f"compare ==== > {user_name} =< {gifs_user}")
             flag = False
             count = 0
             coin = 0
@@ -405,7 +404,8 @@ class Chating:
             snack_gifs_users = []
             sub_result = []
             chating_elements = []
-            cur_position = 0
+            # cur_position = 0
+            last_name = ''
 
             while True:
                 print(f"cur position => {cur_position}")
@@ -421,11 +421,25 @@ class Chating:
                     print('==========================')
                     print(len(chating_elements))
 
-                    chat_element_count = 0
+                    chat_element_flag = False
                     for chat_element in chating_elements:
-                        chat_element_count += 1
-                        print(f"flag => {chat_element_count > cur_position}")
-                        if chat_element_count > cur_position:
+                        if last_name == '':
+                            chat_element_flag = True
+                        
+                        if(chat_element_flag == False):
+                            cur_name = ''
+                            try:
+                                name_element = chat_element.find_elements('css selector', '.ChatUserName__NameWrapper-sc-1ca2hpy-0')
+                                
+                                if(len(name_element) > 0):
+                                    cur_name = name_element[0].text
+                            except:
+                                cur_name = ''
+                            
+                            if(cur_name == last_name):
+                                chat_element_flag = True
+                                continue
+                        else:
                             user_name = ''
                             gifs_elements = []
                             try:
@@ -475,14 +489,27 @@ class Chating:
                                 self.gifs_list = await append_to_gif(self.gifs_list, gif_type, coin)
                                 gifs_users = await append_to_gifusers(gifs_users, res)
 
-                    snack_element_count = 0
+                    snack_element_flag = False
                     for chat_element in chating_elements:
                         user_name = ''
                         snacks_elements = []
-                        snack_element_count += 1
-                        if snack_element_count >= (cur_position + 1):
-                            cur_position += 1
-
+                        if last_name == '':
+                            snack_element_flag = True
+                        
+                        if(snack_element_flag == False):
+                            cur_name = ''
+                            try:
+                                name_element = chat_element.find_elements('css selector', '.ChatUserName__NameWrapper-sc-1ca2hpy-0')
+                                
+                                if(len(name_element) > 0):
+                                    cur_name = name_element[0].text
+                            except:
+                                cur_name = ''
+                            
+                            if(cur_name == last_name):
+                                snack_element_flag = True
+                                continue
+                        else:
                             try:
                                 name_element = chat_element.find_elements('css selector', '.ChatUserName__NameWrapper-sc-1ca2hpy-0')
                                 
@@ -502,6 +529,7 @@ class Chating:
                                 snack_cnt = re.findall(r'\d+', snack_cnt_element)
                                 snack_cnt = snack_cnt[0]
                                 snack_gifs_users = await append_to_snack_gifusers(snack_gifs_users, user_name, gif_state, snack_cnt)
+                                last_name = user_name
 
                     snack_cnt = 0
                     for snack in snack_gifs_users:
