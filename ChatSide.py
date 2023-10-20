@@ -519,10 +519,11 @@ class Chating:
                             print(f"cur name => {cur_name} = last name => {last_name}")
                             print('----------------------------------------------------------')
                             if(cur_name == last_name):
+                                print(f'True ==================== {same_cnt}')
                                 if(same_cnt > 0):
                                     same_cnt -= 1
                                 else:
-                                    chat_element_flag = True
+                                    snack_element_flag = True
                                     same_cnt = 0
                                 continue
                         else:
