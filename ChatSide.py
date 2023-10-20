@@ -434,7 +434,7 @@ class Chating:
                                 if(len(name_element) > 0):
                                     user_name = name_element[0].text
 
-                                gifs_elements = chat_element.find_elements('css selector', '.bPvttk')
+                                gifs_elements = chat_element.find_elements('css selector', '.GiftItem__GiftIcon-sc-g419cs-0')
                             except Exception as e:
                                 print(e)
                                 gifs_elements = []
@@ -446,9 +446,15 @@ class Chating:
 
                             if len(gifs_elements) > 0:
                                 gif_type = ''
+                                gif_element = []
                                 print('********************************************************')
-
-                                gif_type = gifs_elements[0].text
+                                try:
+                                    gif_element = chat_element.find_elements('css selector', '.Chat__ContentWrapper-sc-clenhv-1')
+                                    gif_type = gif_element[0].text
+                                except:
+                                    time.sleep(1)
+                                    gif_element = chat_element.find_elements('css selector', '.Chat__ContentWrapper-sc-clenhv-1')
+                                    gif_type = gif_element[0].text
                                 
                                 coin_element = re.search(r'\((\d+)\)', gif_type)
                                 coin = 0
