@@ -420,6 +420,9 @@ class Chating:
 
                     chat_element_flag = False
                     count = 0
+                    
+                    print(f"same cnt => {same_cnt} = last name => {last_name}")
+                    print('===========================================================')
                     for chat_element in chating_elements:
                         if last_name == '':
                             chat_element_flag = True
@@ -433,8 +436,10 @@ class Chating:
                                     cur_name = name_element[0].text
                             except:
                                 cur_name = ''
+                            print('----------------------------------------------------------')
+                            print(f"cur name => {cur_name} = last name => {last_name}")
+                            print('----------------------------------------------------------')
                             
-                            print(f"same cnt => {same_cnt} = last name => {last_name}")
                             if(cur_name == last_name):
                                 if(same_cnt > 0):
                                     if(count == same_cnt):
