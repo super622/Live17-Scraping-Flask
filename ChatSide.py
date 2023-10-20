@@ -410,14 +410,6 @@ class Chating:
                 if(len(chating_panel) > 0):
                     try:
                         chating_elements = browser.find_elements('css selector', '.Chat__ChatWrapper-sc-clenhv-0')
-                        print(len(chating_elements))
-
-                        browser.execute_script("""
-                            var element = document.getElementsByClassName("ChatList__ListWrapper-sc-733d46-1")[0];
-                            if (element)
-                                element.innerHTML = '';
-                            """)
-                        print(len(chating_elements))
                     except:
                         chating_elements = []
 
@@ -488,6 +480,8 @@ class Chating:
                             snack_cnt = re.findall(r'\d+', snack_cnt_element)
                             snack_cnt = snack_cnt[0]
                             snack_gifs_users = await append_to_snack_gifusers(snack_gifs_users, user_name, gif_state, snack_cnt)
+
+                    browser.execute_script("arguments[0].remove();", chating_elements)
 
                     snack_cnt = 0
                     for snack in snack_gifs_users:
