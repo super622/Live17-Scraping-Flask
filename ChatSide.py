@@ -416,7 +416,7 @@ class Chating:
                     except:
                         chating_elements = []
 
-                    print('==========================')
+                    print('=============     gifs      =============')
 
                     chat_element_flag = False
                     count = 0
@@ -494,6 +494,10 @@ class Chating:
                                 self.gifs_list = await append_to_gif(self.gifs_list, gif_type, coin)
                                 gifs_users = await append_to_gifusers(gifs_users, res)
 
+                    print('===================    snack     ================')
+                    print(len(chating_elements))
+                    print(f"same cnt => {same_cnt} = last name => {last_name}")
+                    print('===========================================================')
                     snack_element_flag = False
                     before_name = ''
                     for chat_element in chating_elements:
@@ -511,7 +515,9 @@ class Chating:
                                     cur_name = name_element[0].text
                             except:
                                 cur_name = ''
-                            
+                            print('----------------------------------------------------------')
+                            print(f"cur name => {cur_name} = last name => {last_name}")
+                            print('----------------------------------------------------------')
                             if(cur_name == last_name):
                                 if(same_cnt > 0):
                                     same_cnt -= 1
@@ -548,7 +554,7 @@ class Chating:
                                     else:
                                         same_cnt = 0
                                     before_name = user_name
-                                    
+
                     print(f"before  ==== > {before_name}")
 
                     snack_cnt = 0
