@@ -420,7 +420,7 @@ class Chating:
 
                     chat_element_flag = False
                     count = 0
-                    
+                    print(len(chating_elements))
                     print(f"same cnt => {same_cnt} = last name => {last_name}")
                     print('===========================================================')
                     for chat_element in chating_elements:
@@ -548,7 +548,8 @@ class Chating:
                                     else:
                                         same_cnt = 0
                                     before_name = user_name
-                                print(before_name)
+                                    
+                    print(f"before  ==== > {before_name}")
 
                     snack_cnt = 0
                     for snack in snack_gifs_users:
