@@ -405,6 +405,7 @@ class Chating:
             sub_result = []
             chating_elements = []
             last_name = ''
+            same_cnt = 0
 
             while True:
                 chating_panel = browser.find_elements('css selector', '.ChatList__ListWrapper-sc-733d46-1')
@@ -436,7 +437,10 @@ class Chating:
                             
                             print(f"cur name => {cur_name} = last name => {last_name}")
                             if(cur_name == last_name):
-                                chat_element_flag = True
+                                if(same_cnt > 0):
+                                    same_cnt -= 1
+                                else:
+                                    chat_element_flag = True
                                 continue
                         else:
                             user_name = ''
@@ -489,6 +493,8 @@ class Chating:
                                 gifs_users = await append_to_gifusers(gifs_users, res)
 
                     snack_element_flag = False
+                    before_name = ''
+                    same_cnt = 0
                     for chat_element in chating_elements:
                         user_name = ''
                         snacks_elements = []
@@ -529,6 +535,13 @@ class Chating:
                                 snack_cnt = snack_cnt[0]
                                 snack_gifs_users = await append_to_snack_gifusers(snack_gifs_users, user_name, gif_state, snack_cnt)
                                 last_name = user_name
+                                if(before_name == ''):
+                                    before_name = user_name
+                                else:
+                                    if(before_name == user_name):
+                                        same_cnt += 1
+                                    else:
+                                        same_cnt = 0
 
                     snack_cnt = 0
                     for snack in snack_gifs_users:
