@@ -404,11 +404,9 @@ class Chating:
             snack_gifs_users = []
             sub_result = []
             chating_elements = []
-            # cur_position = 0
             last_name = ''
 
             while True:
-                print(f"cur position => {cur_position}")
                 chating_panel = browser.find_elements('css selector', '.ChatList__ListWrapper-sc-733d46-1')
                 print('start')
                 if(len(chating_panel) > 0):
