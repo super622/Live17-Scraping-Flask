@@ -435,7 +435,7 @@ class Chating:
                             except:
                                 cur_name = ''
                             
-                            print(f"cur name => {cur_name} = last name => {last_name}")
+                            print(f"same cnt => {same_cnt} = last name => {last_name}")
                             if(cur_name == last_name):
                                 if(same_cnt > 0):
                                     same_cnt -= 1
