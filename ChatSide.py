@@ -413,7 +413,7 @@ class Chating:
                         print(len(chating_elements))
 
                         browser.execute_script("""
-                            var element = document.querySelector(".ChatList__ListWrapper-sc-733d46-1");
+                            var element = document.getElementsByClassName(".ChatList__ListWrapper-sc-733d46-1")[0];
                             if (element)
                                 element.innerHTML = '';
                             """)
