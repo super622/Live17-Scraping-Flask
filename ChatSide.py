@@ -542,6 +542,7 @@ class Chating:
                                         same_cnt += 1
                                     else:
                                         same_cnt = 0
+                                    before_name = user_name
 
                     snack_cnt = 0
                     for snack in snack_gifs_users:
