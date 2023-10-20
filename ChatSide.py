@@ -410,11 +410,14 @@ class Chating:
                 if(len(chating_panel) > 0):
                     try:
                         chating_elements = browser.find_elements('css selector', '.Chat__ChatWrapper-sc-clenhv-0')
+                        print(len(chating_elements))
+
                         browser.execute_script("""
                             var element = document.querySelector(".ChatList__ListWrapper-sc-733d46-1");
                             if (element)
                                 element.innerHTML = '';
                             """)
+                        print(len(chating_elements))
                     except:
                         chating_elements = []
 
