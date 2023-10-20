@@ -403,160 +403,88 @@ class Chating:
             snack_gifs_users = []
             sub_result = []
             chating_elements = []
-            last_name = ''
-            same_cnt = 0
 
             while True:
                 chating_panel = browser.find_elements('css selector', '.ChatList__ListWrapper-sc-733d46-1')
                 print('start')
                 if(len(chating_panel) > 0):
-
                     try:
                         chating_elements = browser.find_elements('css selector', '.Chat__ChatWrapper-sc-clenhv-0')
+                        browser.execute_script("""
+                            var element = document.querySelector(".Chat__ChatWrapper-sc-clenhv-0");
+                            if (element)
+                                element.parentNode.removeChild(element);
+                            """)
                     except:
                         chating_elements = []
 
-                    print('=============     gifs      =============')
-
-                    chat_element_flag = False
-                    count = 0
-                    print(len(chating_elements))
-                    print(f"same cnt => {same_cnt} = last name => {last_name}")
-                    print('===========================================================')
                     for chat_element in chating_elements:
-                        if last_name == '':
-                            chat_element_flag = True
-                        
-                        if(chat_element_flag == False):
-                            cur_name = ''
-                            try:
-                                name_element = chat_element.find_elements('css selector', '.ChatUserName__NameWrapper-sc-1ca2hpy-0')
-                                
-                                if(len(name_element) > 0):
-                                    cur_name = name_element[0].text
-                            except:
-                                cur_name = ''
-                            print('----------------------------------------------------------')
-                            print(f"cur name => {cur_name} = last name => {last_name}")
-                            print('----------------------------------------------------------')
+                        user_name = ''
+                        gifs_elements = []
+                        try:
+                            name_element = chat_element.find_elements('css selector', '.ChatUserName__NameWrapper-sc-1ca2hpy-0')
                             
-                            if(cur_name == last_name):
-                                if(same_cnt > 0):
-                                    if(count == same_cnt):
-                                        chat_element_flag = True
-                                    else:
-                                        count += 1
-                                else:
-                                    chat_element_flag = True
-                                continue
-                        else:
-                            user_name = ''
+                            if(len(name_element) > 0):
+                                user_name = name_element[0].text
+
+                            gifs_elements = chat_element.find_elements('css selector', '.GiftItem__GiftIcon-sc-g419cs-0')
+                        except Exception as e:
+                            print(e)
                             gifs_elements = []
+
+                        if(user_name == ''):
+                            continue
+
+                        if len(gifs_elements) > 0:
+                            gif_type = ''
+                            gif_element = []
                             try:
-                                name_element = chat_element.find_elements('css selector', '.ChatUserName__NameWrapper-sc-1ca2hpy-0')
-                                
-                                if(len(name_element) > 0):
-                                    user_name = name_element[0].text
-
-                                gifs_elements = chat_element.find_elements('css selector', '.GiftItem__GiftIcon-sc-g419cs-0')
-                            except Exception as e:
-                                print(e)
-                                gifs_elements = []
-
-                            if(user_name == ''):
+                                gif_element = chat_element.find_elements('css selector', '.Chat__ContentWrapper-sc-clenhv-1')
+                                gif_type = gif_element[0].text
+                            except:
+                                time.sleep(1)
+                                gif_element = chat_element.find_elements('css selector', '.Chat__ContentWrapper-sc-clenhv-1')
+                                gif_type = gif_element[0].text
+                            
+                            coin_element = re.search(r'\((\d+)\)', gif_type)
+                            coin = 0
+                            if coin_element:
+                                coin = coin_element.group(1)
+                            else:
                                 continue
 
-                            if len(gifs_elements) > 0:
-                                gif_type = ''
-                                gif_element = []
-                                try:
-                                    gif_element = chat_element.find_elements('css selector', '.Chat__ContentWrapper-sc-clenhv-1')
-                                    gif_type = gif_element[0].text
-                                except:
-                                    time.sleep(1)
-                                    gif_element = chat_element.find_elements('css selector', '.Chat__ContentWrapper-sc-clenhv-1')
-                                    gif_type = gif_element[0].text
-                                
-                                coin_element = re.search(r'\((\d+)\)', gif_type)
-                                coin = 0
-                                if coin_element:
-                                    coin = coin_element.group(1)
-                                else:
-                                    continue
+                            res = {
+                                "UserName": user_name,
+                                "Hex": bytes(user_name, "utf-8"),
+                                "GifType": gif_type,
+                                "Gif_Count": 1,
+                                "Coin": coin
+                            }
+                            self.gifs_list = await append_to_gif(self.gifs_list, gif_type, coin)
+                            gifs_users = await append_to_gifusers(gifs_users, res)
 
-                                res = {
-                                    "UserName": user_name,
-                                    "Hex": bytes(user_name, "utf-8"),
-                                    "GifType": gif_type,
-                                    "Gif_Count": 1,
-                                    "Coin": coin
-                                }
-                                self.gifs_list = await append_to_gif(self.gifs_list, gif_type, coin)
-                                gifs_users = await append_to_gifusers(gifs_users, res)
-
-                    print('===================    snack     ================')
-                    print(len(chating_elements))
-                    print(f"same cnt => {same_cnt} = last name => {last_name}")
-                    print('===========================================================')
-                    snack_element_flag = False
-                    before_name = ''
                     for chat_element in chating_elements:
                         user_name = ''
                         snacks_elements = []
-                        if last_name == '':
-                            snack_element_flag = True
-                        
-                        if(snack_element_flag == False):
-                            cur_name = ''
-                            try:
-                                name_element = chat_element.find_elements('css selector', '.ChatUserName__NameWrapper-sc-1ca2hpy-0')
-                                
-                                if(len(name_element) > 0):
-                                    cur_name = name_element[0].text
-                            except:
-                                cur_name = ''
-                            print('----------------------------------------------------------')
-                            print(f"cur name => {cur_name} = last name => {last_name}")
-                            print('----------------------------------------------------------')
-                            if(cur_name == last_name):
-                                print(f'True ==================== {same_cnt}')
-                                if(same_cnt > 0):
-                                    same_cnt -= 1
-                                else:
-                                    snack_element_flag = True
-                                    same_cnt = 0
-                                continue
-                        else:
-                            try:
-                                name_element = chat_element.find_elements('css selector', '.ChatUserName__NameWrapper-sc-1ca2hpy-0')
-                                
-                                if(len(name_element) > 0):
-                                    user_name = name_element[0].text
+                        try:
+                            name_element = chat_element.find_elements('css selector', '.ChatUserName__NameWrapper-sc-1ca2hpy-0')
+                            
+                            if(len(name_element) > 0):
+                                user_name = name_element[0].text
 
-                                snacks_elements = chat_element.find_elements('css selector', '.LaborReward__ControlledText-sc-cxndew-0')
-                            except:
-                                snacks_elements = []
+                            snacks_elements = chat_element.find_elements('css selector', '.LaborReward__ControlledText-sc-cxndew-0')
+                        except:
+                            snacks_elements = []
 
-                            if(user_name == ''):
-                                continue
+                        if(user_name == ''):
+                            continue
 
-                            if len(snacks_elements) > 0:
-                                gif_state = await find_in_gifusers(gifs_users, user_name)
-                                snack_cnt_element = snacks_elements[0].text
-                                snack_cnt = re.findall(r'\d+', snack_cnt_element)
-                                snack_cnt = snack_cnt[0]
-                                snack_gifs_users = await append_to_snack_gifusers(snack_gifs_users, user_name, gif_state, snack_cnt)
-                                last_name = user_name
-                                if(before_name == ''):
-                                    before_name = user_name
-                                else:
-                                    if(before_name == user_name):
-                                        same_cnt += 1
-                                    else:
-                                        same_cnt = 0
-                                    before_name = user_name
-
-                    print(f"before  ==== > {before_name}")
+                        if len(snacks_elements) > 0:
+                            gif_state = await find_in_gifusers(gifs_users, user_name)
+                            snack_cnt_element = snacks_elements[0].text
+                            snack_cnt = re.findall(r'\d+', snack_cnt_element)
+                            snack_cnt = snack_cnt[0]
+                            snack_gifs_users = await append_to_snack_gifusers(snack_gifs_users, user_name, gif_state, snack_cnt)
 
                     snack_cnt = 0
                     for snack in snack_gifs_users:
