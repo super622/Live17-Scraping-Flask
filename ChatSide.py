@@ -314,7 +314,6 @@ class Chating:
         # get score data
         async def get_score_data(elements):
             score = ''
-            print(len(elements))
             for element in elements:
                 print(element.text)
                 if element.text == '':
@@ -418,9 +417,9 @@ class Chating:
                         chating_elements = []
 
                     print('==========================')
-                    print(len(chating_elements))
 
                     chat_element_flag = False
+                    count = 0
                     for chat_element in chating_elements:
                         if last_name == '':
                             chat_element_flag = True
@@ -438,7 +437,10 @@ class Chating:
                             print(f"same cnt => {same_cnt} = last name => {last_name}")
                             if(cur_name == last_name):
                                 if(same_cnt > 0):
-                                    same_cnt -= 1
+                                    if(count == same_cnt):
+                                        chat_element_flag = True
+                                    else:
+                                        count += 1
                                 else:
                                     chat_element_flag = True
                                 continue
@@ -456,15 +458,12 @@ class Chating:
                                 print(e)
                                 gifs_elements = []
 
-                            print(user_name)
-                            print(f"gifs => {len(gifs_elements)}")
                             if(user_name == ''):
                                 continue
 
                             if len(gifs_elements) > 0:
                                 gif_type = ''
                                 gif_element = []
-                                print('********************************************************')
                                 try:
                                     gif_element = chat_element.find_elements('css selector', '.Chat__ContentWrapper-sc-clenhv-1')
                                     gif_type = gif_element[0].text
@@ -479,8 +478,6 @@ class Chating:
                                     coin = coin_element.group(1)
                                 else:
                                     continue
-
-                                print(f"coin => {coin}")
 
                                 res = {
                                     "UserName": user_name,
@@ -546,6 +543,7 @@ class Chating:
                                     else:
                                         same_cnt = 0
                                     before_name = user_name
+                                print(before_name)
 
                     snack_cnt = 0
                     for snack in snack_gifs_users:
