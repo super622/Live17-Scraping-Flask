@@ -434,6 +434,7 @@ class Chating:
                             except:
                                 cur_name = ''
                             
+                            print(f"cur name => {cur_name} = last name => {last_name}")
                             if(cur_name == last_name):
                                 chat_element_flag = True
                                 continue
