@@ -411,9 +411,9 @@ class Chating:
                     try:
                         chating_elements = browser.find_elements('css selector', '.Chat__ChatWrapper-sc-clenhv-0')
                         browser.execute_script("""
-                            var element = document.querySelector(".Chat__ChatWrapper-sc-clenhv-0");
+                            var element = document.querySelector(".ChatList__ListWrapper-sc-733d46-1");
                             if (element)
-                                element.parentNode.removeChild(element);
+                                element.innerHTML = '';
                             """)
                     except:
                         chating_elements = []
