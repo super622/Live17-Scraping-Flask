@@ -78,10 +78,22 @@ class Chating:
             if flag:
                 return gifs_users
             else:
-                self.gif_man_cnt += 1
                 gifs_users.append(res)
                 return gifs_users
             
+        # Count gif users
+        async def count_of_gifs_man(gifs_users_name, res):
+            flag = False
+            for user in gifs_users_name:
+                if user == res['UserName']:
+                    flag = True
+                
+            if flag:
+                return len(gifs_users_name)
+            else:
+                gifs_users_name.append(res['UserName'])
+                return len(gifs_users_name)
+    
         # add gif list
         async def append_to_gif(gif_list, gif_type, coin):
             flag = False
@@ -402,6 +414,7 @@ class Chating:
             coin_cnt = 0
             score = ''
             gifs_users = []
+            gifs_users_name = []
             snack_gifs_users = []
             sub_result = []
             chating_elements = []
@@ -459,6 +472,7 @@ class Chating:
                             }
                             self.gifs_list = await append_to_gif(self.gifs_list, gif_type, coin)
                             gifs_users = await append_to_gifusers(gifs_users, res)
+                            self.gif_man_cnt = await count_of_gifs_man(gifs_users_name, res)
 
                     for chat_element in chating_elements:
                         user_name = ''
