@@ -730,10 +730,6 @@ class Chating:
                         result_response(3)
                         return 
 
-                else:
-                    result_response(2)
-                    return 'Failure'
-
     async def main(self):
         result = await self.scanData()
         return result
