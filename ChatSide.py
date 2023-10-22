@@ -257,7 +257,7 @@ class Chating:
                 return items[0]['id']
 
         # format cell type
-        async def format_cell_format(worksheet, spreadsheet):
+        async def format_cell_format(worksheet, spreadsheet, type):
             try:
                 fmt1 = CellFormat(
                         backgroundColor=Color(0.93, 0.93, 0.93),
@@ -271,10 +271,13 @@ class Chating:
                         textFormat=TextFormat(bold=False, foregroundColor=Color(0, 0, 0)),
                         horizontalAlignment='CENTER',
                     )
-
-                format_cell_range(worksheet, 'A5:H5', fmt1)
-                format_cell_range(worksheet, 'E1:E5', fmt2)
-
+                if 1:
+                    format_cell_range(worksheet, 'A5:H5', fmt1)
+                    format_cell_range(worksheet, 'E1:E5', fmt2)
+                else:
+                    format_cell_range(worksheet, 'A4:H4', fmt1)
+                    format_cell_range(worksheet, 'E1:E4', fmt2)
+                
                 fmt = CellFormat(
                         horizontalAlignment='CENTER'
                     )
@@ -302,28 +305,50 @@ class Chating:
                 print('quota <')
 
         # init content of worksheet
-        async def init_content_of_worksheet(worksheet):
-            worksheet.update("E1", [["コイン数"]], value_input_option="USER_ENTERED")
-            worksheet.update("E2", [["ギフト人数"]], value_input_option="USER_ENTERED")
-            worksheet.update("E3", [["スナック数"]], value_input_option="USER_ENTERED")
-            worksheet.update("E4", [["スコア"]], value_input_option="USER_ENTERED")
+        async def init_content_of_worksheet(worksheet, type):
+            if type:
+                worksheet.update("E1", [["コイン数"]], value_input_option="USER_ENTERED")
+                worksheet.update("E2", [["ギフト人数"]], value_input_option="USER_ENTERED")
+                worksheet.update("E3", [["スナック数"]], value_input_option="USER_ENTERED")
+                worksheet.update("E4", [["スコア"]], value_input_option="USER_ENTERED")
 
-            worksheet.update("A5", [["リスナー名"]], value_input_option="USER_ENTERED")
-            worksheet.update("B5", [["ギフト名"]], value_input_option="USER_ENTERED")
-            worksheet.update("C5", [["ギフト個数"]], value_input_option="USER_ENTERED")
-            worksheet.update("D5", [["コイン数"]], value_input_option="USER_ENTERED")
-            worksheet.update("E5", [["リスナー名"]], value_input_option="USER_ENTERED")
-            worksheet.update("F5", [["スナック"]], value_input_option="USER_ENTERED")
-            worksheet.update("G5", [["ギフト個数"]], value_input_option="USER_ENTERED")
-            worksheet.update("H5", [["合計コイン"]], value_input_option="USER_ENTERED")
+                worksheet.update("A5", [["リスナー名"]], value_input_option="USER_ENTERED")
+                worksheet.update("B5", [["ギフト名"]], value_input_option="USER_ENTERED")
+                worksheet.update("C5", [["ギフト個数"]], value_input_option="USER_ENTERED")
+                worksheet.update("D5", [["コイン数"]], value_input_option="USER_ENTERED")
+                worksheet.update("E5", [["リスナー名"]], value_input_option="USER_ENTERED")
+                worksheet.update("F5", [["スナック"]], value_input_option="USER_ENTERED")
+                worksheet.update("G5", [["ギフト個数"]], value_input_option="USER_ENTERED")
+                worksheet.update("H5", [["合計コイン"]], value_input_option="USER_ENTERED")
 
-            batch = batch_updater(worksheet)
-            batch.set_column_width(worksheet, 'A:A', 200)
-            batch.execute()
+                batch = batch_updater(worksheet)
+                batch.set_column_width(worksheet, 'A:A', 200)
+                batch.execute()
 
-            batch = batch_updater(worksheet)
-            batch.set_column_width(worksheet, 'E:E', 200)
-            batch.execute()
+                batch = batch_updater(worksheet)
+                batch.set_column_width(worksheet, 'E:E', 200)
+                batch.execute()
+            else:
+                worksheet.update("E1", [["コイン数"]], value_input_option="USER_ENTERED")
+                worksheet.update("E2", [["ギフト人数"]], value_input_option="USER_ENTERED")
+                worksheet.update("E3", [["スナック数"]], value_input_option="USER_ENTERED")
+
+                worksheet.update("A4", [["リスナー名"]], value_input_option="USER_ENTERED")
+                worksheet.update("B4", [["ギフト名"]], value_input_option="USER_ENTERED")
+                worksheet.update("C4", [["ギフト個数"]], value_input_option="USER_ENTERED")
+                worksheet.update("D4", [["コイン数"]], value_input_option="USER_ENTERED")
+                worksheet.update("E4", [["リスナー名"]], value_input_option="USER_ENTERED")
+                worksheet.update("F4", [["スナック"]], value_input_option="USER_ENTERED")
+                worksheet.update("G4", [["ギフト個数"]], value_input_option="USER_ENTERED")
+                worksheet.update("H4", [["合計コイン"]], value_input_option="USER_ENTERED")
+
+                batch = batch_updater(worksheet)
+                batch.set_column_width(worksheet, 'A:A', 200)
+                batch.execute()
+
+                batch = batch_updater(worksheet)
+                batch.set_column_width(worksheet, 'E:E', 200)
+                batch.execute()
 
         # get score data
         async def get_score_data(elements):
@@ -628,23 +653,23 @@ class Chating:
                     if(create_flag or tab_position == 1):
                         worksheet = spreadsheet.sheet1
 
-                        await format_cell_format(worksheet, spreadsheet)
+                        await format_cell_format(worksheet, spreadsheet, 1)
 
                         try:
                             worksheet.resize(rows=5000, cols=8)
 
                             worksheet.update_title(f"{self.start_month}-{self.start_day}")
 
-                            await init_content_of_worksheet(worksheet)
+                            await init_content_of_worksheet(worksheet, True)
                         except:
                             print('quota <')
 
                         worksheet = spreadsheet.add_worksheet(title="total", rows='5000', cols='8')
 
-                        await format_cell_format(worksheet, spreadsheet)
+                        await format_cell_format(worksheet, spreadsheet, 2)
 
                         try:
-                            await init_content_of_worksheet(worksheet)
+                            await init_content_of_worksheet(worksheet, False)
                         except:
                             print('quota <')
 
@@ -689,13 +714,13 @@ class Chating:
                         worksheet = spreadsheet.add_worksheet(title=f"{self.start_month}-{self.start_day}", rows='5000', cols='8', index=(tab_position - 1))
 
                         try:
-                            await init_content_of_worksheet(worksheet)
+                            await init_content_of_worksheet(worksheet, True)
                         except:
                             print('quota <')
 
                     # write content into google sheet
                     worksheet = spreadsheet.get_worksheet(tab_position - 3)
-                    await format_cell_format(worksheet, spreadsheet)
+                    await format_cell_format(worksheet, spreadsheet, 1)
 
                     try:
                         worksheet.update("F1", [[str(coin_cnt)]], value_input_option="USER_ENTERED")
@@ -713,7 +738,7 @@ class Chating:
                         print('quota <')
 
                     worksheet = spreadsheet.worksheet("total")
-                    await format_cell_format(worksheet, spreadsheet)
+                    await format_cell_format(worksheet, spreadsheet, 2)
 
                     try:
                         worksheet.update("F1", [[str(self.total_coin_cnt + coin_cnt)]], value_input_option="USER_ENTERED")
