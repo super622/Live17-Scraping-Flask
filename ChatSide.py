@@ -47,6 +47,7 @@ class Chating:
         self.total_snack_user = []
         self.total_results = []
         self.gifs_list = []
+        self.gif_man_cnt = 0
 
     # Get Data from Chating panel
     async def scanData(self):
@@ -77,6 +78,7 @@ class Chating:
             if flag:
                 return gifs_users
             else:
+                self.gif_man_cnt += 1
                 gifs_users.append(res)
                 return gifs_users
             
@@ -396,7 +398,7 @@ class Chating:
             time.sleep(2)
 
             snack_cnt = 0
-            gif_man_cnt = 0
+            self.gif_man_cnt = 0
             coin_cnt = 0
             score = ''
             gifs_users = []
@@ -490,8 +492,6 @@ class Chating:
                     for snack in snack_gifs_users:
                         snack_cnt += int(snack['Snack_Count'])
 
-                    gif_man_cnt = len(gifs_users)
-
                     temp_gifs_users = []
                     for gif in gifs_users:
                         temp_gifs_users = await find_in_gifusers(gifs_users, gif['UserName'])
@@ -567,7 +567,7 @@ class Chating:
                         self.start_day = current_day
 
                         self.total_snack_cnt += snack_cnt
-                        self.total_gif_man_cnt += gif_man_cnt
+                        self.total_gif_man_cnt += self.gif_man_cnt
 
                         # total_gifs_user
                         temp_gifs_arr = self.total_gifs_user
@@ -684,7 +684,7 @@ class Chating:
                     try:
                         worksheet.update("F1", [[str(coin_cnt)]], value_input_option="USER_ENTERED")
                         worksheet.update("F3", [[str(snack_cnt)]], value_input_option="USER_ENTERED")
-                        worksheet.update("F2", [[str(gif_man_cnt)]], value_input_option="USER_ENTERED")
+                        worksheet.update("F2", [[str(self.gif_man_cnt)]], value_input_option="USER_ENTERED")
                         worksheet.update("F4", [[str(score)]], value_input_option="USER_ENTERED")
                     except:
                         print('quota <')
@@ -702,7 +702,7 @@ class Chating:
                     try:
                         worksheet.update("F1", [[str(self.total_coin_cnt + coin_cnt)]], value_input_option="USER_ENTERED")
                         worksheet.update("F3", [[str(self.total_snack_cnt + snack_cnt)]], value_input_option="USER_ENTERED")
-                        worksheet.update("F2", [[str(self.total_gif_man_cnt + gif_man_cnt)]], value_input_option="USER_ENTERED")
+                        worksheet.update("F2", [[str(self.total_gif_man_cnt + self.gif_man_cnt)]], value_input_option="USER_ENTERED")
                         worksheet.update("F4", [[str(self.total_score + score)]], value_input_option="USER_ENTERED")
                     except:
                         print('quota <')
