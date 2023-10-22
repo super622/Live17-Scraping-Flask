@@ -422,6 +422,8 @@ class Chating:
             while True:
                 chating_panel = browser.find_elements('css selector', '.ChatList__ListWrapper-sc-733d46-1')
                 print('start')
+                print(len(chating_panel))
+                print('================================')
                 if(len(chating_panel) > 0):
                     try:
                         chating_elements = browser.find_elements('css selector', '.Chat__ChatWrapper-sc-clenhv-0')
