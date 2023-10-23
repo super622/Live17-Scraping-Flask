@@ -445,6 +445,9 @@ class Chating:
             chating_elements = []
 
             while True:
+                print('************************')
+                print(browser)
+                print('************************')
                 chating_panel = browser.find_elements('css selector', '.ChatList__ListWrapper-sc-733d46-1')
                 print('start')
                 print(len(chating_panel))
