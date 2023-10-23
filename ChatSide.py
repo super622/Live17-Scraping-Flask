@@ -774,7 +774,9 @@ class Chating:
                         result_response(3)
                         return 
                 else:
-                    browser.refresh()
+                    print('request again url')
+                    browser.get(url)
+                    time.sleep(2)
 
     async def main(self):
         result = await self.scanData()
