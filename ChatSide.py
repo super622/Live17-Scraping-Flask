@@ -524,10 +524,13 @@ class Chating:
                             snack_cnt = snack_cnt[0]
                             snack_gifs_users = await append_to_snack_gifusers(snack_gifs_users, user_name, gif_state, snack_cnt)
 
-                    browser.execute_script("""
-                        var elements = arguments[0]
-                        elements.forEach((element) => element.parentNode.removeChild(element))
-                    """, chating_elements)
+                    try:
+                        browser.execute_script("""
+                            var elements = arguments[0]
+                            elements.forEach((element) => element.parentNode.removeChild(element))
+                        """, chating_elements)
+                    except:
+                        print('error javascript')
 
                     snack_cnt = 0
                     for snack in snack_gifs_users:
@@ -770,6 +773,8 @@ class Chating:
                     if current_month == self.end_date_month and current_day == self.end_date_day and current_hour == self.end_time_hour and current_minute == self.end_time_minute:
                         result_response(3)
                         return 
+                else:
+                    time.sleep(10)
 
     async def main(self):
         result = await self.scanData()
