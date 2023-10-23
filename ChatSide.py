@@ -751,7 +751,7 @@ class Chating:
                     try:
                         sheet_range = f'total!A6:Z'
                         service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
-                        worksheet.insert_rows(temp_total_results, row=6)
+                        worksheet.insert_rows(temp_total_results, row=5)
                     except:
                         print('quota <')
 
