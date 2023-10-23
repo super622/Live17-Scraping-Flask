@@ -271,7 +271,7 @@ class Chating:
                         textFormat=TextFormat(bold=False, foregroundColor=Color(0, 0, 0)),
                         horizontalAlignment='CENTER',
                     )
-                if 1:
+                if type:
                     format_cell_range(worksheet, 'A5:H5', fmt1)
                     format_cell_range(worksheet, 'E1:E5', fmt2)
                 else:
@@ -653,7 +653,7 @@ class Chating:
                     if(create_flag or tab_position == 1):
                         worksheet = spreadsheet.sheet1
 
-                        await format_cell_format(worksheet, spreadsheet, 1)
+                        await format_cell_format(worksheet, spreadsheet, True)
 
                         try:
                             worksheet.resize(rows=5000, cols=8)
@@ -666,7 +666,7 @@ class Chating:
 
                         worksheet = spreadsheet.add_worksheet(title="total", rows='5000', cols='8')
 
-                        await format_cell_format(worksheet, spreadsheet, 2)
+                        await format_cell_format(worksheet, spreadsheet, False)
 
                         try:
                             await init_content_of_worksheet(worksheet, False)
@@ -720,7 +720,7 @@ class Chating:
 
                     # write content into google sheet
                     worksheet = spreadsheet.get_worksheet(tab_position - 3)
-                    await format_cell_format(worksheet, spreadsheet, 1)
+                    await format_cell_format(worksheet, spreadsheet, True)
 
                     try:
                         worksheet.update("F1", [[str(coin_cnt)]], value_input_option="USER_ENTERED")
@@ -738,7 +738,7 @@ class Chating:
                         print('quota <')
 
                     worksheet = spreadsheet.worksheet("total")
-                    await format_cell_format(worksheet, spreadsheet, 2)
+                    await format_cell_format(worksheet, spreadsheet, False)
 
                     try:
                         worksheet.update("F1", [[str(self.total_coin_cnt + coin_cnt)]], value_input_option="USER_ENTERED")
