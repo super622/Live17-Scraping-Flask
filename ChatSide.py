@@ -426,8 +426,8 @@ class Chating:
             url = f'https://17.live/ja/live/{live_room_id}'
 
             options = webdriver.ChromeOptions()
-            options.add_argument('--headless')
-            options.add_argument('--no-sandbox')
+            # options.add_argument('--headless')
+            # options.add_argument('--no-sandbox')
 
             browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
