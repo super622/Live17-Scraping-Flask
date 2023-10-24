@@ -756,6 +756,12 @@ class Chating:
                                 origin_array = before_gifs_users[0:len(gifs_users)]
                                 rest_array = before_gifs_users[len(gifs_users):len(before_gifs_users)]
                                 print(rest_array)
+                                
+                                for i in range(len(origin_array)):
+                                    if gifs_users[i]['Gif_Count'] != origin_array[i]['Gif_Count']:
+                                        worksheet.update(f"C{i + 6}", [[gifs_users[i]['Gif_Count']]], value_input_option="USER_ENTERED")
+                                    if gifs_users[i]['Coin']!= origin_array[i]['Coin']:
+                                        worksheet.update(f"D{i + 6}", [[gifs_users[i]['Coin']]], value_input_option="USER_ENTERED")
 
                                 for i in range(len(rest_array)):
                                     worksheet.update(f"A{i + 6 + len(origin_array)}", [[rest_array[i]['UserName']]], value_input_option="USER_ENTERED")
@@ -774,6 +780,12 @@ class Chating:
                             if len(snack_gifs_users) < len(before_snack_gifs_users):
                                 origin_array = before_snack_gifs_users[0:len(snack_gifs_users)]
                                 rest_array = before_snack_gifs_users[len(snack_gifs_users):len(before_snack_gifs_users)]
+
+                                for i in range(len(origin_array)):
+                                    if gifs_users[i]['Gif_Count'] != origin_array[i]['Gif_Count']:
+                                        worksheet.update(f"C{i + 6}", [[gifs_users[i]['Gif_Count']]], value_input_option="USER_ENTERED")
+                                    if gifs_users[i]['Coin']!= origin_array[i]['Coin']:
+                                        worksheet.update(f"D{i + 6}", [[gifs_users[i]['Coin']]], value_input_option="USER_ENTERED")
 
                                 for i in range(len(rest_array)):
                                     worksheet.update(f"E{i + 6 + len(origin_array)}", [[rest_array[i]['UserName']]], value_input_option="USER_ENTERED")
