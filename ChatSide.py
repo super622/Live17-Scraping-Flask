@@ -747,9 +747,12 @@ class Chating:
                         else:
                             rest_array = []
                             origin_array = []
+                            print(len(gifs_users))
+                            print(len(before_gifs_users))
                             if len(gifs_users) < len(before_gifs_users):
                                 origin_array = before_gifs_users[0:len(gifs_users)]
                                 rest_array = before_gifs_users[len(gifs_users):len(before_gifs_users)]
+                                print(rest_array)
 
                                 for i in range(0, len(rest_array)):
                                     worksheet.update(f"A{i + 6 + len(origin_array)}", [[rest_array[i]['UserName']]], value_input_option="USER_ENTERED")
@@ -765,9 +768,9 @@ class Chating:
                                     
                             rest_array = []
                             origin_array = []
-                            if len(gifs_users) < len(before_snack_gifs_users):
-                                origin_array = before_snack_gifs_users[0:len(gifs_users)]
-                                rest_array = before_snack_gifs_users[len(gifs_users):len(before_snack_gifs_users)]
+                            if len(snack_gifs_users) < len(before_snack_gifs_users):
+                                origin_array = before_snack_gifs_users[0:len(snack_gifs_users)]
+                                rest_array = before_snack_gifs_users[len(snack_gifs_users):len(before_snack_gifs_users)]
 
                                 for i in range(0, len(rest_array)):
                                     worksheet.update(f"E{i + 6 + len(origin_array)}", [[rest_array[i]['UserName']]], value_input_option="USER_ENTERED")
@@ -803,8 +806,8 @@ class Chating:
                             sheet_range = f'total!A5:Z'
                             service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
                             worksheet.insert_rows(sub_result, row=5)
-                            before_gifs_users = gifs_users
-                            before_snack_gifs_users = snack_gifs_users
+                            before_gifs_users = gifs_users.clone()
+                            before_snack_gifs_users = snack_gifs_users.clone()
                         else:
                             rest_array = []
                             origin_array = []
@@ -826,9 +829,9 @@ class Chating:
 
                             rest_array = []
                             origin_array = []
-                            if len(gifs_users) < len(before_snack_gifs_users):
-                                origin_array = before_snack_gifs_users[0:len(gifs_users)]
-                                rest_array = before_snack_gifs_users[len(gifs_users):len(before_snack_gifs_users)]
+                            if len(snack_gifs_users) < len(before_snack_gifs_users):
+                                origin_array = before_snack_gifs_users[0:len(snack_gifs_users)]
+                                rest_array = before_snack_gifs_users[len(snack_gifs_users):len(before_snack_gifs_users)]
 
                                 for i in range(0, len(rest_array)):
                                     worksheet.update(f"E{i + 5 + len(origin_array)}", [[rest_array[i]['UserName']]], value_input_option="USER_ENTERED")
@@ -844,8 +847,8 @@ class Chating:
                                     if snack_gifs_users[i]['Coin']!= before_snack_gifs_users[i]['Coin']:
                                         worksheet.update(f"H{i + 5}", [[snack_gifs_users[i]['Coin']]], value_input_option="USER_ENTERED")
 
-                            before_gifs_users = gifs_users
-                            before_snack_gifs_users = snack_gifs_users
+                            before_gifs_users = gifs_users.clone()
+                            before_snack_gifs_users = snack_gifs_users.clone()
                     except:
                         print('quota <')
 
