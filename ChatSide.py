@@ -426,8 +426,8 @@ class Chating:
             url = f'https://17.live/ja/live/{live_room_id}'
 
             options = webdriver.ChromeOptions()
-            # options.add_argument('--headless')
-            # options.add_argument('--no-sandbox')
+            options.add_argument('--headless')
+            options.add_argument('--no-sandbox')
 
             browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
@@ -443,6 +443,8 @@ class Chating:
             snack_gifs_users = []
             sub_result = []
             chating_elements = []
+            before_gifs_users = []
+            before_snack_gifs_users = []
 
             while True:
                 print('************************')
@@ -717,7 +719,7 @@ class Chating:
                         worksheet = None
 
                     if(worksheet == None):
-                        worksheet = spreadsheet.add_worksheet(title=f"{self.start_month}-{self.start_day}", rows='5000', cols='8', index=(tab_position - 1))
+                        worksheet = spreadsheet.add_worksheet(title=f"{self.start_month}-{self.start_day}", rows='5000', cols='8', index=(tab_position - 2))
 
                         try:
                             await init_content_of_worksheet(worksheet, True)
@@ -739,7 +741,27 @@ class Chating:
                     try:
                         sheet_range = f'{self.start_month}-{self.start_day}!A6:Z'  # Adjust the range as needed
                         service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
-                        worksheet.insert_rows(sub_result, row=6)
+                        
+                        if len(before_gifs_users) == 0 and len(before_snack_gifs_users) == 0:
+                            worksheet.insert_rows(sub_result, row=6)
+                        else:
+                            rest_array = []
+                            origin_array = []
+                            if len(gifs_users) < len(before_gifs_users):
+                                origin_array = before_gifs_users[0:len(gifs_users)]
+                                rest_array = before_gifs_users[len(gifs_users):len(before_gifs_users)]
+
+                                for i in range(0, len(rest_array)):
+                                    worksheet.update(f"A{i + 6 + len(origin_array)}", [[rest_array[i]['UserName']]], value_input_option="USER_ENTERED")
+                                    worksheet.update(f"B{i + 6 + len(origin_array)}", [[rest_array[i]['Gif_Type']]], value_input_option="USER_ENTERED")
+                                    worksheet.update(f"C{i + 6 + len(origin_array)}", [[rest_array[i]['Gif_Count']]], value_input_option="USER_ENTERED")
+                                    worksheet.update(f"D{i + 6 + len(origin_array)}", [[rest_array[i]['Coin']]], value_input_option="USER_ENTERED")
+                            else:
+                                for i in range(0, len(before_gifs_users)):
+                                    if gifs_users[i]['Gif_Count'] != before_gifs_users[i]['Gif_Count']:
+                                        worksheet.update(f"C{i + 6}", [[gifs_users[i]['Gif_Count']]], value_input_option="USER_ENTERED")
+                                    if gifs_users[i]['Coin']!= before_gifs_users[i]['Coin']:
+                                        worksheet.update(f"D{i + 6}", [[gifs_users[i]['Coin']]], value_input_option="USER_ENTERED")
                     except:
                         print('quota <')
 
@@ -755,9 +777,35 @@ class Chating:
                         print('quota <')
 
                     try:
-                        sheet_range = f'total!A6:Z'
+                        sheet_range = f'total!A5:Z'
                         service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
-                        worksheet.insert_rows(temp_total_results, row=5)
+                        
+                                                
+                        if len(before_gifs_users) == 0 and len(before_snack_gifs_users) == 0:
+                            worksheet.insert_rows(sub_result, row=5)
+                            before_gifs_users = gifs_users
+                            before_snack_gifs_users = snack_gifs_users
+                        else:
+                            rest_array = []
+                            origin_array = []
+                            if len(gifs_users) < len(before_gifs_users):
+                                origin_array = before_gifs_users[0:len(gifs_users)]
+                                rest_array = before_gifs_users[len(gifs_users):len(before_gifs_users)]
+
+                                for i in range(0, len(rest_array)):
+                                    worksheet.update(f"A{i + 5 + len(origin_array)}", [[rest_array[i]['UserName']]], value_input_option="USER_ENTERED")
+                                    worksheet.update(f"B{i + 5 + len(origin_array)}", [[rest_array[i]['Gif_Type']]], value_input_option="USER_ENTERED")
+                                    worksheet.update(f"C{i + 5 + len(origin_array)}", [[rest_array[i]['Gif_Count']]], value_input_option="USER_ENTERED")
+                                    worksheet.update(f"D{i + 5 + len(origin_array)}", [[rest_array[i]['Coin']]], value_input_option="USER_ENTERED")
+                            else:
+                                for i in range(0, len(before_gifs_users)):
+                                    if gifs_users[i]['Gif_Count'] != before_gifs_users[i]['Gif_Count']:
+                                        worksheet.update(f"C{i + 5}", [[gifs_users[i]['Gif_Count']]], value_input_option="USER_ENTERED")
+                                    if gifs_users[i]['Coin']!= before_gifs_users[i]['Coin']:
+                                        worksheet.update(f"D{i + 5}", [[gifs_users[i]['Coin']]], value_input_option="USER_ENTERED")
+
+                            before_gifs_users = gifs_users
+                            before_snack_gifs_users = snack_gifs_users
                     except:
                         print('quota <')
 
