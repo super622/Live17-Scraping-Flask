@@ -849,8 +849,8 @@ class Chating:
                                         worksheet.update(f"H{i + 5}", [[snack_gifs_users[i]['Coin']]], value_input_option="USER_ENTERED")
 
                         first_flag = False
-                        before_gifs_users = gifs_users
-                        before_snack_gifs_users = snack_gifs_users
+                        before_gifs_users = gifs_users.copy()
+                        before_snack_gifs_users = snack_gifs_users.copy()
                     except:
                         print('quota <')
 
