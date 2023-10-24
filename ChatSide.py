@@ -807,8 +807,8 @@ class Chating:
                             sheet_range = f'total!A5:Z'
                             service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
                             worksheet.insert_rows(sub_result, row=5)
-                            before_gifs_users = gifs_users.clone()
-                            before_snack_gifs_users = snack_gifs_users.clone()
+                            before_gifs_users = gifs_users
+                            before_snack_gifs_users = snack_gifs_users
                             first_flag = False
                         else:
                             rest_array = []
@@ -849,8 +849,8 @@ class Chating:
                                     if snack_gifs_users[i]['Coin']!= before_snack_gifs_users[i]['Coin']:
                                         worksheet.update(f"H{i + 5}", [[snack_gifs_users[i]['Coin']]], value_input_option="USER_ENTERED")
 
-                            before_gifs_users = gifs_users.clone()
-                            before_snack_gifs_users = snack_gifs_users.clone()
+                            before_gifs_users = gifs_users
+                            before_snack_gifs_users = snack_gifs_users
                     except:
                         print('quota <')
 
