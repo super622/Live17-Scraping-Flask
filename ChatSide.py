@@ -753,7 +753,7 @@ class Chating:
 
                                 for i in range(0, len(rest_array)):
                                     worksheet.update(f"A{i + 6 + len(origin_array)}", [[rest_array[i]['UserName']]], value_input_option="USER_ENTERED")
-                                    worksheet.update(f"B{i + 6 + len(origin_array)}", [[rest_array[i]['Gif_Type']]], value_input_option="USER_ENTERED")
+                                    worksheet.update(f"B{i + 6 + len(origin_array)}", [[rest_array[i]['GifType']]], value_input_option="USER_ENTERED")
                                     worksheet.update(f"C{i + 6 + len(origin_array)}", [[rest_array[i]['Gif_Count']]], value_input_option="USER_ENTERED")
                                     worksheet.update(f"D{i + 6 + len(origin_array)}", [[rest_array[i]['Coin']]], value_input_option="USER_ENTERED")
                             else:
@@ -814,7 +814,7 @@ class Chating:
 
                                 for i in range(0, len(rest_array)):
                                     worksheet.update(f"A{i + 5 + len(origin_array)}", [[rest_array[i]['UserName']]], value_input_option="USER_ENTERED")
-                                    worksheet.update(f"B{i + 5 + len(origin_array)}", [[rest_array[i]['Gif_Type']]], value_input_option="USER_ENTERED")
+                                    worksheet.update(f"B{i + 5 + len(origin_array)}", [[rest_array[i]['GifType']]], value_input_option="USER_ENTERED")
                                     worksheet.update(f"C{i + 5 + len(origin_array)}", [[rest_array[i]['Gif_Count']]], value_input_option="USER_ENTERED")
                                     worksheet.update(f"D{i + 5 + len(origin_array)}", [[rest_array[i]['Coin']]], value_input_option="USER_ENTERED")
                             else:
