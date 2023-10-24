@@ -785,7 +785,7 @@ class Chating:
                         for i in range(len(origin_array)):
                             print('-----------------------------')
                             print(before_snack_gifs_users[i])
-                            print(origin_array[i])
+                            print(snack_gifs_users[i])
                             print('-----------------------------')
                             time.sleep(0.3)
                             if before_snack_gifs_users[i]['Snack_Count'] != origin_array[i]['Snack_Count']:
@@ -794,7 +794,7 @@ class Chating:
                             if before_snack_gifs_users[i]['Gif_Count'] != origin_array[i]['Gif_Count']:
                                 # worksheet.update(f"G{i + 6}", [[str(int(before_snack_gifs_users[i]['Gif_Count']) + int(origin_array[i]['Gif_Count']))]], value_input_option="USER_ENTERED")
                                 worksheet.update(f"G{i + 6}", [[origin_array[i]['Gif_Count']]], value_input_option="USER_ENTERED")
-                            if before_snack_gifs_users[i]['Coin']!= origin_array[i]['Coin']:
+                            if before_snack_gifs_users[i]['Coin'] != origin_array[i]['Coin']:
                                 # worksheet.update(f"H{i + 6}", [[str(int(before_snack_gifs_users[i]['Coin']) + int(origin_array[i]['Coin']))]], value_input_option="USER_ENTERED")
                                 worksheet.update(f"H{i + 6}", [[origin_array[i]['Coin']]], value_input_option="USER_ENTERED")
 
@@ -827,8 +827,8 @@ class Chating:
                             service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
 
                         first_flag = False
-                        before_gifs_users = gifs_users.copy()
-                        before_snack_gifs_users = snack_gifs_users.copy()
+                        before_gifs_users = gifs_users
+                        before_snack_gifs_users = snack_gifs_users
                     except:
                         print('quota <')
 
