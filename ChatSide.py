@@ -778,12 +778,12 @@ class Chating:
                             print(rest_array)
 
                             for i in range(len(origin_array)):
-                                if snack_gifs_users[i]['Snack_Count'] != origin_array[i]['Snack_Count']:
-                                    worksheet.update(f"F{i + 6}", [[snack_gifs_users[i]['Snack_Count']]], value_input_option="USER_ENTERED")
-                                if snack_gifs_users[i]['Gif_Count'] != origin_array[i]['Gif_Count']:
-                                    worksheet.update(f"G{i + 6}", [[snack_gifs_users[i]['Gif_Count']]], value_input_option="USER_ENTERED")
-                                if snack_gifs_users[i]['Coin']!= origin_array[i]['Coin']:
-                                    worksheet.update(f"H{i + 6}", [[snack_gifs_users[i]['Coin']]], value_input_option="USER_ENTERED")
+                                if before_snack_gifs_users[i]['Snack_Count'] != origin_array[i]['Snack_Count']:
+                                    worksheet.update(f"F{i + 6}", [[origin_array[i]['Snack_Count']]], value_input_option="USER_ENTERED")
+                                if before_snack_gifs_users[i]['Gif_Count'] != origin_array[i]['Gif_Count']:
+                                    worksheet.update(f"G{i + 6}", [[origin_array[i]['Gif_Count']]], value_input_option="USER_ENTERED")
+                                if before_snack_gifs_users[i]['Coin']!= origin_array[i]['Coin']:
+                                    worksheet.update(f"H{i + 6}", [[origin_array[i]['Coin']]], value_input_option="USER_ENTERED")
 
                             for i in range(len(rest_array)):
                                 worksheet.update(f"E{i + 6 + len(origin_array)}", [[rest_array[i]['UserName']]], value_input_option="USER_ENTERED")
@@ -791,13 +791,14 @@ class Chating:
                                 worksheet.update(f"G{i + 6 + len(origin_array)}", [[rest_array[i]['Gif_Count']]], value_input_option="USER_ENTERED")
                                 worksheet.update(f"H{i + 6 + len(origin_array)}", [[rest_array[i]['Coin']]], value_input_option="USER_ENTERED")
                         else:
-                            for i in range(len(before_snack_gifs_users)):
-                                if snack_gifs_users[i]['Snack_Count'] != before_snack_gifs_users[i]['Snack_Count']:
-                                    worksheet.update(f"F{i + 6}", [[snack_gifs_users[i]['Snack_Count']]], value_input_option="USER_ENTERED")
-                                if snack_gifs_users[i]['Gif_Count'] != before_snack_gifs_users[i]['Gif_Count']:
-                                    worksheet.update(f"G{i + 6}", [[snack_gifs_users[i]['Gif_Count']]], value_input_option="USER_ENTERED")
-                                if snack_gifs_users[i]['Coin']!= before_snack_gifs_users[i]['Coin']:
-                                    worksheet.update(f"H{i + 6}", [[snack_gifs_users[i]['Coin']]], value_input_option="USER_ENTERED")
+                            for i in range(len(origin_array)):
+                                if before_snack_gifs_users[i]['Snack_Count'] != origin_array[i]['Snack_Count']:
+                                    worksheet.update(f"F{i + 6}", [[origin_array[i]['Snack_Count']]], value_input_option="USER_ENTERED")
+                                if before_snack_gifs_users[i]['Gif_Count'] != origin_array[i]['Gif_Count']:
+                                    worksheet.update(f"G{i + 6}", [[origin_array[i]['Gif_Count']]], value_input_option="USER_ENTERED")
+                                if before_snack_gifs_users[i]['Coin']!= origin_array[i]['Coin']:
+                                    worksheet.update(f"H{i + 6}", [[origin_array[i]['Coin']]], value_input_option="USER_ENTERED")
+
                     except:
                         print('quota <')
 
