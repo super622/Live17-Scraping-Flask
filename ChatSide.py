@@ -804,7 +804,10 @@ class Chating:
                             worksheet.update(f"F{i + 6 + len(origin_array)}", [[rest_array[i]['Snack_Count']]], value_input_option="USER_ENTERED")
                             worksheet.update(f"G{i + 6 + len(origin_array)}", [[rest_array[i]['Gif_Count']]], value_input_option="USER_ENTERED")
                             worksheet.update(f"H{i + 6 + len(origin_array)}", [[rest_array[i]['Coin']]], value_input_option="USER_ENTERED")
-
+                        
+                        first_flag = False
+                        before_gifs_users = gifs_users.copy()
+                        before_snack_gifs_users = snack_gifs_users.copy()
                     except:
                         print('quota <')
 
@@ -826,9 +829,7 @@ class Chating:
                             sheet_range = f'total!A5:Z'
                             service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
 
-                        first_flag = False
-                        before_gifs_users = gifs_users
-                        before_snack_gifs_users = snack_gifs_users
+
                     except:
                         print('quota <')
 
