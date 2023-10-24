@@ -739,9 +739,9 @@ class Chating:
                         print('quota <')
 
                     try:
-                        sheet_range = f'{self.start_month}-{self.start_day}!A6:Z'  # Adjust the range as needed
-                        service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
-                        print(f"insert date => {len(before_gifs_users)} = {len(before_snack_gifs_users)}")
+                        # sheet_range = f'{self.start_month}-{self.start_day}!A6:Z'  # Adjust the range as needed
+                        # service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
+                        print(f"insert date => {len(gifs_users)} = {len(before_gifs_users)}")
                         if len(before_gifs_users) == 0 and len(before_snack_gifs_users) == 0:
                             worksheet.insert_rows(sub_result, row=6)
                         else:
@@ -777,8 +777,8 @@ class Chating:
                         print('quota <')
 
                     try:
-                        sheet_range = f'total!A5:Z'
-                        service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
+                        # sheet_range = f'total!A5:Z'
+                        # service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
                         print(f"insert date total => {len(before_gifs_users)} = {len(before_snack_gifs_users)}")
                                                 
                         if len(before_gifs_users) == 0 and len(before_snack_gifs_users) == 0:
