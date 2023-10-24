@@ -445,6 +445,7 @@ class Chating:
             chating_elements = []
             before_gifs_users = []
             before_snack_gifs_users = []
+            first_flag = True
 
             while True:
                 print('************************')
@@ -740,7 +741,7 @@ class Chating:
 
                     try:
                         print(f"insert date => {len(gifs_users)} = {len(before_gifs_users)}")
-                        if len(before_gifs_users) == 0 and len(before_snack_gifs_users) == 0:
+                        if first_flag:
                             sheet_range = f'{self.start_month}-{self.start_day}!A6:Z'  # Adjust the range as needed
                             service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
                             worksheet.insert_rows(sub_result, row=6)
@@ -802,12 +803,13 @@ class Chating:
                     try:
                         print(f"insert date total => {len(before_gifs_users)} = {len(before_snack_gifs_users)}")
                                                 
-                        if len(before_gifs_users) == 0 and len(before_snack_gifs_users) == 0:
+                        if first_flag:
                             sheet_range = f'total!A5:Z'
                             service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
                             worksheet.insert_rows(sub_result, row=5)
                             before_gifs_users = gifs_users.clone()
                             before_snack_gifs_users = snack_gifs_users.clone()
+                            first_flag = False
                         else:
                             rest_array = []
                             origin_array = []
