@@ -461,6 +461,7 @@ class Chating:
                     except:
                         chating_elements = []
 
+                    print('gifs counting ...')
                     for chat_element in chating_elements:
                         user_name = ''
                         gifs_elements = []
@@ -507,6 +508,7 @@ class Chating:
                             gifs_users = await append_to_gifusers(gifs_users, res)
                             self.gif_man_cnt = await count_of_gifs_man(gifs_users_name, res)
 
+                    print('snack counting ...')
                     for chat_element in chating_elements:
                         user_name = ''
                         snacks_elements = []
@@ -575,6 +577,7 @@ class Chating:
                             res_arr = [gifs_users[i]['UserName'], gifs_users[i]['GifType'], gifs_users[i]['Gif_Count'], gifs_users[i]['Coin'], snack_gifs_users[i]['UserName'], snack_gifs_users[i]['Snack_Count'], snack_gifs_users[i]['Gif_Count'], snack_gifs_users[i]['Coin']]
                         sub_result.append(res_arr)
 
+                    print('score counting...')
                     score_elements = browser.find_elements(By.XPATH, "//*[@style='transform: rotateX(0deg) translateZ(28px);']")
 
                     end_delivery_flag = False
@@ -589,9 +592,9 @@ class Chating:
                             score_elements = browser.find_elements(By.XPATH, "//*[@style='transform: rotateX(0deg) translateZ(28px);']")
                             score = await get_score_data(score_elements)
                     
-                    if(end_delivery_flag == True):
-                        result_response(3)
-                        return
+                    # if(end_delivery_flag == True):
+                    #     result_response(3)
+                    #     return
                     
                     print(f"coin = {coin_cnt}, score = {score}")
 
