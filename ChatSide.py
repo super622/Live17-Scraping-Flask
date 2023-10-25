@@ -549,11 +549,6 @@ class Chating:
                         temp_gifs_users = await find_in_gifusers(gifs_users, gif['UserName'])
                         snack_gifs_users = await append_to_snack_gifusers(snack_gifs_users, gif['UserName'], temp_gifs_users, 0)
 
-                    print('*************************')
-                    print(before_snack_gifs_users)
-                    print('*************************')
-                    print(snack_gifs_users)
-                    print('*************************')
                     coin_cnt = 0
                     for user in gifs_users:
                         coin_cnt += int(user['Coin'])
@@ -778,6 +773,12 @@ class Chating:
                             worksheet.update(f"C{i + 6 + len(origin_array)}", [[rest_array[i]['Gif_Count']]], value_input_option="USER_ENTERED")
                             worksheet.update(f"D{i + 6 + len(origin_array)}", [[rest_array[i]['Coin']]], value_input_option="USER_ENTERED")
 
+                        print('*************************')
+                        print(before_snack_gifs_users)
+                        print('*************************')
+                        print(snack_gifs_users)
+                        print('*************************')
+
                         rest_array = []
                         origin_array = []
                         print(f"{len(snack_gifs_users)} == {len(before_snack_gifs_users)}")
@@ -801,12 +802,8 @@ class Chating:
                         first_flag = False
                         before_gifs_users.clear()
                         before_snack_gifs_users.clear()
-                        before_gifs_users = gifs_users[:]
-                        before_snack_gifs_users = snack_gifs_users[:]
-                        print('after ===================')
-                        print(before_snack_gifs_users)
-                        print('*******************************')
-                        print(snack_gifs_users)
+                        before_gifs_users = gifs_users.copy()
+                        before_snack_gifs_users = snack_gifs_users.copy()
                     except:
                         print('quota <')
 
