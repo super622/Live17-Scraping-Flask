@@ -802,6 +802,7 @@ class Chating:
                         before_snack_gifs_users.clear()
                         before_gifs_users = gifs_users.copy()
                         before_snack_gifs_users = snack_gifs_users.copy()
+                        print(before_snack_gifs_users)
                     except:
                         print('quota <')
 
