@@ -783,7 +783,7 @@ class Chating:
                         print(f"{len(snack_gifs_users)} == {len(before_snack_gifs_users)}")
                         new_array = snack_gifs_users[len(before_snack_gifs_users):]
 
-                        for i in range(len(snack_gifs_users)):
+                        for i in range(len(before_snack_gifs_users)):
                             if before_snack_gifs_users[i]['Snack_Count'] != snack_gifs_users[i]['Snack_Count']:
                                 worksheet.update(f"F{i + 6}", [[snack_gifs_users[i]['Snack_Count']]], value_input_option="USER_ENTERED")
                             if before_snack_gifs_users[i]['Gif_Count'] != snack_gifs_users[i]['Gif_Count']:
