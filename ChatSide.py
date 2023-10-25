@@ -760,30 +760,23 @@ class Chating:
 
                         rest_array = []
                         origin_array = []
-                        if len(gifs_users) > len(before_gifs_users):
-                            origin_array = gifs_users[0:len(before_gifs_users)]
-                            rest_array = gifs_users[len(before_gifs_users):]
-                            
-                            for i in range(len(origin_array)):
-                                time.sleep(0.3)
-                                if before_gifs_users[i]['Gif_Count'] != origin_array[i]['Gif_Count']:
-                                    worksheet.update(f"C{i + 6}", [[origin_array[i]['Gif_Count']]], value_input_option="USER_ENTERED")
-                                if before_gifs_users[i]['Coin']!= origin_array[i]['Coin']:
-                                    worksheet.update(f"D{i + 6}", [[origin_array[i]['Coin']]], value_input_option="USER_ENTERED")
+                        
+                        origin_array = gifs_users[0:len(before_gifs_users)]
+                        rest_array = gifs_users[len(before_gifs_users):]
+                        
+                        for i in range(len(origin_array)):
+                            time.sleep(0.3)
+                            if before_gifs_users[i]['Gif_Count'] != origin_array[i]['Gif_Count']:
+                                worksheet.update(f"C{i + 6}", [[origin_array[i]['Gif_Count']]], value_input_option="USER_ENTERED")
+                            if before_gifs_users[i]['Coin']!= origin_array[i]['Coin']:
+                                worksheet.update(f"D{i + 6}", [[origin_array[i]['Coin']]], value_input_option="USER_ENTERED")
 
-                            for i in range(len(rest_array)):
-                                time.sleep(0.3)
-                                worksheet.update(f"A{i + 6 + len(origin_array)}", [[rest_array[i]['UserName']]], value_input_option="USER_ENTERED")
-                                worksheet.update(f"B{i + 6 + len(origin_array)}", [[rest_array[i]['GifType']]], value_input_option="USER_ENTERED")
-                                worksheet.update(f"C{i + 6 + len(origin_array)}", [[rest_array[i]['Gif_Count']]], value_input_option="USER_ENTERED")
-                                worksheet.update(f"D{i + 6 + len(origin_array)}", [[rest_array[i]['Coin']]], value_input_option="USER_ENTERED")
-                        else:
-                            for i in range(len(origin_array)):
-                                time.sleep(0.3)
-                                if before_gifs_users[i]['Gif_Count'] != origin_array[i]['Gif_Count']:
-                                    worksheet.update(f"C{i + 6}", [[origin_array[i]['Gif_Count']]], value_input_option="USER_ENTERED")
-                                if before_gifs_users[i]['Coin']!= origin_array[i]['Coin']:
-                                    worksheet.update(f"D{i + 6}", [[origin_array[i]['Coin']]], value_input_option="USER_ENTERED")
+                        for i in range(len(rest_array)):
+                            time.sleep(0.3)
+                            worksheet.update(f"A{i + 6 + len(origin_array)}", [[rest_array[i]['UserName']]], value_input_option="USER_ENTERED")
+                            worksheet.update(f"B{i + 6 + len(origin_array)}", [[rest_array[i]['GifType']]], value_input_option="USER_ENTERED")
+                            worksheet.update(f"C{i + 6 + len(origin_array)}", [[rest_array[i]['Gif_Count']]], value_input_option="USER_ENTERED")
+                            worksheet.update(f"D{i + 6 + len(origin_array)}", [[rest_array[i]['Coin']]], value_input_option="USER_ENTERED")
 
                         rest_array = []
                         origin_array = []
@@ -806,8 +799,8 @@ class Chating:
                             worksheet.update(f"H{i + 6 + len(origin_array)}", [[rest_array[i]['Coin']]], value_input_option="USER_ENTERED")
                         
                         first_flag = False
-                        before_gifs_users = []
-                        before_snack_gifs_users = []
+                        before_gifs_users.clear()
+                        before_snack_gifs_users.clear()
                         before_gifs_users = gifs_users[:]
                         before_snack_gifs_users = snack_gifs_users[:]
                         print('after ===================')
