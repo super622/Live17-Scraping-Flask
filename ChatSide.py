@@ -797,6 +797,7 @@ class Chating:
                             worksheet.update(f"G{i + 6 + len(snack_gifs_users)}", [[new_array[i]['Gif_Count']]], value_input_option="USER_ENTERED")
                             worksheet.update(f"H{i + 6 + len(snack_gifs_users)}", [[new_array[i]['Coin']]], value_input_option="USER_ENTERED")
 
+                        print('================***====================')
                         first_flag = False
                         before_gifs_users.clear()
                         before_snack_gifs_users.clear()
