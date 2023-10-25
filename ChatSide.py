@@ -426,8 +426,8 @@ class Chating:
             url = f'https://17.live/ja/live/{live_room_id}'
 
             options = webdriver.ChromeOptions()
-            # options.add_argument('--headless')
-            # options.add_argument('--no-sandbox')
+            options.add_argument('--headless')
+            options.add_argument('--no-sandbox')
 
             browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
@@ -753,40 +753,50 @@ class Chating:
                             sheet_range = f'{self.start_month}-{self.start_day}!A6:Z'  # Adjust the range as needed
                             service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
 
-                        new_array = []
-                        new_array = gifs_users[len(before_gifs_users):]
+                        rest_array = []
+                        origin_array = []
                         
-                        for i in range(len(before_gifs_users)):
+                        origin_array = gifs_users[0:len(before_gifs_users)]
+                        rest_array = gifs_users[len(before_gifs_users):]
+                        
+                        for i in range(len(origin_array)):
                             time.sleep(0.3)
-                            if before_gifs_users[i]['Gif_Count'] != before_gifs_users[i]['Gif_Count']:
-                                worksheet.update(f"C{i + 6}", [[before_gifs_users[i]['Gif_Count']]], value_input_option="USER_ENTERED")
-                            if before_gifs_users[i]['Coin']!= before_gifs_users[i]['Coin']:
-                                worksheet.update(f"D{i + 6}", [[before_gifs_users[i]['Coin']]], value_input_option="USER_ENTERED")
+                            if before_gifs_users[i]['Gif_Count'] != origin_array[i]['Gif_Count']:
+                                worksheet.update(f"C{i + 6}", [[origin_array[i]['Gif_Count']]], value_input_option="USER_ENTERED")
+                            if before_gifs_users[i]['Coin']!= origin_array[i]['Coin']:
+                                worksheet.update(f"D{i + 6}", [[origin_array[i]['Coin']]], value_input_option="USER_ENTERED")
 
-                        for i in range(len(new_array)):
+                        for i in range(len(rest_array)):
                             time.sleep(0.3)
-                            worksheet.update(f"A{i + 6 + len(before_gifs_users)}", [[new_array[i]['UserName']]], value_input_option="USER_ENTERED")
-                            worksheet.update(f"B{i + 6 + len(before_gifs_users)}", [[new_array[i]['GifType']]], value_input_option="USER_ENTERED")
-                            worksheet.update(f"C{i + 6 + len(before_gifs_users)}", [[new_array[i]['Gif_Count']]], value_input_option="USER_ENTERED")
-                            worksheet.update(f"D{i + 6 + len(before_gifs_users)}", [[new_array[i]['Coin']]], value_input_option="USER_ENTERED")
+                            worksheet.update(f"A{i + 6 + len(origin_array)}", [[rest_array[i]['UserName']]], value_input_option="USER_ENTERED")
+                            worksheet.update(f"B{i + 6 + len(origin_array)}", [[rest_array[i]['GifType']]], value_input_option="USER_ENTERED")
+                            worksheet.update(f"C{i + 6 + len(origin_array)}", [[rest_array[i]['Gif_Count']]], value_input_option="USER_ENTERED")
+                            worksheet.update(f"D{i + 6 + len(origin_array)}", [[rest_array[i]['Coin']]], value_input_option="USER_ENTERED")
+
+                        print('*************************')
+                        print(before_snack_gifs_users)
+                        print('*************************')
+                        print(snack_gifs_users)
+                        print('*************************')
 
                         new_array = []
+                        print(f"{len(snack_gifs_users)} == {len(before_snack_gifs_users)}")
                         new_array = snack_gifs_users[len(before_snack_gifs_users):]
 
-                        for i in range(len(before_snack_gifs_users)):
-                            if before_snack_gifs_users[i]['Snack_Count'] != before_snack_gifs_users[i]['Snack_Count']:
-                                worksheet.update(f"F{i + 6}", [[before_snack_gifs_users[i]['Snack_Count']]], value_input_option="USER_ENTERED")
-                            if before_snack_gifs_users[i]['Gif_Count'] != before_snack_gifs_users[i]['Gif_Count']:
-                                worksheet.update(f"G{i + 6}", [[before_snack_gifs_users[i]['Gif_Count']]], value_input_option="USER_ENTERED")
-                            if before_snack_gifs_users[i]['Coin'] != before_snack_gifs_users[i]['Coin']:
-                                worksheet.update(f"H{i + 6}", [[before_snack_gifs_users[i]['Coin']]], value_input_option="USER_ENTERED")
+                        for i in range(len(snack_gifs_users)):
+                            if before_snack_gifs_users[i]['Snack_Count'] != snack_gifs_users[i]['Snack_Count']:
+                                worksheet.update(f"F{i + 6}", [[snack_gifs_users[i]['Snack_Count']]], value_input_option="USER_ENTERED")
+                            if before_snack_gifs_users[i]['Gif_Count'] != snack_gifs_users[i]['Gif_Count']:
+                                worksheet.update(f"G{i + 6}", [[snack_gifs_users[i]['Gif_Count']]], value_input_option="USER_ENTERED")
+                            if before_snack_gifs_users[i]['Coin'] != snack_gifs_users[i]['Coin']:
+                                worksheet.update(f"H{i + 6}", [[snack_gifs_users[i]['Coin']]], value_input_option="USER_ENTERED")
 
                         for i in range(len(new_array)):
-                            worksheet.update(f"E{i + 6 + len(before_snack_gifs_users)}", [[new_array[i]['UserName']]], value_input_option="USER_ENTERED")
-                            worksheet.update(f"F{i + 6 + len(before_snack_gifs_users)}", [[new_array[i]['Snack_Count']]], value_input_option="USER_ENTERED")
-                            worksheet.update(f"G{i + 6 + len(before_snack_gifs_users)}", [[new_array[i]['Gif_Count']]], value_input_option="USER_ENTERED")
-                            worksheet.update(f"H{i + 6 + len(before_snack_gifs_users)}", [[new_array[i]['Coin']]], value_input_option="USER_ENTERED")
-                        
+                            worksheet.update(f"E{i + 6 + len(snack_gifs_users)}", [[new_array[i]['UserName']]], value_input_option="USER_ENTERED")
+                            worksheet.update(f"F{i + 6 + len(snack_gifs_users)}", [[new_array[i]['Snack_Count']]], value_input_option="USER_ENTERED")
+                            worksheet.update(f"G{i + 6 + len(snack_gifs_users)}", [[new_array[i]['Gif_Count']]], value_input_option="USER_ENTERED")
+                            worksheet.update(f"H{i + 6 + len(snack_gifs_users)}", [[new_array[i]['Coin']]], value_input_option="USER_ENTERED")
+
                         first_flag = False
                         before_gifs_users.clear()
                         before_snack_gifs_users.clear()
