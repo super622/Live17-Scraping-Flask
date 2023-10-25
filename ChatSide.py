@@ -800,8 +800,8 @@ class Chating:
                             worksheet.update(f"H{i + 6 + len(origin_array)}", [[rest_array[i]['Coin']]], value_input_option="USER_ENTERED")
                         
                         first_flag = False
-                        before_gifs_users = gifs_users
-                        before_snack_gifs_users = snack_gifs_users
+                        before_gifs_users = gifs_users[:]
+                        before_snack_gifs_users = snack_gifs_users[:]
                         print('after ===================')
                         print(before_snack_gifs_users)
                         print('*******************************')
