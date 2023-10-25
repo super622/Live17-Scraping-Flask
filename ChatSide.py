@@ -756,7 +756,7 @@ class Chating:
                         origin_array = []
                         if len(gifs_users) > len(before_gifs_users):
                             origin_array = gifs_users[0:len(before_gifs_users)]
-                            rest_array = gifs_users[len(before_gifs_users):len(gifs_users)]
+                            rest_array = gifs_users[len(before_gifs_users):]
                             
                             for i in range(len(origin_array)):
                                 time.sleep(0.3)
@@ -783,7 +783,7 @@ class Chating:
                         origin_array = []
                         print(f"{len(snack_gifs_users)} == {len(before_snack_gifs_users)}")
                         origin_array = snack_gifs_users[0:len(before_snack_gifs_users)]
-                        rest_array = snack_gifs_users[len(before_snack_gifs_users):len(snack_gifs_users)]
+                        rest_array = snack_gifs_users[len(before_snack_gifs_users):]
 
                         for i in range(len(origin_array)):
                             if before_snack_gifs_users[i]['Snack_Count'] != origin_array[i]['Snack_Count']:
@@ -800,6 +800,8 @@ class Chating:
                             worksheet.update(f"H{i + 6 + len(origin_array)}", [[rest_array[i]['Coin']]], value_input_option="USER_ENTERED")
                         
                         first_flag = False
+                        before_gifs_users = []
+                        before_snack_gifs_users = []
                         before_gifs_users = gifs_users[:]
                         before_snack_gifs_users = snack_gifs_users[:]
                         print('after ===================')
