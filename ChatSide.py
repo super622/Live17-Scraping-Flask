@@ -784,23 +784,14 @@ class Chating:
                         print(f"{len(snack_gifs_users)} == {len(before_snack_gifs_users)}")
                         origin_array = snack_gifs_users[0:len(before_snack_gifs_users)]
                         rest_array = snack_gifs_users[len(before_snack_gifs_users):len(snack_gifs_users)]
-                        print(len(origin_array))
-                        print(len(rest_array))
 
                         for i in range(len(origin_array)):
-                            print('-----------------------------')
-                            print(before_snack_gifs_users[i])
-                            print(snack_gifs_users[i])
-                            print('-----------------------------')
                             time.sleep(0.3)
                             if before_snack_gifs_users[i]['Snack_Count'] != origin_array[i]['Snack_Count']:
-                                # worksheet.update(f"F{i + 6}", [[str(int(before_snack_gifs_users[i]['Snack_Count']) + int(origin_array[i]['Snack_Count']))]], value_input_option="USER_ENTERED")
                                 worksheet.update(f"F{i + 6}", [[origin_array[i]['Snack_Count']]], value_input_option="USER_ENTERED")
                             if before_snack_gifs_users[i]['Gif_Count'] != origin_array[i]['Gif_Count']:
-                                # worksheet.update(f"G{i + 6}", [[str(int(before_snack_gifs_users[i]['Gif_Count']) + int(origin_array[i]['Gif_Count']))]], value_input_option="USER_ENTERED")
                                 worksheet.update(f"G{i + 6}", [[origin_array[i]['Gif_Count']]], value_input_option="USER_ENTERED")
                             if before_snack_gifs_users[i]['Coin'] != origin_array[i]['Coin']:
-                                # worksheet.update(f"H{i + 6}", [[str(int(before_snack_gifs_users[i]['Coin']) + int(origin_array[i]['Coin']))]], value_input_option="USER_ENTERED")
                                 worksheet.update(f"H{i + 6}", [[origin_array[i]['Coin']]], value_input_option="USER_ENTERED")
 
                         for i in range(len(rest_array)):
@@ -813,6 +804,10 @@ class Chating:
                         first_flag = False
                         before_gifs_users = gifs_users.copy()
                         before_snack_gifs_users = snack_gifs_users.copy()
+                        print('after ===================')
+                        print(before_snack_gifs_users)
+                        print('*******************************')
+                        print(snack_gifs_users)
                     except:
                         print('quota <')
 
