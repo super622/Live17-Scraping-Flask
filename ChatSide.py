@@ -451,7 +451,10 @@ class Chating:
                 print('************************')
                 print(browser)
                 print('************************')
-                chating_panel = browser.find_elements('css selector', '.ChatList__ListWrapper-sc-733d46-1')
+                try:
+                    chating_panel = browser.find_elements('css selector', '.ChatList__ListWrapper-sc-733d46-1')
+                except:
+                    chating_panel = []
                 print('start')
                 print(len(chating_panel))
                 print('================================')
@@ -773,14 +776,12 @@ class Chating:
                         rest_array = gifs_users[len(before_gifs_users):]
                         
                         for i in range(len(origin_array)):
-                            time.sleep(0.3)
                             if before_gifs_users[i]['Gif_Count'] != origin_array[i]['Gif_Count']:
                                 worksheet.update(f"C{i + 6}", [[origin_array[i]['Gif_Count']]], value_input_option="USER_ENTERED")
                             if before_gifs_users[i]['Coin']!= origin_array[i]['Coin']:
                                 worksheet.update(f"D{i + 6}", [[origin_array[i]['Coin']]], value_input_option="USER_ENTERED")
 
                         for i in range(len(rest_array)):
-                            time.sleep(0.3)
                             worksheet.update(f"A{i + 6 + len(origin_array)}", [[rest_array[i]['UserName']]], value_input_option="USER_ENTERED")
                             worksheet.update(f"B{i + 6 + len(origin_array)}", [[rest_array[i]['GifType']]], value_input_option="USER_ENTERED")
                             worksheet.update(f"C{i + 6 + len(origin_array)}", [[rest_array[i]['Gif_Count']]], value_input_option="USER_ENTERED")
@@ -804,7 +805,6 @@ class Chating:
                             worksheet.update(f"G{i + 6 + len(before_snack_gifs_users)}", [[new_array[i]['Gif_Count']]], value_input_option="USER_ENTERED")
                             worksheet.update(f"H{i + 6 + len(before_snack_gifs_users)}", [[new_array[i]['Coin']]], value_input_option="USER_ENTERED")
 
-                        time.sleep(1)
                     except:
                         print('quota <')
 
@@ -833,14 +833,12 @@ class Chating:
                         rest_array = gifs_users[len(before_gifs_users):]
                         
                         for i in range(len(origin_array)):
-                            time.sleep(0.3)
                             if before_gifs_users[i]['Gif_Count'] != origin_array[i]['Gif_Count']:
                                 worksheet.update(f"C{i + 5}", [[origin_array[i]['Gif_Count']]], value_input_option="USER_ENTERED")
                             if before_gifs_users[i]['Coin']!= origin_array[i]['Coin']:
                                 worksheet.update(f"D{i + 5}", [[origin_array[i]['Coin']]], value_input_option="USER_ENTERED")
 
                         for i in range(len(rest_array)):
-                            time.sleep(0.3)
                             worksheet.update(f"A{i + 5 + len(origin_array)}", [[rest_array[i]['UserName']]], value_input_option="USER_ENTERED")
                             worksheet.update(f"B{i + 5 + len(origin_array)}", [[rest_array[i]['GifType']]], value_input_option="USER_ENTERED")
                             worksheet.update(f"C{i + 5 + len(origin_array)}", [[rest_array[i]['Gif_Count']]], value_input_option="USER_ENTERED")
@@ -863,7 +861,6 @@ class Chating:
                             worksheet.update(f"F{i + 5 + len(before_snack_gifs_users)}", [[new_array[i]['Snack_Count']]], value_input_option="USER_ENTERED")
                             worksheet.update(f"G{i + 5 + len(before_snack_gifs_users)}", [[new_array[i]['Gif_Count']]], value_input_option="USER_ENTERED")
                             worksheet.update(f"H{i + 5 + len(before_snack_gifs_users)}", [[new_array[i]['Coin']]], value_input_option="USER_ENTERED")
-
 
                         first_flag = False
                         before_gifs_users = []
