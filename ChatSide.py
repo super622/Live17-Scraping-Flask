@@ -1,5 +1,4 @@
 import re
-import sys
 import time
 import requests
 import asyncio
@@ -9,6 +8,7 @@ import gspread
 import pytz
 import mysql.connector
 import logging
+import copy
 
 import config
 
@@ -67,7 +67,7 @@ class Chating:
                 return ''
 
         # Add gif user
-        async def append_to_gifusers(gifs_users, res):
+        def append_to_gifusers(gifs_users, res):
             flag = False
             for user in gifs_users:
                 if(user['UserName'] == res['UserName'] and user['GifType'] == res['GifType']):
@@ -82,7 +82,7 @@ class Chating:
                 return gifs_users
             
         # Count gif users
-        async def count_of_gifs_man(gifs_users_name, res):
+        def count_of_gifs_man(gifs_users_name, res):
             flag = False
             for user in gifs_users_name:
                 if user == res['UserName']:
@@ -95,7 +95,7 @@ class Chating:
                 return len(gifs_users_name)
     
         # add gif list
-        async def append_to_gif(gif_list, gif_type, coin):
+        def append_to_gif(gif_list, gif_type, coin):
             flag = False
             for gif in gif_list:
                 if(gif[0] == gif_type):
@@ -110,7 +110,7 @@ class Chating:
                 return gif_list
 
         # find special gif user
-        async def find_in_gifusers(gifs_users, user_name):
+        def find_in_gifusers(gifs_users, user_name):
             result_arr = []
             for user in gifs_users:
                 hex = bytes(user_name, 'utf-8')
@@ -185,7 +185,7 @@ class Chating:
             return self.total_results
 
         # add git and snack user
-        async def append_to_snack_gifusers(snack_gifs_users, user_name, gifs_user, snack_cnt):
+        def append_to_snack_gifusers(snack_gifs_users, user_name, gifs_user, snack_cnt):
             flag = False
             count = 0
             coin = 0
@@ -504,9 +504,9 @@ class Chating:
                                 "Gif_Count": 1,
                                 "Coin": coin
                             }
-                            self.gifs_list = await append_to_gif(self.gifs_list, gif_type, coin)
-                            gifs_users = await append_to_gifusers(gifs_users, res)
-                            self.gif_man_cnt = await count_of_gifs_man(gifs_users_name, res)
+                            self.gifs_list = append_to_gif(self.gifs_list, gif_type, coin)
+                            gifs_users = append_to_gifusers(gifs_users, res)
+                            self.gif_man_cnt = count_of_gifs_man(gifs_users_name, res)
 
                     print('snack counting ...')
                     for chat_element in chating_elements:
@@ -526,11 +526,11 @@ class Chating:
                             continue
 
                         if len(snacks_elements) > 0:
-                            gif_state = await find_in_gifusers(gifs_users, user_name)
+                            gif_state = find_in_gifusers(gifs_users, user_name)
                             snack_cnt_element = snacks_elements[0].text
                             snack_cnt = re.findall(r'\d+', snack_cnt_element)
                             snack_cnt = snack_cnt[0]
-                            snack_gifs_users = await append_to_snack_gifusers(snack_gifs_users, user_name, gif_state, snack_cnt)
+                            snack_gifs_users = append_to_snack_gifusers(snack_gifs_users, user_name, gif_state, snack_cnt)
 
                     try:
                         browser.execute_script("""
@@ -546,8 +546,8 @@ class Chating:
 
                     temp_gifs_users = []
                     for gif in gifs_users:
-                        temp_gifs_users = await find_in_gifusers(gifs_users, gif['UserName'])
-                        snack_gifs_users = await append_to_snack_gifusers(snack_gifs_users, gif['UserName'], temp_gifs_users, 0)
+                        temp_gifs_users = find_in_gifusers(gifs_users, gif['UserName'])
+                        snack_gifs_users = append_to_snack_gifusers(snack_gifs_users, gif['UserName'], temp_gifs_users, 0)
 
                     coin_cnt = 0
                     for user in gifs_users:
@@ -635,6 +635,19 @@ class Chating:
 
                         # total result
                         temp_total_results = await append_to_total_result(temp_total_gifs_user, temp_total_snack_user)
+
+                        snack_cnt = 0
+                        self.gif_man_cnt = 0
+                        coin_cnt = 0
+                        score = ''
+                        gifs_users = []
+                        gifs_users_name = []
+                        snack_gifs_users = []
+                        sub_result = []
+                        chating_elements = []
+                        before_gifs_users = []
+                        before_snack_gifs_users = []
+                        first_flag = True
 
                         # refresh
                         browser.refresh()
@@ -792,17 +805,18 @@ class Chating:
                                 worksheet.update(f"H{i + 6}", [[snack_gifs_users[i]['Coin']]], value_input_option="USER_ENTERED")
 
                         for i in range(len(new_array)):
-                            worksheet.update(f"E{i + 6 + len(snack_gifs_users)}", [[new_array[i]['UserName']]], value_input_option="USER_ENTERED")
-                            worksheet.update(f"F{i + 6 + len(snack_gifs_users)}", [[new_array[i]['Snack_Count']]], value_input_option="USER_ENTERED")
-                            worksheet.update(f"G{i + 6 + len(snack_gifs_users)}", [[new_array[i]['Gif_Count']]], value_input_option="USER_ENTERED")
-                            worksheet.update(f"H{i + 6 + len(snack_gifs_users)}", [[new_array[i]['Coin']]], value_input_option="USER_ENTERED")
+                            worksheet.update(f"E{i + 6 + len(before_snack_gifs_users)}", [[new_array[i]['UserName']]], value_input_option="USER_ENTERED")
+                            worksheet.update(f"F{i + 6 + len(before_snack_gifs_users)}", [[new_array[i]['Snack_Count']]], value_input_option="USER_ENTERED")
+                            worksheet.update(f"G{i + 6 + len(before_snack_gifs_users)}", [[new_array[i]['Gif_Count']]], value_input_option="USER_ENTERED")
+                            worksheet.update(f"H{i + 6 + len(before_snack_gifs_users)}", [[new_array[i]['Coin']]], value_input_option="USER_ENTERED")
 
                         print('================***====================')
                         first_flag = False
-                        before_gifs_users.clear()
-                        before_snack_gifs_users.clear()
-                        before_gifs_users = gifs_users.copy()
-                        before_snack_gifs_users = snack_gifs_users.copy()
+                        before_gifs_users = []
+                        before_snack_gifs_users = []
+                        before_gifs_users = copy.deepcopy(gifs_users)
+                        before_snack_gifs_users = copy.deepcopy(snack_gifs_users)
+                        time.sleep(1)
                         print(before_snack_gifs_users)
                         print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
                     except:
