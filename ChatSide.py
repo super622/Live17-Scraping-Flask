@@ -890,6 +890,7 @@ class Chating:
                         return 
                 else:
                     print('request again url')
+                    print(browser)
                     browser.get(url)
                     time.sleep(2)
 
