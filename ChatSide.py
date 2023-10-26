@@ -680,8 +680,9 @@ class Chating:
 
                     # write content into google sheet (init column name)
                     spreadsheet = client.open_by_key(sheetID)
-
+                    print(f' ================== {create_flag} ========================  {tab_position}')
                     if(create_flag or tab_position == 1):
+                        print('first ===================')
                         worksheet = spreadsheet.sheet1
 
                         await format_cell_format(worksheet, spreadsheet, True)
