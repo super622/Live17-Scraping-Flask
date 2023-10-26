@@ -888,7 +888,7 @@ class Chating:
                         return 
                 else:
                     print('request again url')
-                    print(browser)
+                    browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
                     browser.get(url)
                     time.sleep(2)
 
