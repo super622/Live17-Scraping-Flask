@@ -426,8 +426,8 @@ class Chating:
             url = f'https://17.live/ja/live/{live_room_id}'
 
             options = webdriver.ChromeOptions()
-            options.add_argument('--headless')
-            options.add_argument('--no-sandbox')
+            # options.add_argument('--headless')
+            # options.add_argument('--no-sandbox')
 
             browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
@@ -884,7 +884,7 @@ class Chating:
 
                     current_hour = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).hour
                     current_minute = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).minute
-                    
+                    print('end--------------------')
                     if current_month == self.end_date_month and current_day == self.end_date_day and current_hour == self.end_time_hour and current_minute == self.end_time_minute:
                         result_response(3)
                         return 
