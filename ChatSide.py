@@ -49,6 +49,11 @@ class Chating:
         self.gifs_list = []
         self.gif_man_cnt = 0
 
+        self.creds = None
+        self.client = None
+        self.service = None
+        self.drive = None
+
     # Get Data from Chating panel
     async def scanData(self):
         # Send get request
@@ -225,31 +230,23 @@ class Chating:
 
         # Create New Google Sheet
         async def createGoogleSheet(filename):
-            SCOPES = ['https://www.googleapis.com/auth/drive']  # Modified
-            credentials = service_account.Credentials.from_service_account_file('service-account.json', scopes=SCOPES)
-
-            drive = build('drive', 'v3', credentials=credentials)
             file_metadata = {
                 'name': filename,
                 'parents': ['1IkovXnPZ8y-aIgR6MnbykOVfXC34CJhT'],
                 'mimeType': 'application/vnd.google-apps.spreadsheet'
             }
-            res = drive.files().create(body=file_metadata).execute()
+            res = self.drive.files().create(body=file_metadata).execute()
             permission_body = {
                 'role': 'writer',  # Set the desired role ('reader', 'writer', 'commenter', 'owner')
                 'type': 'anyone',  # Share with anyone
             }
-            drive.permissions().create(fileId=res['id'], body=permission_body).execute()
+            self.drive.permissions().create(fileId=res['id'], body=permission_body).execute()
 
             return res['id']
 
         # Get Sheet ID by file name in special folder
         async def get_sheet_by_name(file_name, folder_name):
-            SCOPES = ['https://www.googleapis.com/auth/drive']  # Modified
-            credentials = service_account.Credentials.from_service_account_file('service-account.json', scopes=SCOPES)
-            drive_service = build('drive', 'v3', credentials=credentials)
-
-            results = drive_service.files().list(q="name='" + file_name + "' and mimeType='application/vnd.google-apps.spreadsheet' and parents in '" + folder_name + "'", pageSize=10, fields="nextPageToken, files(id, name)").execute()
+            results = self.drive.files().list(q="name='" + file_name + "' and mimeType='application/vnd.google-apps.spreadsheet' and parents in '" + folder_name + "'", pageSize=10, fields="nextPageToken, files(id, name)").execute()
             items = results.get('files', [])
             if not items:
                 return ''
@@ -420,6 +417,13 @@ class Chating:
         if(self.started_flag != True):
             result_response(0)
             self.started_flag = True
+        
+        SCOPES = ['https://www.googleapis.com/auth/drive']
+        SERVICE_ACCOUNT_FILE = 'service-account.json'
+        self.creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+        self.client = gspread.authorize(self.creds)
+        self.service = build('sheets', 'v4', credentials=self.creds)
+        self.drive = build('drive', 'v3', credentials=self.creds)
 
         logging.basicConfig(level=logging.INFO)
         for live_room_id in live_stream_id_arr:
@@ -656,13 +660,6 @@ class Chating:
                         browser.refresh()
 
                     # create google sheet
-                    SCOPES = ['https://www.googleapis.com/auth/drive']
-                    SERVICE_ACCOUNT_FILE = 'service-account.json'
-
-                    creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-                    client = gspread.authorize(creds)
-                    service = build('sheets', 'v4', credentials=creds)
-
                     tab_position = 0
                     filename = f"{self.name}"
                     folder_name = '1IkovXnPZ8y-aIgR6MnbykOVfXC34CJhT'
@@ -674,12 +671,12 @@ class Chating:
                         sheetID = await createGoogleSheet(filename)
                         tab_position = 3
                     else:
-                        spreadsheet = client.open_by_key(sheetID)
+                        spreadsheet = self.client.open_by_key(sheetID)
                         sheets_list = spreadsheet.worksheets()
                         tab_position = len(sheets_list)
 
                     # write content into google sheet (init column name)
-                    spreadsheet = client.open_by_key(sheetID)
+                    spreadsheet = self.client.open_by_key(sheetID)
                     print(f' ================== {create_flag} ========================  {tab_position}')
                     if(create_flag or tab_position == 1):
                         print('first ===================')
@@ -768,7 +765,7 @@ class Chating:
                         # worksheet.insert_rows(sub_result, row=6)
                         if first_flag:
                             sheet_range = f'{self.start_month}-{self.start_day}!A6:Z'  # Adjust the range as needed
-                            service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
+                            self.service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
 
                         rest_array = []
                         origin_array = []
@@ -824,7 +821,7 @@ class Chating:
                                                 
                         if first_flag:
                             sheet_range = f'total!A5:Z'
-                            service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
+                            self.service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
 
                         rest_array = []
                         origin_array = []
@@ -874,7 +871,7 @@ class Chating:
 
                     try:
                         sheet_range = f'ギフト内訳!A2:Z'  # Adjust the range as needed
-                        service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
+                        self.service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
                         worksheet.insert_rows(self.gifs_list, row=2)
                     except:
                         print('quota <')
