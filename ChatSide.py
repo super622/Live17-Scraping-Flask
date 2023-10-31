@@ -417,13 +417,6 @@ class Chating:
         if(self.started_flag != True):
             result_response(0)
             self.started_flag = True
-        
-        SCOPES = ['https://www.googleapis.com/auth/drive']
-        SERVICE_ACCOUNT_FILE = 'service-account.json'
-        self.creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-        self.client = gspread.authorize(self.creds)
-        self.service = build('sheets', 'v4', credentials=self.creds)
-        self.drive = build('drive', 'v3', credentials=self.creds)
 
         logging.basicConfig(level=logging.INFO)
         for live_room_id in live_stream_id_arr:
@@ -654,6 +647,13 @@ class Chating:
                     temp_total_results = await append_to_total_result(temp_total_gifs_user, temp_total_snack_user)
 
                     # create google sheet
+                    SCOPES = ['https://www.googleapis.com/auth/drive']
+                    SERVICE_ACCOUNT_FILE = 'service-account.json'
+                    self.creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+                    self.client = gspread.authorize(self.creds)
+                    self.service = build('sheets', 'v4', credentials=self.creds)
+                    self.drive = build('drive', 'v3', credentials=self.creds)
+
                     tab_position = 0
                     filename = f"{self.name}"
                     folder_name = '1IkovXnPZ8y-aIgR6MnbykOVfXC34CJhT'
