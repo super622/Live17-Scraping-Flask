@@ -766,7 +766,7 @@ class Chating:
                         # service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
                         # worksheet.insert_rows(sub_result, row=6)
                         if first_flag:
-                            sheet_range = f'{self.start_month}-{self.start_day}!A6:Z'  # Adjust the range as needed
+                            sheet_range = f'{delivery_number}!A6:Z'  # Adjust the range as needed
                             self.service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
 
                         rest_array = []
