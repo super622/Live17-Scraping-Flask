@@ -449,6 +449,7 @@ class Chating:
             chating_elements = []
             before_gifs_users = []
             before_snack_gifs_users = []
+            before_gifs_list = []
             first_flag = True
             delivery_number = 1
 
@@ -860,7 +861,6 @@ class Chating:
                             worksheet.update(f"G{i + 5 + len(before_snack_gifs_users)}", [[new_array[i]['Gif_Count']]], value_input_option="USER_ENTERED")
                             worksheet.update(f"H{i + 5 + len(before_snack_gifs_users)}", [[new_array[i]['Coin']]], value_input_option="USER_ENTERED")
 
-                        first_flag = False
                         before_gifs_users = []
                         before_snack_gifs_users = []
                         before_gifs_users = copy.deepcopy(gifs_users)
@@ -871,9 +871,27 @@ class Chating:
                     worksheet = spreadsheet.worksheet("ギフト内訳")
 
                     try:
-                        sheet_range = f'ギフト内訳!A2:Z'  # Adjust the range as needed
-                        self.service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
-                        worksheet.insert_rows(self.gifs_list, row=2)
+                        if first_flag == True:
+                            sheet_range = f'ギフト内訳!A2:Z'  # Adjust the range as needed
+                            self.service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
+                        
+                        origin_array = self.gifs_list[0:len(before_gifs_list)]
+                        new_array = self.gifs_list[len(before_gifs_list):]
+
+                        for i in range(len(before_gifs_list)):
+                            if before_gifs_list[i][1] != self.gifs_list[i][1]:
+                                worksheet.update(f"B{i + 2}", [[self.gifs_list[i][1]]], value_input_option="USER_ENTERED")
+                            if before_gifs_list[i][2] != self.gifs_list[i][2]:
+                                worksheet.update(f"C{i + 2}", [[self.gifs_list[i][2]]], value_input_option="USER_ENTERED")
+
+                        for i in range(len(new_array)):
+                            worksheet.update(f"A{i + 2 + len(before_gifs_list)}", [[new_array[i][0]]], value_input_option="USER_ENTERED")
+                            worksheet.update(f"B{i + 2 + len(before_gifs_list)}", [[new_array[i][1]]], value_input_option="USER_ENTERED")
+                            worksheet.update(f"C{i + 2 + len(before_gifs_list)}", [[new_array[i][2]]], value_input_option="USER_ENTERED")
+
+                        before_gifs_list = []
+                        before_gifs_list = copy.deepcopy(self.gifs_list)
+                        first_flag = False
                     except:
                         print('quota <')
 
