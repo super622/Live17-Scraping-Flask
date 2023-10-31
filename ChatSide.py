@@ -318,13 +318,16 @@ class Chating:
                 worksheet.update("G5", [["ギフト個数"]], value_input_option="USER_ENTERED")
                 worksheet.update("H5", [["合計コイン"]], value_input_option="USER_ENTERED")
 
-                batch = batch_updater(worksheet)
-                batch.set_column_width(worksheet, 'A:A', 200)
-                batch.execute()
+                try:
+                    batch = batch_updater(worksheet)
+                    batch.set_column_width(worksheet, 'A:A', 200)
+                    batch.execute()
 
-                batch = batch_updater(worksheet)
-                batch.set_column_width(worksheet, 'E:E', 200)
-                batch.execute()
+                    batch = batch_updater(worksheet)
+                    batch.set_column_width(worksheet, 'E:E', 200)
+                    batch.execute()
+                except:
+                    print('error')
             else:
                 worksheet.update("E1", [["コイン数"]], value_input_option="USER_ENTERED")
                 worksheet.update("E2", [["ギフト人数"]], value_input_option="USER_ENTERED")
@@ -338,14 +341,16 @@ class Chating:
                 worksheet.update("F4", [["スナック"]], value_input_option="USER_ENTERED")
                 worksheet.update("G4", [["ギフト個数"]], value_input_option="USER_ENTERED")
                 worksheet.update("H4", [["合計コイン"]], value_input_option="USER_ENTERED")
+                try:
+                    batch = batch_updater(worksheet)
+                    batch.set_column_width(worksheet, 'A:A', 200)
+                    batch.execute()
 
-                batch = batch_updater(worksheet)
-                batch.set_column_width(worksheet, 'A:A', 200)
-                batch.execute()
-
-                batch = batch_updater(worksheet)
-                batch.set_column_width(worksheet, 'E:E', 200)
-                batch.execute()
+                    batch = batch_updater(worksheet)
+                    batch.set_column_width(worksheet, 'E:E', 200)
+                    batch.execute()
+                except:
+                    print('error')
 
         # get score data
         async def get_score_data(elements):
