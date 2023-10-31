@@ -460,7 +460,7 @@ class Chating:
 
                 if(len(end_elements) > 0):
                     self.total_coin_cnt += coin_cnt
-                    self.total_score += score
+                    self.total_score += int(score)
 
                     self.total_snack_cnt += snack_cnt
                     self.total_gif_man_cnt += self.gif_man_cnt
