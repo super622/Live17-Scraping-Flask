@@ -450,6 +450,8 @@ class Chating:
             before_gifs_users = []
             before_snack_gifs_users = []
             first_flag = True
+            delivery_number = 1
+
 
             while True:
                 print('************************')
@@ -459,6 +461,43 @@ class Chating:
                     chating_panel = browser.find_elements('css selector', '.ChatList__ListWrapper-sc-733d46-1')
                 except:
                     chating_panel = []
+
+                end_elements = browser.find_elements('css selector', '.SubmitChat__TextAreaWrapper-sc-3xpwq0-2')
+
+                if(len(end_elements) > 0):
+                    self.total_coin_cnt += coin_cnt
+                    self.total_score += score
+
+                    self.total_snack_cnt += snack_cnt
+                    self.total_gif_man_cnt += self.gif_man_cnt
+
+                    # total_gifs_user
+                    temp_gifs_arr = self.total_gifs_user
+                    temp_total_gifs_user = await append_to_total_gif_users(temp_gifs_arr, gifs_users, False)
+
+                    # total_snack_user
+                    temp_snack_arr = self.total_snack_user
+                    temp_total_snack_user = await append_to_total_snack_users(temp_snack_arr, snack_gifs_users, False)
+
+                    # total result
+                    temp_total_results = await append_to_total_result(temp_total_gifs_user, temp_total_snack_user)
+
+                    snack_cnt = 0
+                    self.gif_man_cnt = 0
+                    coin_cnt = 0
+                    score = ''
+                    gifs_users = []
+                    gifs_users_name = []
+                    snack_gifs_users = []
+                    sub_result = []
+                    chating_elements = []
+                    before_gifs_users = []
+                    before_snack_gifs_users = []
+                    first_flag = True
+                    delivery_number += 1
+
+                    browser.refresh()
+
                 print('start')
                 print(len(chating_panel))
                 print('================================')
@@ -588,24 +627,18 @@ class Chating:
                     score_elements = browser.find_elements(By.XPATH, "//*[@style='transform: rotateX(0deg) translateZ(28px);']")
 
                     try:
-                        end_delivery_flag = False
                         score = await get_score_data(score_elements)
                         if(score == ''):
                             cnt = 0
                             while score == '':
                                 cnt += 1
                                 if cnt > 100:
-                                    end_delivery_flag = True
                                     break
                                 score_elements = browser.find_elements(By.XPATH, "//*[@style='transform: rotateX(0deg) translateZ(28px);']")
                                 score = await get_score_data(score_elements)
                     except:
-                        print('error')
-                    
-                    # if(end_delivery_flag == True):
-                    #     result_response(3)
-                    #     return
-                    
+                        continue
+                                        
                     print(f"coin = {coin_cnt}, score = {score}")
 
                     # total_gifs_user
@@ -618,46 +651,6 @@ class Chating:
 
                     # total result
                     temp_total_results = await append_to_total_result(temp_total_gifs_user, temp_total_snack_user)
-
-                    current_month = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).month
-                    current_day = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).day
-
-                    if(self.start_day != current_day):
-                        print('date==================')
-                        self.total_coin_cnt = coin_cnt
-                        self.total_score = score
-
-                        self.start_day = current_day
-
-                        self.total_snack_cnt += snack_cnt
-                        self.total_gif_man_cnt += self.gif_man_cnt
-
-                        # total_gifs_user
-                        temp_gifs_arr = self.total_gifs_user
-                        temp_total_gifs_user = await append_to_total_gif_users(temp_gifs_arr, gifs_users, False)
-
-                        # total_snack_user
-                        temp_snack_arr = self.total_snack_user
-                        temp_total_snack_user = await append_to_total_snack_users(temp_snack_arr, snack_gifs_users, False)
-
-                        # total result
-                        temp_total_results = await append_to_total_result(temp_total_gifs_user, temp_total_snack_user)
-
-                        snack_cnt = 0
-                        self.gif_man_cnt = 0
-                        coin_cnt = 0
-                        score = ''
-                        gifs_users = []
-                        gifs_users_name = []
-                        snack_gifs_users = []
-                        sub_result = []
-                        chating_elements = []
-                        before_gifs_users = []
-                        before_snack_gifs_users = []
-                        first_flag = True
-
-                        # refresh
-                        browser.refresh()
 
                     # create google sheet
                     tab_position = 0
@@ -687,7 +680,7 @@ class Chating:
                         try:
                             worksheet.resize(rows=5000, cols=8)
 
-                            worksheet.update_title(f"{self.start_month}-{self.start_day}")
+                            worksheet.update_title(f"{delivery_number}")
 
                             await init_content_of_worksheet(worksheet, True)
                         except:
@@ -735,19 +728,27 @@ class Chating:
 
                     worksheet = None
                     try:
-                        worksheet = spreadsheet.worksheet(f"{self.start_month}-{self.start_day}")
+                        worksheet = spreadsheet.worksheet(f"{delivery_number}")
                     except:
                         worksheet = None
 
                     if(worksheet == None):
-                        worksheet = spreadsheet.add_worksheet(title=f"{self.start_month}-{self.start_day}", rows='5000', cols='8', index=(tab_position - 2))
+                        worksheet = spreadsheet.add_worksheet(title=f"{delivery_number}", rows='5000', cols='8', index=(tab_position - 2))
 
                         try:
-                            await init_content_of_worksheet(worksheet, True)
                             await format_cell_format(worksheet, spreadsheet, True)
                         except:
+                            time.sleep(3)
+                            await format_cell_format(worksheet, spreadsheet, True)
                             print('quota <')
-
+                        
+                        try:
+                            await init_content_of_worksheet(worksheet, True)
+                        except:
+                            time.sleep(3)
+                            await init_content_of_worksheet(worksheet, True)
+                            print('quota <')
+                    
                     # write content into google sheet
                     worksheet = spreadsheet.get_worksheet(tab_position - 3)
 
@@ -818,7 +819,7 @@ class Chating:
 
                     try:
                         print(f"insert date total => {len(before_gifs_users)} = {len(before_snack_gifs_users)}")
-                                                
+
                         if first_flag:
                             sheet_range = f'total!A5:Z'
                             self.service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
@@ -876,6 +877,8 @@ class Chating:
                     except:
                         print('quota <')
 
+                    current_month = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).month
+                    current_day = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).day
                     current_hour = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).hour
                     current_minute = datetime.datetime.now(pytz.timezone('Asia/Tokyo')).minute
                     print('end--------------------')
