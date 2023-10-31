@@ -526,9 +526,7 @@ class Chating:
                                 gif_element = chat_element.find_elements('css selector', '.Chat__ContentWrapper-sc-clenhv-1')
                                 gif_type = gif_element[0].text
                             except:
-                                time.sleep(1)
-                                gif_element = chat_element.find_elements('css selector', '.Chat__ContentWrapper-sc-clenhv-1')
-                                gif_type = gif_element[0].text
+                                continue
                             
                             coin_element = re.search(r'\((\d+)\)', gif_type)
                             coin = 0
