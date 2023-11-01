@@ -761,8 +761,6 @@ class Chating:
                             print('quota <')
                     
                     # write content into google sheet
-                    worksheet = spreadsheet.get_worksheet(tab_position - 3)
-
                     try:
                         worksheet.update("F1", [[str(coin_cnt)]], value_input_option="USER_ENTERED")
                         worksheet.update("F3", [[str(snack_cnt)]], value_input_option="USER_ENTERED")
