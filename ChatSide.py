@@ -463,6 +463,7 @@ class Chating:
 
                 end_elements = browser.find_elements('css selector', '.SubmitChat__TextAreaWrapper-sc-3xpwq0-2')
 
+                print(f"end flag => {len(end_elements)}")
                 if(len(end_elements) > 0):
                     self.total_coin_cnt += coin_cnt
                     if score != '':
@@ -680,6 +681,7 @@ class Chating:
                     # write content into google sheet (init column name)
                     spreadsheet = self.client.open_by_key(sheetID)
                     print(f' ================== {create_flag} ========================  {tab_position}')
+                    print(f"delivery number =>  {delivery_number}")
                     if(create_flag or tab_position == 1):
                         print('first ===================')
                         worksheet = spreadsheet.sheet1
@@ -827,8 +829,6 @@ class Chating:
                         print('quota <')
 
                     try:
-                        print(f"insert date total => {len(before_gifs_users)} = {len(before_snack_gifs_users)}")
-
                         if first_flag:
                             sheet_range = f'total!A5:Z'
                             self.service.spreadsheets().values().clear(spreadsheetId=sheetID, range=sheet_range).execute()
