@@ -465,7 +465,8 @@ class Chating:
 
                 if(len(end_elements) > 0):
                     self.total_coin_cnt += coin_cnt
-                    self.total_score += int(score)
+                    if score != '':
+                        self.total_score += int(score)
 
                     self.total_snack_cnt += snack_cnt
                     self.total_gif_man_cnt += self.gif_man_cnt
@@ -623,6 +624,7 @@ class Chating:
                     print('score counting...')
                     score_elements = browser.find_elements(By.XPATH, "//*[@style='transform: rotateX(0deg) translateZ(28px);']")
 
+                    before_score = score
                     try:
                         score = await get_score_data(score_elements)
                         if(score == ''):
@@ -635,7 +637,10 @@ class Chating:
                                 score = await get_score_data(score_elements)
                     except:
                         continue
-                                        
+
+                    if score == '':
+                        score = before_score
+                              
                     print(f"coin = {coin_cnt}, score = {score}")
 
                     # total_gifs_user
