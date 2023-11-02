@@ -706,7 +706,7 @@ class Chating:
                         except:
                             print('quota <')
 
-                        worksheet = spreadsheet.add_worksheet(title="ギフト内訳", rows='5000', cols='3')
+                        worksheet = spreadsheet.add_worksheet(title="ギフト内訳", rows='3000', cols='3')
 
                         try:
                             fmt = CellFormat(
@@ -744,7 +744,7 @@ class Chating:
                         worksheet = None
 
                     if(worksheet == None):
-                        worksheet = spreadsheet.add_worksheet(title=f"{delivery_number}", rows='5000', cols='8', index=(tab_position - 2))
+                        worksheet = spreadsheet.add_worksheet(title=f"{delivery_number}", rows='4000', cols='8', index=(tab_position - 2))
 
                         try:
                             await format_cell_format(worksheet, spreadsheet, True)
