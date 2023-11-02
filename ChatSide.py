@@ -815,8 +815,10 @@ class Chating:
 
                     except:
                         print('quota <')
-
-                    worksheet = spreadsheet.worksheet("total")
+                    try:
+                        worksheet = spreadsheet.worksheet("total")
+                    except:
+                        worksheet = spreadsheet.add_worksheet(title="total", rows="5000", cols='8')
 
                     try:
                         worksheet.update("F1", [[str(self.total_coin_cnt + coin_cnt)]], value_input_option="USER_ENTERED")
