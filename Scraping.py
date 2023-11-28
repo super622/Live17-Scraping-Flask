@@ -154,13 +154,6 @@ async def scanData(start_month, start_day):
 
     # Insert html content into worksheet
     async def insert_content_in_googlesheet(sheetID, element, parent_title, title):
-        # SCOPES = ['https://www.googleapis.com/auth/drive']
-        # SERVICE_ACCOUNT_FILE = 'service-account.json'
-
-        # creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-        # client = gspread.authorize(creds)
-        # spreadsheet = client.open_by_key(sheetID)
-
         # result = None
         # content = element.find_elements('css selector', '.btCdvi')
         # if(len(content) > 0):
